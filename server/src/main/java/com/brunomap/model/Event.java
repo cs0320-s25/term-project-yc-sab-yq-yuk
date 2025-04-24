@@ -17,7 +17,6 @@ public class Event {
     private String timezone; // EDT
     private String location;
     private String description;
-    private String url;
     @JsonProperty("liked_count")
     private int likedCount;
     @JsonProperty("viewed_count")
@@ -29,6 +28,7 @@ public class Event {
     private String group;  // organizer info
     @JsonProperty("event_type")
     private String eventType;  // attending mode: in person, online only, hybrid?
+    private String link; // link to Events@Brown for redirect
     
     // Getters and Setters
     public String getId() { return id; }
@@ -55,9 +55,6 @@ public class Event {
     public String getDescription() { return description; }
     public void setDescription(String description) { this.description = description; }
 
-    public String getUrl() { return url; }
-    public void setUrl(String url) { this.url = url; }
-
     public int getLikedCount() { return likedCount; }
     public void setLikedCount(int likedCount) { this.likedCount = likedCount; }
 
@@ -78,4 +75,7 @@ public class Event {
 
     public String getEventType() { return eventType; }
     public void setEventType(String eventType) { this.eventType = eventType; }
+
+    public String getLink() { return link; }
+    public void setLink(String link) { this.link = link; }
 }

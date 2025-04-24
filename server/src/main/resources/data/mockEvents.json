@@ -13,7 +13,8 @@
     "event_type": null,
     "latitude": 41.8268,
     "longitude": -71.4025,
-    "group": "Brown Arts Initiative"
+    "group": "Brown Arts Initiative",
+    "link": "https://brunomap.brown.edu/events/e1"
   },
   {
     "id": "e2",
@@ -29,7 +30,8 @@
     "event_type": "Online only",
     "latitude": 41.8268,
     "longitude": -71.4,
-    "group": "Brown Computer Science Department"
+    "group": "Brown Computer Science Department",
+    "link": "https://brunomap.brown.edu/events/e2"
   },
   {
     "id": "e3",
@@ -45,7 +47,8 @@
     "event_type": "Online only",
     "latitude": 41.827,
     "longitude": -71.403,
-    "group": "Brown CareerLAB"
+    "group": "Brown CareerLAB",
+    "link": "https://brunomap.brown.edu/events/e3"
   },
   {
     "id": "e4",
@@ -61,7 +64,8 @@
     "event_type": "In person",
     "latitude": 41.825,
     "longitude": -71.405,
-    "group": "Brown Concert Committee"
+    "group": "Brown Concert Committee",
+    "link": "https://brunomap.brown.edu/events/e4"
   },
   {
     "id": "e5",
@@ -77,6 +81,7 @@
     "event_type": "Hybrid",
     "latitude": 41.828,
     "longitude": -71.401,
-    "group": "Brown Entrepreneurship Program"
+    "group": "Brown Entrepreneurship Program",
+    "link": "https://brunomap.brown.edu/events/e5"
   }
 ]
