@@ -20,10 +20,10 @@ public class GeoJsonCacheProxy {
     this.cache = new HashMap<>();
   }
 
-// Main query method
-// Maintains a HashMap as cache where:
-// Keys are strings formed by concatenating the bounding box parameters
-// Values are pre-filtered GeoJSON objects
+  // Main query method
+  // Maintains a HashMap as cache where:
+  // Keys are strings formed by concatenating the bounding box parameters
+  // Values are pre-filtered GeoJSON objects
   public GeoJsonObject query(double minLong, double maxLong, double minLat, double maxLat) {
     // Created a simple but effective key with bounding box parameters.
     String key = minLong + "_" + maxLong + "_" + minLat + "_" + maxLat;
@@ -35,7 +35,6 @@ public class GeoJsonCacheProxy {
       return filtered;
     }
   }
-
 
   // Filtering logic implementation
   private GeoJsonObject filterData(

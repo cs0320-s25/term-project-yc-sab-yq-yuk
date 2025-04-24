@@ -1,6 +1,6 @@
 import { useState } from "react";
 import FirestoreDemo from "./FirestoreDemo";
-import Mapbox from "./Mapbox";
+import EventMap from "./EventMap";
 
 enum Section {
   FIRESTORE_DEMO = "FIRESTORE_DEMO",
@@ -20,7 +20,7 @@ export default function MapsGearup() {
         Section 2: Mapbox Demo
       </button>
       {section === Section.FIRESTORE_DEMO ? <FirestoreDemo /> : null}
-      {section === Section.MAP_DEMO ? <Mapbox /> : null}
+      {section === Section.MAP_DEMO ? <EventMap /> : null}
     </div>
   );
 }

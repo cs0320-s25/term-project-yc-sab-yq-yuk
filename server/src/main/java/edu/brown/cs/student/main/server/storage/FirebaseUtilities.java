@@ -20,8 +20,8 @@ import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
 /**
- * FirebaseUtilities class implements the StorageInterface using Google Firestore. 
- * This class handles operations for documents, including adding documents, fetching collections, clearing user
+ * FirebaseUtilities class implements the StorageInterface using Google Firestore. This class
+ * handles operations for documents, including adding documents, fetching collections, clearing user
  * data, and aggregating pins across all users.
  */
 public class FirebaseUtilities implements StorageInterface {
