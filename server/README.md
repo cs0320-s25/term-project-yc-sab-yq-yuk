@@ -23,5 +23,6 @@ Next Sprint Plans:
 - Refine and implement time decay logic for the personal match scoring
 - Collaborate with teammates to finalize the database schema and ensure alignment with frontend and scraping components
 - Coordinate with teammates for configuration to pre-calculate trending scores periodically
+- Implement `/api/trending`
 - Integrate real user likes and event data into the backend
 - Add pagination or limit control for the recommendation feed
