@@ -1,5 +1,13 @@
 # Backend Progress Report
 
+```bash
+# Run the Spring Boot app
+./mvnw spring-boot:run
+
+# Build the project
+./mvnw clean install
+```
+
 ## Week 1 (Yumian)
 
 This week, I set up the Spring Boot backend project for BrunoMap (Spring Initializr) and implemented a proof-of-concept /api/recommendations endpoint (http://localhost:8080/api/recommendations?userId=xyz will invoke recommendations and return a list of recommended events). The current recommendation engine serves as a prototype that combines mock user profiles and event data to calculate personalized scores. The scoring logic integrates a personal match score, trending score, and random score injection based on a 70/20/10 weighting scheme. In addition, a fallback cold-start mechanism is in place for new users without “like” history (90/10 weighting scheme without personal match score). Currently,
