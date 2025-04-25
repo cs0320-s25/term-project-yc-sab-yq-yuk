@@ -26,3 +26,4 @@ Next Sprint Plans:
 - Implement `/api/trending`
 - Integrate real user likes and event data into the backend
 - Add pagination or limit control for the recommendation feed
+- Write unit tests!!!
