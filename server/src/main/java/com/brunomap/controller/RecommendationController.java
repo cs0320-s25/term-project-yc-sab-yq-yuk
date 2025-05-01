@@ -15,7 +15,7 @@ public class RecommendationController {
     private RecommendationService recommendationService;
 
     @GetMapping("/recommendations") // Spark parallel: Spark.get("/recommendations", handler)
-    public List<Event> getRecommendations(@RequestParam String userId) throws Exception {
+    public List<Event> getRecommendations(@RequestParam("userId") String userId) throws Exception {
         return recommendationService.getRecommendations(userId);
     }
 
