@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.map.mapper.EventMapper">
+
+<!--  useGeneratedKeys="true"-->
+<insert id="insertEventRecord" parameterType="com.map.entity.Event">
+  INSERT INTO event (
+    event_id, name, time, location, description, link,
+    liked_count, viewed_count, trending_score, latitude, longitude
+  ) VALUES (
+             #{eventId}, #{name}, #{time}, #{location},
+             #{description}, #{link}, #{likedCount},
+             #{viewedCount}, #{trendingScore}, #{latitude}, #{longitude}
+           )
+</insert>
+</mapper>
