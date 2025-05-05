@@ -14,26 +14,29 @@ public class TrendingController {
   @Autowired private TrendingService trendingService;
 
   /**
-   * GET /api/trending Fetch a list of trending events, ranked by current trending scores
+   * GET /api/trending 
+   * Fetch a list of trending events, ranked by current trending scores
    *
    * @return list of trending events
    */
   @GetMapping
   public List<Event> getTrendingEvents() {
     // TODO
-    // return trendingService.getTrendingEvents();
+    return trendingService.getTrendingEvents();
   }
 
   /**
-   * POST /api/trending/recalculate Recalculate trending scores for all events triggered by a cron
-   * job or internal call
+   * POST /api/trending/recalculate 
+   * Recalculate trending scores for all events triggered by a cron job or internal call
+   * 
+   * curl -X POST http://localhost:8080/api/trending/recalculate
    *
    * @return success message after recalculation
    */
   @PostMapping("/recalculate")
   public String recalculateTrendingScores() {
     // TODO
-    // trendingService.recalculateTrendingScores();
-    // return "Trending scores recalculated successfully.";
+    trendingService.recalculateTrendingScores();
+    return "Trending scores recalculated successfully.";
   }
 }
