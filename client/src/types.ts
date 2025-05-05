@@ -10,7 +10,7 @@ export interface Event {
     liked_count: number;       // Number of likes this event received
     viewed_count: number;      // Number of times this event was viewed
     trending_score: number;    // Pre-calculated normalized score (0-1)
-    latitude: number;          // Event location (inferred via geocoding)
+    latitude: number;         // Event location (inferred via geocoding)
     longitude: number;         // Event location (inferred via geocoding)
   }
   
