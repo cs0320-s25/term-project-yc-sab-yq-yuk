@@ -12,6 +12,5 @@ import lombok.NoArgsConstructor;
 public class UserCategoryFrequency {
   private String userId;
   private Integer categoryId;
-  // TODO: needs to be changed to float type
-  private Integer frequency;
+  private Double frequency;
 }
