@@ -14,6 +14,9 @@ public class MockDataLoader {
     ObjectMapper mapper = new ObjectMapper();
     mapper.registerModule(new JavaTimeModule());
     InputStream inputStream = MockDataLoader.class.getResourceAsStream("/data/mockEvents.json");
+    if (inputStream == null) {
+      throw new IllegalArgumentException("mockEvents.json not found in resources.");
+    }
     return mapper.readValue(inputStream, new TypeReference<List<Event>>() {});
   }
 
@@ -21,6 +24,9 @@ public class MockDataLoader {
     ObjectMapper mapper = new ObjectMapper();
     mapper.registerModule(new JavaTimeModule());
     InputStream inputStream = MockDataLoader.class.getResourceAsStream("/data/mockUsers.json");
+    if (inputStream == null) {
+      throw new IllegalArgumentException("mockUsers.json not found in resources.");
+    }
     return mapper.readValue(inputStream, new TypeReference<List<UserProfile>>() {});
   }
 }
