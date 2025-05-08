@@ -31,13 +31,13 @@ public class UserServiceImpl implements UserService {
             List<Integer> bookmarks = userMapper.getUserBookmarks(userId);
             
             // Get user's derived categories
-            List<String> derivedCategories = userMapper.getDerivedCategory(userId);
+//            List<String> derivedCategories = userMapper.getDerivedCategory(userId);
 
             // Build and return the UserProfileVO
             return UserProfileVO.builder()
                     .likes(likes)
                     .bookmarks(bookmarks)
-                    .derivedCategories(derivedCategories)
+//                    .derivedCategories(derivedCategories)
                     .build();
         } catch (Exception e) {
             logger.error("Error retrieving profile for user ID: {}", userId, e);

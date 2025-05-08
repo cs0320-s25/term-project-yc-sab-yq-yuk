@@ -15,5 +15,5 @@ import java.io.Serializable;
 public class UserProfileVO implements Serializable{
   private List<Integer> likes;
   private List<Integer> bookmarks;
-  private List<String> derivedCategories;
+//  private List<String> derivedCategories;
 }

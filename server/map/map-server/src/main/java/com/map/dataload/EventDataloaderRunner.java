@@ -6,8 +6,8 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.context.ConfigurableApplicationContext;
 
-@SpringBootApplication
-@MapperScan("com.map.mapper") // Scan your mapper interfaces
+//@SpringBootApplication
+@MapperScan("com.map.mapper")
 public class EventDataloaderRunner {
   public static void main(String[] args) {
     // Start Spring in non-web mode

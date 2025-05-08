@@ -16,7 +16,7 @@ public interface UserMapper {
    * @return
    */
   @Select("SELECT event_id FROM users JOIN user_likes ON "
-      + "users.user_id = user_likes.user_id WHERE user_id = #{userId}")
+      + "users.user_id = user_likes.user_id WHERE users.user_id = #{userId}")
   List<Integer> getUserLikes(@Param("userId") Integer userId);
 
   /**
@@ -25,7 +25,7 @@ public interface UserMapper {
    * @return
    */
   @Select("SELECT event_id FROM users JOIN user_bookmarks "
-      + "ON users.user_id = user_bookmarks.user_id WHERE user_id = #{userId}")
+      + "ON users.user_id = user_bookmarks.user_id WHERE users.user_id = #{userId}")
   List<Integer> getUserBookmarks(@Param("userId") Integer userId);
 
   /**

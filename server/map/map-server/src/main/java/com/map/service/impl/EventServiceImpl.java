@@ -40,6 +40,16 @@ public class EventServiceImpl implements EventService {
     }
 
     /**
+     * Search for event(s) by roughly matching the value with the event name/event description.
+     * @param query
+     * @return
+     */
+    @Override
+    public List<Event> getEventByMatching(String query){
+        return eventMapper.selectEventByValue(query);
+    }
+
+    /**
      * Update the view count for the selected event by eventId.
      * @param eventId
      */

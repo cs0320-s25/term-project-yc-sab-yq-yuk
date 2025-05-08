@@ -21,6 +21,13 @@ public interface EventService {
   Event getEventById(Integer eventId);
 
   /**
+   * Search for event(s) by roughly matching the value with the event name/event description.
+   * @param query
+   * @return
+   */
+  List<Event> getEventByMatching(String query);
+
+  /**
    * Update the view count for the selected event by eventId.
    * @param eventId
    */

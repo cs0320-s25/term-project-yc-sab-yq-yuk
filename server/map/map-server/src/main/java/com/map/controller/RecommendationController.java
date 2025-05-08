@@ -13,10 +13,11 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/recommendations")
 public class RecommendationController {
 
-  @Autowired private RecommendationService recommendationService;
+//  @Autowired
+//  private RecommendationService recommendationService;
 
-  @GetMapping("/{userId}")
-  public Result<List<Event>> getRecommendations(@PathVariable Integer userId){
-    return Result.success(recommendationService.getRecommendations(userId));
-  }
+//  @GetMapping("/{userId}")
+//  public Result<List<Event>> getRecommendations(@PathVariable Integer userId){
+//    return Result.success(recommendationService.getRecommendations(userId));
+//  }
 }

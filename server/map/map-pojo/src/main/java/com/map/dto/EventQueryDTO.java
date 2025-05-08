@@ -13,8 +13,5 @@ import java.io.Serializable;
 public class EventQueryDTO implements Serializable {
     private String category;
     private String time;
-    private String search;
-
-    // TODO: this needs double check
     private String near;
 }

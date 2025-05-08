@@ -8,6 +8,6 @@ import org.apache.ibatis.annotations.Select;
 
 @Mapper
 public interface CategoryMapper {
-  @Select("SELECT category_name FROM Category")
+  @Select("SELECT category_name FROM Categories")
   List<String> fetchAllCategories();
 }
