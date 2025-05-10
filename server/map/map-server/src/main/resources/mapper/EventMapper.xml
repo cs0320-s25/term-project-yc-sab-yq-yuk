@@ -43,9 +43,6 @@
             </when>
         </choose>
     </if>
-    <if test="time == null or time == '' or time == 'Any Time'">
-        AND time >= NOW()
-    </if>
     <if test="near != null and near != '' and near != 'All Locations'">
         AND LOWER(location) = LOWER(#{near})
     </if>

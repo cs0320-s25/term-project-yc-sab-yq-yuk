@@ -47,6 +47,14 @@ public interface EventMapper{
   List<Event> selectEventByValue(@Param("query") String query);
 
   /**
+   * Update trending score
+   * @param eventId
+   * @param trendingScore
+   */
+  @Update("UPDATE events SET trending_score = #{trendingScore} WHERE event_id = #{eventId}")
+  void updateTrendingScore(@Param("eventId") Integer eventId, @Param("trendingScore") Double trendingScore);  
+
+  /**
    * Increment the view count for a specific event by 1.
    * @param eventId
    */

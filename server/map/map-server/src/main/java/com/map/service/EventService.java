@@ -35,6 +35,13 @@ public interface EventService {
   void updateViewCount(Integer eventId);
 
   /**
+   * Update the trending score for the event by eventId
+   * @param eventId
+   * @param trendingScore
+   */
+  void updateTrendingScore(Integer eventId, Double trendingScore);
+
+  /**
    * Return all event locations.
    * @return
    */

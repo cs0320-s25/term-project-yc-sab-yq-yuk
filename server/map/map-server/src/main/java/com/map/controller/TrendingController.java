@@ -13,32 +13,40 @@ import com.map.service.TrendingService;
 // TODO: reset this to be a automatic event rather than triggered by an api call
 public class TrendingController {
 
-//  @Autowired
-//  private TrendingService trendingService;
+ @Autowired
+ private TrendingService trendingService;
 
-//  /**
-//   * Fetch a list of trending events, ranked by current trending scores
-//   *
-//   * @return list of trending events
-//   */
-//  @GetMapping
-//  public Result<List<Event>> getTrendingEvents() {
-//    // TODO
-//    return Result.success(trendingService.getTrendingEvents());
-//  }
-//
-//  /**
-//   * POST /api/trending/recalculate
-//   * Recalculate trending scores for all events triggered by a cron job or internal call
-//   *
-//   * curl -X POST http://localhost:8080/api/trending/recalculate
-//   *
-//   * @return success message after recalculation
-//   */
-//  @PostMapping("/recalculate")
-//  public String recalculateTrendingScores() {
-//    // TODO
-//    trendingService.recalculateTrendingScores();
-//    return "Trending scores recalculated successfully.";
-//  }
+    /**
+     * Fetch a list of trending events, ranked by current trending scores
+    *
+    * @return list of trending events
+    */
+    @GetMapping
+    public Result<List<Event>> fetchTrendingEvents(
+        @RequestParam(required = false) String category,
+        @RequestParam(required = false) String time,
+        @RequestParam(required = false) String near
+    ) {
+        EventQueryDTO queryDTO = EventQueryDTO.builder()
+            .category(category)
+            .time(time)
+            .near(near)
+            .build();
+        return Result.success(trendingService.fetchTrendingEvents(queryDTO));
+    }
+
+    /**
+     * POST /api/trending/recalculate
+    * Recalculate trending scores for all events triggered by a cron job or internal call
+    *
+    * curl -X POST http://localhost:8080/trending/recalculate
+    *
+    * @return success message after recalculation
+    */
+    @PostMapping("/recalculate")
+    public Result<String> recalculateTrendingScores() {
+        // TODO
+        trendingService.recalculateTrendingScores();
+        return Result.success("Trending scores recalculated successfully.");
+    }
 }

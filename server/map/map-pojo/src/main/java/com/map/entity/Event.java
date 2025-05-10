@@ -15,7 +15,9 @@ public class Event implements Serializable{
   private String eventId;
   private String name;
   // TODO: add startTime & endTime
-  private LocalDateTime time;
+  private LocalDateTime startTime;
+  private LocalDateTime endTime;
+  private String timezone;
   private String location;
   private String description;
   private String link;

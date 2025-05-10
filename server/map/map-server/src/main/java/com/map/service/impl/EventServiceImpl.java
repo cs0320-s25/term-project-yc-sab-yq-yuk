@@ -58,6 +58,16 @@ public class EventServiceImpl implements EventService {
     }
 
     /**
+     * Update the trending score for the event by eventId
+     * @param eventId
+     * @param trendingScore
+     */
+    @Override
+    public void updateTrendingScore(Integer eventId, Double trendingScore) {
+        eventMapper.updateTrendingScore(eventId, trendingScore);
+    }
+
+    /**
      * Return all event locations.
      * @return
      */
