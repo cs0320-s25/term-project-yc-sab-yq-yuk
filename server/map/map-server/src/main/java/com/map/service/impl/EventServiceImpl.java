@@ -64,4 +64,9 @@ public class EventServiceImpl implements EventService {
     public List<String> getAllLocations(){
         return eventMapper.getAllLocations();
     }
+
+    @Override
+    public List<EventCategoryDTO> getCategoriesForEvents(List<Integer> eventIds) {
+        return eventMapper.getCategoriesForEvents(eventIds);
+    }
 } 

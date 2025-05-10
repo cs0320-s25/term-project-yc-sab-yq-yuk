@@ -1,6 +1,7 @@
 package com.map.mapper;
 
 import com.map.dto.EventQueryDTO;
+import com.map.dto.EventCategoryDTO;
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Select;
@@ -53,9 +54,38 @@ public interface EventMapper{
   void updateViewCount(@Param("eventId") Integer eventId);
 
   /**
+   * Increment the like count for a specific event by 1.
+   * @param eventId
+   */
+  @Update("UPDATE events SET liked_count = liked_count + 1 WHERE event_id = #{eventId}")
+  void incrementLikedCount(@Param("eventId") Integer eventId);
+
+  /**
+   * Decrement the like count for a specific event by 1.
+   * @param eventId
+   */
+  @Update("UPDATE events SET liked_count = GREATEST(liked_count - 1, 0) WHERE event_id = #{eventId}")
+  void decrementLikedCount(@Param("eventId") Integer eventId);
+
+  /**
    * Return locations of all events.
    * @param
    */
   @Select("SELECT DISTINCT location FROM Events")
   List<String> getAllLocations();
+
+  /**
+   * batch version of getCategoriesByEventId
+   * @param eventIds
+   * @return
+   */
+  @Select("""
+    SELECT ec.event_id, c.category_name
+    FROM event_categories ec
+    JOIN categories c ON ec.category_id = c.category_id
+    WHERE ec.event_id IN <foreach collection='eventIds' item='id' open='(' separator=',' close=')'>
+        #{id}
+    </foreach>
+  """)
+  List<EventCategoryDTO> getCategoriesForEvents(@Param("eventIds") List<Integer> eventIds);
 }

@@ -1,5 +1,7 @@
 package com.map.mapper;
 
+
+import com.map.dto.UserLikeDTO;
 import java.util.List;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
@@ -18,6 +20,14 @@ public interface UserMapper {
   @Select("SELECT event_id FROM users JOIN user_likes ON "
       + "users.user_id = user_likes.user_id WHERE users.user_id = #{userId}")
   List<Integer> getUserLikes(@Param("userId") Integer userId);
+
+  /**
+   * Extract all events that the user has liked and their timestamps.
+   * @param userId
+   * @return
+   */
+  @Select("SELECT event_id, timestamp FROM user_likes WHERE user_id = #{userId}")
+  List<UserLikeDTO> getUserLikesWithTimestamps(@Param("userId") String userId);
 
   /**
    * Extract all events that the user has bookmarked.

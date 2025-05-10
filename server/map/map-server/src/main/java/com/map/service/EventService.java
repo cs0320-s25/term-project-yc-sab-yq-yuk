@@ -1,6 +1,7 @@
 package com.map.service;
 
 import com.map.dto.EventQueryDTO;
+import com.map.dto.EventCategoryDTO;
 import com.map.entity.Event;
 import java.util.List;
 
@@ -38,4 +39,13 @@ public interface EventService {
    * @return
    */
   List<String> getAllLocations();
+
+
+  /**
+   * Batch fetch categories for a list of event IDs.
+   * @param eventIds list of event IDs
+   * @return list of event-category pairs
+   */
+  List<EventCategoryDTO> getCategoriesForEvents(List<Integer> eventIds);
+
 }

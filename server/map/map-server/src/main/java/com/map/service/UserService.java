@@ -12,6 +12,13 @@ public interface UserService {
   UserProfileVO getUserProfile(Integer userId);
 
   /**
+   * Fetch the user like entries --- event ids and timestamps.
+   * @param userId
+   * @return user like entries or empty list if user has not liked any
+   */
+  List<UserLikeDTO> getUserLikeEntries(Integer userId);
+
+  /**
    * Like an event if it hasn't been liked; else do nothing.
    * @param userId
    * @param eventId

@@ -1,6 +1,7 @@
 package com.map.service.impl;
 
 import com.map.mapper.UserMapper;
+import com.map.mapper.EventMapper;
 import com.map.service.UserService;
 import com.map.vo.UserProfileVO;
 import java.util.List;
@@ -15,6 +16,9 @@ public class UserServiceImpl implements UserService {
 
     @Autowired
     private UserMapper userMapper;
+
+    @Autowired
+    private EventMapper eventMapper;
 
     @Override
     public UserProfileVO getUserProfile(Integer userId) {
@@ -46,12 +50,23 @@ public class UserServiceImpl implements UserService {
     }
 
     /**
+     * Fetch the user like entries --- event ids and timestamps.
+     * @param userId
+     * @return
+     */
+    @Override
+    public List<UserLikeDTO> getUserLikeEntries(Integer userId) {
+      return userMapper.getUserLikesWithTimestamps(userId);
+    }
+
+    /**
      * Like an event if it hasn't been liked; else do nothing.
      * @param userId
      * @param eventId
      */
     public void likeEvent(Integer userId, Integer eventId){
       userMapper.likeEvent(userId, eventId);
+      eventMapper.incrementLikedCount(eventId);
     }
 
     /**
@@ -61,6 +76,7 @@ public class UserServiceImpl implements UserService {
      */
     public void delikeEvent(Integer userId, Integer eventId){
       userMapper.delikeEvent(userId, eventId);
+      eventMapper.decrementLikedCount(eventId);
     }
 
     /**
