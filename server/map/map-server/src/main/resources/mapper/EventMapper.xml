@@ -34,7 +34,7 @@
         AND LOWER(category_name) = LOWER(#{category})
     </if>
     <if test="time != null and time != '' and time != 'Any Time'">
-        AND time BETWEEN
+        AND e.start_time BETWEEN
         <choose>
             <when test="time == 'Today'">
                 CURRENT_DATE AND DATE_ADD(CURRENT_DATE, INTERVAL 1 DAY)
