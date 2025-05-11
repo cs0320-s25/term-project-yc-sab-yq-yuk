@@ -67,5 +67,11 @@
       <artifactId>jaxb-api</artifactId>
     </dependency>
 
+    <dependency>
+      <groupId>com.map</groupId>
+      <artifactId>map-pojo</artifactId>
+      <version>1.0-SNAPSHOT</version>
+    </dependency>
+
   </dependencies>
 </project>

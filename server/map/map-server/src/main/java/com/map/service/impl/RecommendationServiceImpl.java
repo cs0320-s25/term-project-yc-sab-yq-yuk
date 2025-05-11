@@ -18,6 +18,11 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import java.time.LocalDateTime;
+import com.map.dto.UserLikeDTO;
+import java.util.HashMap;
 
 @Service
 public class RecommendationServiceImpl implements RecommendationService {
@@ -79,7 +84,7 @@ public class RecommendationServiceImpl implements RecommendationService {
         // System.out.println(
         //     "Welcome to BrunoMap! Generating fresh recommendations to get you started...");
             logger.info("Cold start: no like history for userId {}", userId);
-            return getColdStartRecommendations(events);
+            return RecommendationUtils.getColdStartRecommendations(events);
         }
 
         // System.out.println("Welcome back! Generating new recommendations...");
@@ -87,74 +92,74 @@ public class RecommendationServiceImpl implements RecommendationService {
         // Keep going!
         // Compute intermediate scores:
         // Personal match score for all events for the user
-        Map<String, Double> personalMatchScores =
+        Map<Integer, Double> personalMatchScores =
         RecommendationUtils.computePersonalMatchScores(userLikeEntries, events, eventCategoryMap);
 
-        return scoreAndSortEvents(events, personalMatchScores, 0.7, 0.2, 0.1);
+        return RecommendationUtils.scoreAndSortEvents(events, personalMatchScores, 0.7, 0.2, 0.1);
     }
 
-    /**
-     * For new user with no like history, give cold start recommendations (trending + random)
-    *
-    * @param events
-    * @return
-    */
-    public static List<Event> getColdStartRecommendations(List<Event> events) {
-        return scoreAndSortEvents(events, null, 0.0, 0.9, 0.1);
-    }
+    // /**
+    //  * For new user with no like history, give cold start recommendations (trending + random)
+    // *
+    // * @param events
+    // * @return
+    // */
+    // public static List<Event> getColdStartRecommendations(List<Event> events) {
+    //     return scoreAndSortEvents(events, null, 0.0, 0.9, 0.1);
+    // }
 
-    /**
-     * Score, sort, and return recommended events
-    *
-    * @param events
-    * @param personalMatchScores
-    * @param personalWeight
-    * @param trendingWeight
-    * @param randomWeight
-    * @return top 50 recommended events
-    */
-    private static List<Event> scoreAndSortEvents(
-    List<Event> events,
-    Map<String, Double> personalMatchScores,
-    double personalWeight,
-    double trendingWeight,
-    double randomWeight) {
+    // /**
+    //  * Score, sort, and return recommended events
+    // *
+    // * @param events
+    // * @param personalMatchScores
+    // * @param personalWeight
+    // * @param trendingWeight
+    // * @param randomWeight
+    // * @return top 50 recommended events
+    // */
+    // private static List<Event> scoreAndSortEvents(
+    // List<Event> events,
+    // Map<String, Double> personalMatchScores,
+    // double personalWeight,
+    // double trendingWeight,
+    // double randomWeight) {
 
-        // Max popularity (liked count + viewed count) for trending score normalization
-        double maxPopularity =
-        RecommendationUtils.computeMaxPopularity(
-            events); // TODO: remove this once precalculation of trending score is added
+    //     // Max popularity (liked count + viewed count) for trending score normalization
+    //     double maxPopularity =
+    //     RecommendationUtils.computeMaxPopularity(
+    //         events); // TODO: remove this once precalculation of trending score is added
 
-        // Compute final score for each event based on the 70/20/10 formula
-        List<ScoredEvent> scoredEvents = new ArrayList<>();
-        for (Event event : events) {
-            double personalScore =
-                (personalMatchScores != null)
-                    ? personalMatchScores.getOrDefault(event.getEventId(), 0.0)
-                    : 0.0;
-            // TODO: pre-calculate trending scores periodically (e.g., hourly/daily) instead of on the fly
-            // here
-            // so replace this with double trendingScore = event.getTrendingScore();
-            double trendingScore = (event.getLikedCount() + event.getViewedCount()) / maxPopularity;
-            double randomScore =
-                RecommendationUtils
-                    .computeRandomScores(); // random injection: 30% events get a random score boost of
-            // 0.2
+    //     // Compute final score for each event based on the 70/20/10 formula
+    //     List<ScoredEvent> scoredEvents = new ArrayList<>();
+    //     for (Event event : events) {
+    //         double personalScore =
+    //             (personalMatchScores != null)
+    //                 ? personalMatchScores.getOrDefault(event.getEventId(), 0.0)
+    //                 : 0.0;
+    //         // TODO: pre-calculate trending scores periodically (e.g., hourly/daily) instead of on the fly
+    //         // here
+    //         // so replace this with double trendingScore = event.getTrendingScore();
+    //         double trendingScore = (event.getLikedCount() + event.getViewedCount()) / maxPopularity;
+    //         double randomScore =
+    //             RecommendationUtils
+    //                 .computeRandomScores(); // random injection: 30% events get a random score boost of
+    //         // 0.2
 
-            double finalScore =
-                personalWeight * personalScore
-                    + trendingWeight * trendingScore
-                    + randomWeight * randomScore;
-            scoredEvents.add(new ScoredEvent(event, finalScore));
-        }
+    //         double finalScore =
+    //             personalWeight * personalScore
+    //                 + trendingWeight * trendingScore
+    //                 + randomWeight * randomScore;
+    //         scoredEvents.add(new ScoredEvent(event, finalScore));
+    //     }
 
-        // Sort events list by final scores
-        scoredEvents.sort((a, b) -> Double.compare(b.score, a.score));
+    //     // Sort events list by final scores
+    //     scoredEvents.sort((a, b) -> Double.compare(b.score, a.score));
 
-        // Return top 50 recommended events
-        return scoredEvents.stream()
-            .limit(RECOMMENDATION_LIMIT)
-            .map(se -> se.event)
-            .collect(Collectors.toList());
-    }
+    //     // Return top 50 recommended events
+    //     return scoredEvents.stream()
+    //         .limit(RECOMMENDATION_LIMIT)
+    //         .map(se -> se.event)
+    //         .collect(Collectors.toList());
+    // }
 }

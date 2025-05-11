@@ -6,6 +6,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import com.map.service.TrendingService;
+import com.map.dto.EventQueryDTO;
 
 /** Controller responsible for handling trending event logic */
 @RestController

@@ -1,6 +1,8 @@
 package com.map.service;
 
 import com.map.vo.UserProfileVO;
+import com.map.dto.UserLikeDTO;
+import java.util.List;
 
 public interface UserService {
 

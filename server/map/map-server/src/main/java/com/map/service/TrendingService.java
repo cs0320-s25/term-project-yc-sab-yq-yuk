@@ -3,6 +3,7 @@ package com.map.service;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import com.map.entity.Event;
+import com.map.dto.EventQueryDTO;
 
 /**
  * Service responsible for calculating and retrieving trending events based on liked/viewed counts.

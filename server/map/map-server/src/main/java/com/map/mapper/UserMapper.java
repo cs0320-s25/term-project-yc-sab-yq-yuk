@@ -27,7 +27,7 @@ public interface UserMapper {
    * @return
    */
   @Select("SELECT event_id, timestamp FROM user_likes WHERE user_id = #{userId}")
-  List<UserLikeDTO> getUserLikesWithTimestamps(@Param("userId") String userId);
+  List<UserLikeDTO> getUserLikesWithTimestamps(@Param("userId") Integer userId);
 
   /**
    * Extract all events that the user has bookmarked.

@@ -5,19 +5,30 @@
 <!--  useGeneratedKeys="true"-->
 <insert id="insertEventRecord" parameterType="com.map.entity.Event">
   INSERT INTO Event (
-    event_id, name, time, location, description, link,
+    event_id, name, start_time, end_time, timezone, location, description, link,
     liked_count, viewed_count, trending_score, latitude, longitude
   ) VALUES (
-             #{eventId}, #{name}, #{time}, #{location},
+             #{eventId}, #{name}, #{startTime}, #{endTime}, #{timezone}, #{location},
              #{description}, #{link}, #{likedCount},
              #{viewedCount}, #{trendingScore}, #{latitude}, #{longitude}
            )
 </insert>
 
+<select id="getCategoriesForEvents" resultType="com.map.dto.EventCategoryDTO" parameterType="java.util.List">
+    SELECT ec.event_id, c.category_name
+    FROM event_categories ec
+    JOIN categories c ON ec.category_id = c.category_id
+    WHERE ec.event_id IN
+    <foreach collection="list" item="id" open="(" separator="," close=")">
+      #{id}
+    </foreach>
+  </select>
+
 <select id="selectEvents" resultType="com.map.entity.Event">
-    SELECT * FROM Events
-    JOIN Event_Categories ON Events.event_id = Event_Categories.event_id
-    JOIN Categories ON Event_Categories.category_id = Categories.category_id
+    SELECT DISTINCT e.*
+    FROM Events e
+    JOIN Event_Categories ec ON e.event_id = ec.event_id
+    JOIN Categories c ON ec.category_id = c.category_id
     WHERE 1=1
     <if test="category != null and category != '' and category != 'All Categories'">
         AND LOWER(category_name) = LOWER(#{category})
@@ -46,6 +57,6 @@
     <if test="near != null and near != '' and near != 'All Locations'">
         AND LOWER(location) = LOWER(#{near})
     </if>
-    ORDER BY time ASC
+    ORDER BY start_time ASC
 </select>
 </mapper>

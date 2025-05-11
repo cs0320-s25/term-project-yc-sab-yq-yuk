@@ -17,27 +17,4 @@ public interface RecommendationService {
   * @throws Exception
   */
  List<Event> fetchRecommendations(Integer userId, EventQueryDTO queryDTO) throws Exception;
-
- /**
-  * Get the cold start recommendation
-  * @param events
-  * @return
-  */
- List<Event> getColdStartRecommendations(List<Event> events);
-
- /**
-  * Score the events
-  * @param events
-  * @param personalMatchScores
-  * @param personalWeight
-  * @param trendingWeight
-  * @param randomWeight
-  * @return
-  */
- List<Event> scoreAndSortEvents(
-     List<Event> events,
-     Map<String, Double> personalMatchScores,
-     double personalWeight,
-     double trendingWeight,
-     double randomWeight);
 }

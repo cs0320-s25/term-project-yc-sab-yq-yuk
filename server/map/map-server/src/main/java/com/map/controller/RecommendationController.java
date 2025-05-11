@@ -6,6 +6,7 @@ import com.map.service.RecommendationService;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import com.map.dto.EventQueryDTO;
 
 // TODO: handle exceptions!!!!!
 /** Controller responsible for handling recommendation logic :) */
@@ -35,13 +36,13 @@ public class RecommendationController {
         @RequestParam(required = false) String category,
         @RequestParam(required = false) String time,
         @RequestParam(required = false) String near
-    ) {
+    ) throws Exception {
         EventQueryDTO queryDTO = EventQueryDTO.builder()
             .category(category)
             .time(time)
             .near(near)
             .build();
     
-        return Result.success(recommendationService.getRecommendations(userId, queryDTO));
+        return Result.success(recommendationService.fetchRecommendations(userId, queryDTO));
     }
 }

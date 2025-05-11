@@ -148,6 +148,17 @@
 <!--      <scope>compile</scope>-->
 <!--    </dependency>-->
 
+    <dependency>
+      <groupId>com.map</groupId>
+      <artifactId>map-common</artifactId>
+      <version>1.0-SNAPSHOT</version>
+    </dependency>
+    <dependency>
+      <groupId>com.map</groupId>
+      <artifactId>map-pojo</artifactId>
+      <version>1.0-SNAPSHOT</version>
+    </dependency>
+
   </dependencies>
 
   <build>

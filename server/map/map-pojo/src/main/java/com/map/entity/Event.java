@@ -12,7 +12,7 @@ import java.io.Serializable;
 @NoArgsConstructor // auto generate no parameter constructor
 @AllArgsConstructor // auto generate a all parameter constructor
 public class Event implements Serializable{
-  private String eventId;
+  private Integer eventId;
   private String name;
   // TODO: add startTime & endTime
   private LocalDateTime startTime;

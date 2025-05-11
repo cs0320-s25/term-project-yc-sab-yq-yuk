@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.OptionalDouble;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import com.map.service.TrendingService;
 
 import static com.map.constant.RecommendationConstant.RECOMMENDATION_LIMIT;
 
@@ -15,7 +16,7 @@ import static com.map.constant.RecommendationConstant.RECOMMENDATION_LIMIT;
  * Service responsible for calculating and retrieving trending events based on liked/viewed counts.
  */
 @Service
-public class TrendingServiceImpl {
+public class TrendingServiceImpl implements TrendingService {
     @Autowired
     private EventService eventService;
     // private List<Event> allEvents = eventService.fetchEvents(EventQueryDTO.builder().build());
@@ -47,10 +48,10 @@ public class TrendingServiceImpl {
         if (maxPopularityOpt.isEmpty()) return;
 
         double maxPopularity = maxPopularityOpt.getAsDouble();
-
+        double safeMax = maxPopularity > 0 ? maxPopularity : 1;
         for (Event event : allEvents) {
             double rawScore = (double) event.getLikedCount() + event.getViewedCount();
-            double trendingScore = rawScore / maxPopularity;
+            double trendingScore = rawScore / safeMax;
             eventService.updateTrendingScore(event.getEventId(), trendingScore); // persist to DB
         }
     }
@@ -69,8 +70,8 @@ public class TrendingServiceImpl {
     *
     * @return List of top trending events
     */
-    public List<Event> getTrendingEvents() {
-        List<Event> allEvents = eventService.fetchEvents(EventQueryDTO.builder().build());
+    public List<Event> fetchTrendingEvents(EventQueryDTO queryDTO) {
+        List<Event> allEvents = eventService.fetchEvents(queryDTO);
         return allEvents.stream()
             .sorted(Comparator.comparingDouble(Event::getTrendingScore).reversed())
             .limit(RECOMMENDATION_LIMIT)

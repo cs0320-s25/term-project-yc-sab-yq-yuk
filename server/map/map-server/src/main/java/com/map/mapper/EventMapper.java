@@ -87,13 +87,5 @@ public interface EventMapper{
    * @param eventIds
    * @return
    */
-  @Select("""
-    SELECT ec.event_id, c.category_name
-    FROM event_categories ec
-    JOIN categories c ON ec.category_id = c.category_id
-    WHERE ec.event_id IN <foreach collection='eventIds' item='id' open='(' separator=',' close=')'>
-        #{id}
-    </foreach>
-  """)
-  List<EventCategoryDTO> getCategoriesForEvents(@Param("eventIds") List<Integer> eventIds);
+  List<EventCategoryDTO> getCategoriesForEvents(List<Integer> eventIds);
 }

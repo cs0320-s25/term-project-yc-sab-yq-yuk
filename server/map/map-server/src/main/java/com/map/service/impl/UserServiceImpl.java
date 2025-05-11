@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import com.map.dto.UserLikeDTO;
 
 @Service
 public class UserServiceImpl implements UserService {
