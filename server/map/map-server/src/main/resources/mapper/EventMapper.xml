@@ -14,7 +14,7 @@
            )
 </insert>
 
-<select id="getCategoriesForEvents" resultType="com.map.dto.EventCategoryDTO" parameterType="java.util.List">
+<!-- <select id="getCategoriesForEvents" resultType="com.map.dto.EventCategoryDTO" parameterType="java.util.List">
     SELECT ec.event_id, c.category_name
     FROM event_categories ec
     JOIN categories c ON ec.category_id = c.category_id
@@ -22,7 +22,23 @@
     <foreach collection="list" item="id" open="(" separator="," close=")">
       #{id}
     </foreach>
-  </select>
+  </select> -->
+<select id="getCategoriesForEvents" resultType="com.map.dto.EventCategoryDTO" parameterType="java.util.List">
+    SELECT ec.event_id AS eventId, c.category_name AS categoryName
+    FROM event_categories ec
+    JOIN categories c ON ec.category_id = c.category_id
+    <where>
+        <if test="list != null and list.size() > 0">
+            ec.event_id IN
+            <foreach collection="list" item="id" open="(" separator="," close=")">
+                #{id}
+            </foreach>
+        </if>
+        <if test="list == null or list.size() == 0">
+            1=0 <!-- Always false condition if no event IDs, returns empty result -->
+        </if>
+    </where>
+</select>
 
 <select id="selectEvents" resultType="com.map.entity.Event">
     SELECT DISTINCT e.*
