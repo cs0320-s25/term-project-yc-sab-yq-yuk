@@ -4,6 +4,7 @@ import { useEffect, useState, useRef } from "react";
 import Map, { ViewStateChangeEvent, Popup, Marker } from "react-map-gl";
 import { useAuth } from "@clerk/clerk-react";
 import { Event, UserProfile } from "../types";
+import { api } from "../services/api";
 
 // Mapbox API key
 const MAPBOX_API_KEY = process.env.MAPBOX_TOKEN;
@@ -109,75 +110,6 @@ const CATEGORIES = [
   "University Services & Operations",
 ];
 
-// Mock data for initial development
-const mockEvents: Event[] = [
-  {
-    event_id: "1",
-    name: "Litigating Fengshui: Law and Environmental Knowledge in Qing Dynasty China (1644-1912)",
-    categories: [
-      "Academic Calendar, University Dates & Events",
-      "Mathematics, Technology, Engineering",
-    ],
-    time: "2025-04-26T12:00:00",
-    location: "Stephen Robert '62 Hall",
-    description:
-      "Based on the author's recently published book, Laws of the Land: Fengshui and the State in Qing Dynasty China (Princeton, 2023), this talk explores fengshui's invocations in Chinese law during the Qing dynasty. Facing a growing population, dwindling natural resources, and an overburdened rural government, judicial administrators across China grappled with disputes and petitions about fengshui in their efforts to sustain forestry, farming, mining, and city planning. Laws of the Land offers a radically new interpretation of these legal arrangements: they worked. An intelligent, considered, and sustained engagement with fengshui on the ground helped the imperial state keep the peace and maintain its legitimacy, especially during the increasingly turbulent decades of the nineteenth century. As the century came to an end, contentious debates over industrialization swept across the bureaucracy, with fengshui invoked by officials and scholars opposed to the establishment of railways, telegraphs, and foreign-owned mines. Demonstrating that the only way to understand those debates and their profound stakes is to grasp fengshui's longstanding roles in Chinese public life, Laws of the Land rethinks key issues in the history of Chinese law, politics, science, religion, and economics. ",
-    link: "https://events.brown.edu/event/308245-litigating-fengshui-law-and-environmental",
-    liked_count: 24,
-    viewed_count: 153,
-    trending_score: 0.85,
-    latitude: 41.826772,
-    longitude: -71.400438,
-  },
-  {
-    event_id: "2",
-    name: "Protestant Sunday Service",
-    categories: [
-      "Faith, Spirituality, Worship",
-      "OCRL"
-    ],
-    time: "2025-04-24T18:00:00",
-    location: "Main Green",
-    description:
-      "Join us for worship every Sunday at 6:00 PM in Manning Chapel. Led by Rev. Del Demosthenes, Associate Chaplain of the University for the Protestant Community & featuring the music of Harmonizing Grace gospel choir, led by Sophia Stone.  ",
-    link: "https://events.brown.edu/event/304175-protestant-sunday-service",
-    liked_count: 87,
-    viewed_count: 312,
-    trending_score: 0.93,
-    latitude: 41.826851,
-    longitude: -71.402903,
-  },
-  {
-    event_id: "3",
-    name: "Bone Density Screening",
-    categories: ["Wellness"],
-    time: "2025-05-06T11:00:00",
-    location: "Nelson Center for Entrepreneurship",
-    description:
-      "Hear from successful Brown alumni entrepreneurs about their journey from student to founder.",
-    link: "https://events.brown.edu/event/310655-bone-density-screening-onsite-college-hill",
-    liked_count: 42,
-    viewed_count: 189,
-    trending_score: 0.78,
-    latitude: 41.824689,
-    longitude: -71.400967,
-  },
-  {
-    event_id: "4",
-    name: "Bone Density Screening",
-    categories: ["Wellness"],
-    time: "2025-05-06T11:00:00",
-    location: "online only",
-    description:
-      "",
-    link: "https://events.brown.edu/event/287985-cobre-cbc-computational-biology-walk-in-off",
-    liked_count: 12,
-    viewed_count: 189,
-    trending_score: 0.78,
-    latitude: 0,
-    longitude: 0,
-  },
-];
 
 
 // Helper function to check if an event is online
@@ -205,6 +137,8 @@ const hasValidCoordinates = (event: Event): boolean => {
 
 export default function EventMap() {
   const { userId } = useAuth(); // Get user ID from Clerk auth
+  // Debug loggings
+  console.log('Clerk userId:', userId);
   const mapRef = useRef<any>(null);
   const [mapLoaded, setMapLoaded] = useState(false);
   const [viewState, setViewState] = useState({
@@ -229,177 +163,253 @@ export default function EventMap() {
   const [locationFilter, setLocationFilter] = useState<string>("");
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [showOnlineEvents, setShowOnlineEvents] = useState<boolean>(true);
-
+  const [categories, setCategories] = useState<string[]>([]);
+  const [locations, setLocations] = useState<string[]>([]);
+ 
   // User state (mock for now, will be replaced with real data)
   const [userLikes, setUserLikes] = useState<string[]>([]);
   const [userBookmarks, setUserBookmarks] = useState<string[]>([]);
 
-  // Load initial events
+  
+  // Fetch categories
   useEffect(() => {
-    // Simulate loading from API
-    setLoading(true);
-    setTimeout(() => {
-      setEvents(mockEvents);
-      setLoading(false);
-    }, 500);
+    const fetchCategories = async () => {
+      const data = await api.getCategories();
+      setCategories(data);
+    };
 
-    // Mock user data
-    setUserLikes(["2"]);
-    setUserBookmarks(["1", "3"]);
+    fetchCategories();
   }, []);
+
+  // Fetch locations
+  useEffect(() => {
+    const fetchLocations = async () => {
+      const data = await api.getLocations();
+      setLocations(data);
+    };
+
+    fetchLocations();
+  }, []);
+
+  // Fetch user profile
+  useEffect(() => {
+    if (userId) {
+      const fetchUserProfile = async () => {
+        const profile = await api.getUserProfile(userId);
+        if (profile) {
+          setUserLikes(profile.likes || []);
+          setUserBookmarks(profile.bookmarks || []);
+        }
+      };
+
+      fetchUserProfile();
+    }
+  }, [userId]);
+
+  // Fetch events based on filters
+  useEffect(() => {
+    const fetchEvents = async () => {
+      setLoading(true);
+      try {
+        const filters = {
+          category: selectedCategory,
+          time: timeFilter,
+          near: locationFilter,
+        };
+
+        let data: Event[] = [];
+        
+        if (showTrending) {
+          data = await api.getTrendingEvents(filters);
+        } else if (userId && !searchQuery) {
+          data = await api.getRecommendations(userId, filters);
+        } else if (searchQuery) {
+          data = await api.searchEvents(searchQuery);
+        } else {
+          data = await api.getEvents(filters);
+        }
+        
+        setEvents(data);
+      } catch (error) {
+        console.error("Error fetching events:", error);
+        setEvents([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchEvents();
+  }, [userId, showTrending, selectedCategory, timeFilter, locationFilter, searchQuery]);
 
   // Record view when event is selected
   useEffect(() => {
     if (selectedEvent) {
-      // Increase view count in UI
-      setEvents((prev) =>
-        prev.map((event) =>
-          event.event_id === selectedEvent.event_id
-            ? { ...event, viewed_count: event.viewed_count + 1 }
-            : event
-        )
-      );
+      const recordView = async () => {
+        await api.recordView(selectedEvent.eventId);
+        
+        // Update local state to reflect the view
+        setEvents(prev => 
+          prev.map(event => 
+            event.eventId === selectedEvent.eventId 
+              ? { ...event, viewedCount: event.viewedCount + 1 } 
+              : event
+          )
+        );
+      };
+      
+      recordView();
     }
   }, [selectedEvent]);
 
-  // Filter events based on current filters
+  // Filter events based on current filters and search
   const filteredEvents = events.filter((event) => {
-    // Category filter
-    if (selectedCategory && !event.categories.includes(selectedCategory)) {
-      return false;
-    }
-
-    // Simple search implementation
-    if (
-      searchQuery &&
-      !event.name.toLowerCase().includes(searchQuery.toLowerCase()) &&
-      !event.description.toLowerCase().includes(searchQuery.toLowerCase())
-    ) {
-      return false;
-    }
-
     // Online/location filter
-    if (locationFilter === 'online') {
-      if (!isOnlineEvent(event)) {
-        return false;
-      }
-    } else if (locationFilter === 'in_person') {
-      if (isOnlineEvent(event)) {
-        return false;
-      }
-    } else if (locationFilter) {
-      // Create a mapping of filter values to potential location strings
-      const locationMappings: Record<string, string[]> = {
-        'main_green': ['main green', 'the green', 'brown green'],
-        'cit': ['cit', 'center for information technology', 'computer science'],
-        'watson': ['watson', 'watson center', 'watson institute'],
-        'sayles': ['sayles', 'sayles hall'],
-        'pembroke': ['pembroke', 'pembroke campus', 'pembroke hall']
-      };
-      
-      // Get the list of location keywords to check
-      const locationKeywords = locationMappings[locationFilter];
-      if (locationKeywords) {
-        // Check if any of the keywords match the event location
-        const locationMatches = locationKeywords.some(keyword =>
-          event.location.toLowerCase().includes(keyword)
-        );
-        if (!locationMatches) {
-          return false;
-        }
-      } else {
-        // Direct match if no mapping exists
-        if (!event.location.toLowerCase().includes(locationFilter.toLowerCase())) {
-          return false;
-        }
-      }
+    if (locationFilter === 'online' && !isOnlineEvent(event)) {
+      return false;
     }
-
-    // Time filter
-    if (timeFilter) {
-      const now = new Date();
-      const eventDate = new Date(event.time);
-      
-      // Reset hours to compare just the date
-      const todayStart = new Date(now);
-      todayStart.setHours(0, 0, 0, 0);
-      
-      // Tomorrow
-      const tomorrowStart = new Date(todayStart);
-      tomorrowStart.setDate(todayStart.getDate() + 1);
-      
-      // Day after tomorrow (for end of "tomorrow" range)
-      const dayAfterTomorrow = new Date(todayStart);
-      dayAfterTomorrow.setDate(todayStart.getDate() + 2);
-      
-      // Calculate the start of this week (Sunday)
-      const thisWeekStart = new Date(todayStart);
-      thisWeekStart.setDate(todayStart.getDate() - todayStart.getDay());
-      
-      // Calculate the end of this week (Saturday)
-      const thisWeekEnd = new Date(thisWeekStart);
-      thisWeekEnd.setDate(thisWeekStart.getDate() + 7);
-      
-      // Calculate start of weekend (Friday)
-      const weekendStart = new Date(todayStart);
-      weekendStart.setDate(todayStart.getDate() + (5 - todayStart.getDay()));
-      if (weekendStart < todayStart) {
-        // If today is already weekend, use today
-        weekendStart.setTime(todayStart.getTime());
-      }
-      
-      // Calculate end of weekend (Sunday)
-      const weekendEnd = new Date(thisWeekStart);
-      weekendEnd.setDate(thisWeekStart.getDate() + 7); // Next Sunday
-      
-      // Calculate start of next week (next Sunday)
-      const nextWeekStart = new Date(thisWeekEnd);
-      
-      // Calculate end of next week (next Saturday)
-      const nextWeekEnd = new Date(nextWeekStart);
-      nextWeekEnd.setDate(nextWeekStart.getDate() + 7);
-      
-      switch (timeFilter) {
-        case 'today':
-          // Event is today
-          if (eventDate < todayStart || eventDate >= tomorrowStart) {
-            return false;
-          }
-          break;
-        case 'tomorrow':
-          // Event is tomorrow
-          if (eventDate < tomorrowStart || eventDate >= dayAfterTomorrow) {
-            return false;
-          }
-          break;
-        case 'this_week':
-          // Event is within this week (Sunday to Saturday)
-          if (eventDate < todayStart || eventDate >= thisWeekEnd) {
-            return false;
-          }
-          break;
-        case 'weekend':
-          // Event is this weekend (Friday to Sunday)
-          if (eventDate < weekendStart || eventDate >= weekendEnd) {
-            return false;
-          }
-          break;
-        case 'next_week':
-          // Event is next week (next Sunday to next Saturday)
-          if (eventDate < nextWeekStart || eventDate >= nextWeekEnd) {
-            return false;
-          }
-          break;
-        default:
-          // No time filter or unknown filter
-          break;
-      }
-    }
-
-    // Trending filter logic would be here
 
     return true;
   });
+
+
+  // Filter events based on current filters
+  // const filteredEvents = events.filter((event) => {
+  //   // Category filter
+  //   if (selectedCategory && !event.categories.includes(selectedCategory)) {
+  //     return false;
+  //   }
+
+  //   // Simple search implementation
+  //   if (
+  //     searchQuery &&
+  //     !event.name.toLowerCase().includes(searchQuery.toLowerCase()) &&
+  //     !event.description.toLowerCase().includes(searchQuery.toLowerCase())
+  //   ) {
+  //     return false;
+  //   }
+
+  //   // Online/location filter
+  //   if (locationFilter === 'online') {
+  //     if (!isOnlineEvent(event)) {
+  //       return false;
+  //     }
+  //   } else if (locationFilter === 'in_person') {
+  //     if (isOnlineEvent(event)) {
+  //       return false;
+  //     }
+  //   } else if (locationFilter) {
+  //     // Create a mapping of filter values to potential location strings
+  //     const locationMappings: Record<string, string[]> = {
+  //       'main_green': ['main green', 'the green', 'brown green'],
+  //       'cit': ['cit', 'center for information technology', 'computer science'],
+  //       'watson': ['watson', 'watson center', 'watson institute'],
+  //       'sayles': ['sayles', 'sayles hall'],
+  //       'pembroke': ['pembroke', 'pembroke campus', 'pembroke hall']
+  //     };
+      
+  //     // Get the list of location keywords to check
+  //     const locationKeywords = locationMappings[locationFilter];
+  //     if (locationKeywords) {
+  //       // Check if any of the keywords match the event location
+  //       const locationMatches = locationKeywords.some(keyword =>
+  //         event.location.toLowerCase().includes(keyword)
+  //       );
+  //       if (!locationMatches) {
+  //         return false;
+  //       }
+  //     } else {
+  //       // Direct match if no mapping exists
+  //       if (!event.location.toLowerCase().includes(locationFilter.toLowerCase())) {
+  //         return false;
+  //       }
+  //     }
+  //   }
+
+  //   // Time filter
+  //   if (timeFilter) {
+  //     const now = new Date();
+  //     const eventDate = new Date(event.time);
+      
+  //     // Reset hours to compare just the date
+  //     const todayStart = new Date(now);
+  //     todayStart.setHours(0, 0, 0, 0);
+      
+  //     // Tomorrow
+  //     const tomorrowStart = new Date(todayStart);
+  //     tomorrowStart.setDate(todayStart.getDate() + 1);
+      
+  //     // Day after tomorrow (for end of "tomorrow" range)
+  //     const dayAfterTomorrow = new Date(todayStart);
+  //     dayAfterTomorrow.setDate(todayStart.getDate() + 2);
+      
+  //     // Calculate the start of this week (Sunday)
+  //     const thisWeekStart = new Date(todayStart);
+  //     thisWeekStart.setDate(todayStart.getDate() - todayStart.getDay());
+      
+  //     // Calculate the end of this week (Saturday)
+  //     const thisWeekEnd = new Date(thisWeekStart);
+  //     thisWeekEnd.setDate(thisWeekStart.getDate() + 7);
+      
+  //     // Calculate start of weekend (Friday)
+  //     const weekendStart = new Date(todayStart);
+  //     weekendStart.setDate(todayStart.getDate() + (5 - todayStart.getDay()));
+  //     if (weekendStart < todayStart) {
+  //       // If today is already weekend, use today
+  //       weekendStart.setTime(todayStart.getTime());
+  //     }
+      
+  //     // Calculate end of weekend (Sunday)
+  //     const weekendEnd = new Date(thisWeekStart);
+  //     weekendEnd.setDate(thisWeekStart.getDate() + 7); // Next Sunday
+      
+  //     // Calculate start of next week (next Sunday)
+  //     const nextWeekStart = new Date(thisWeekEnd);
+      
+  //     // Calculate end of next week (next Saturday)
+  //     const nextWeekEnd = new Date(nextWeekStart);
+  //     nextWeekEnd.setDate(nextWeekStart.getDate() + 7);
+      
+  //     switch (timeFilter) {
+  //       case 'today':
+  //         // Event is today
+  //         if (eventDate < todayStart || eventDate >= tomorrowStart) {
+  //           return false;
+  //         }
+  //         break;
+  //       case 'tomorrow':
+  //         // Event is tomorrow
+  //         if (eventDate < tomorrowStart || eventDate >= dayAfterTomorrow) {
+  //           return false;
+  //         }
+  //         break;
+  //       case 'this_week':
+  //         // Event is within this week (Sunday to Saturday)
+  //         if (eventDate < todayStart || eventDate >= thisWeekEnd) {
+  //           return false;
+  //         }
+  //         break;
+  //       case 'weekend':
+  //         // Event is this weekend (Friday to Sunday)
+  //         if (eventDate < weekendStart || eventDate >= weekendEnd) {
+  //           return false;
+  //         }
+  //         break;
+  //       case 'next_week':
+  //         // Event is next week (next Sunday to next Saturday)
+  //         if (eventDate < nextWeekStart || eventDate >= nextWeekEnd) {
+  //           return false;
+  //         }
+  //         break;
+  //       default:
+  //         // No time filter or unknown filter
+  //         break;
+  //     }
+  //   }
+
+  //   // Trending filter logic would be here
+
+  //   return true;
+  // });
 
   // Filter events to only show those with valid coordinates for map display
   const mapEvents = filteredEvents.filter(event => hasValidCoordinates(event));
@@ -419,54 +429,76 @@ export default function EventMap() {
   };
 
   // Handle like/unlike event
-  const handleLikeEvent = (eventId: string) => {
+  const handleLikeEvent = async (eventId: string) => {
+    if (!userId) return;
+    
     const isLiked = userLikes.includes(eventId);
+    let success = false;
+    
     if (isLiked) {
-      setUserLikes((prev) => prev.filter((id) => id !== eventId));
+      success = await api.unlikeEvent(userId, eventId);
+      if (success) {
+        setUserLikes(prev => prev.filter(id => id !== eventId));
+      }
     } else {
-      setUserLikes((prev) => [...prev, eventId]);
+      success = await api.likeEvent(userId, eventId);
+      if (success) {
+        setUserLikes(prev => [...prev, eventId]);
+      }
     }
-
-    // Update events list to reflect new like status
-    setEvents((prev) =>
-      prev.map((event) =>
-        event.event_id === eventId
-          ? {
-              ...event,
-              liked_count: isLiked
-                ? Math.max(0, event.liked_count - 1)
-                : event.liked_count + 1,
-            }
-          : event
-      )
-    );
-
-    // Update selected event if it's the one being liked
-    if (selectedEvent?.event_id === eventId) {
-      setSelectedEvent({
-        ...selectedEvent,
-        liked_count: isLiked
-          ? Math.max(0, selectedEvent.liked_count - 1)
-          : selectedEvent.liked_count + 1,
-      });
+    
+    if (success) {
+      // Update events list with new like count
+      setEvents(prev =>
+        prev.map(event =>
+          event.eventId === eventId
+            ? {
+                ...event,
+                likedCount: isLiked
+                  ? Math.max(0, event.likedCount - 1)
+                  : event.likedCount + 1,
+              }
+            : event
+        )
+      );
+      
+      // Update selected event if it's being liked/unliked
+      if (selectedEvent?.eventId === eventId) {
+        setSelectedEvent({
+          ...selectedEvent,
+          likedCount: isLiked
+            ? Math.max(0, selectedEvent.likedCount - 1)
+            : selectedEvent.likedCount + 1,
+        });
+      }
     }
   };
 
+
   // Handle bookmark/unbookmark event
-  const handleBookmarkEvent = (eventId: string) => {
+  const handleBookmarkEvent = async (eventId: string) => {
+    if (!userId) return;
+    
     const isBookmarked = userBookmarks.includes(eventId);
+    let success = false;
+    
     if (isBookmarked) {
-      setUserBookmarks((prev) => prev.filter((id) => id !== eventId));
+      success = await api.unbookmarkEvent(userId, eventId);
+      if (success) {
+        setUserBookmarks(prev => prev.filter(id => id !== eventId));
+      }
     } else {
-      setUserBookmarks((prev) => [...prev, eventId]);
+      success = await api.bookmarkEvent(userId, eventId);
+      if (success) {
+        setUserBookmarks(prev => [...prev, eventId]);
+      }
     }
   };
 
   // Handle search input
   const handleSearchSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    // In a real implementation, this would filter events
-    console.log("Search for:", searchQuery);
+    // The actual search occurs in the useEffect that watches searchQuery
   };
 
   return (
@@ -734,7 +766,6 @@ export default function EventMap() {
               >
                 <option value="">All Locations</option>
                 <option value="online">Online Only</option>
-                <option value="in_person">In-Person Events</option>
                 <option value="main_green">Main Green</option>
                 <option value="cit">CIT Building</option>
                 <option value="watson">Watson Center</option>
@@ -835,11 +866,11 @@ export default function EventMap() {
                     <span>{new Date(selectedEvent.time).toLocaleString()}</span>
                     
                     <strong>Categories:</strong>
-                    <span>
+                    {/* <span>
                       {selectedEvent.categories
                         .map((cat) => getShortCategoryName(cat))
                         .join(", ")}
-                    </span>
+                    </span> */}
                     
                     <strong>Location:</strong>
                     <span>{selectedEvent.location}</span>
@@ -854,48 +885,48 @@ export default function EventMap() {
                   }}>
                     <div>
                       <span style={{ marginRight: "15px" }}>
-                        👁️ {selectedEvent.viewed_count} views
+                        👁️ {selectedEvent.viewedCount} views
                       </span>
                       <button
-                        onClick={() => handleLikeEvent(selectedEvent.event_id)}
+                        onClick={() => handleLikeEvent(selectedEvent.eventId)}
                         style={{
                           padding: "5px 10px",
-                          backgroundColor: userLikes.includes(selectedEvent.event_id)
+                          backgroundColor: userLikes.includes(selectedEvent.eventId)
                             ? "#dc3545"
                             :  "#f8f9fa",
-                            color: userLikes.includes(selectedEvent.event_id)
+                            color: userLikes.includes(selectedEvent.eventId)
                             ? "white"
                             : "#212529",
-                          border: userLikes.includes(selectedEvent.event_id)
+                          border: userLikes.includes(selectedEvent.eventId)
                             ? "none"
                             : "1px solid #ced4da",
                           borderRadius: "4px",
                           cursor: "pointer",
                         }}
                       >
-                        {userLikes.includes(selectedEvent.event_id) ? "❤️" : "👍"}{" "}
-                        {selectedEvent.liked_count}
+                        {userLikes.includes(selectedEvent.eventId) ? "❤️" : "👍"}{" "}
+                        {selectedEvent.likedCount}
                       </button>
                     </div>
                     
                     <button
-                      onClick={() => handleBookmarkEvent(selectedEvent.event_id)}
+                      onClick={() => handleBookmarkEvent(selectedEvent.eventId)}
                       style={{
                         padding: "5px 10px",
-                        backgroundColor: userBookmarks.includes(selectedEvent.event_id)
+                        backgroundColor: userBookmarks.includes(selectedEvent.eventId)
                           ? "#dc3545"
                           :  "#f8f9fa",
-                          color: userBookmarks.includes(selectedEvent.event_id)
+                          color: userBookmarks.includes(selectedEvent.eventId)
                             ? "white"
                             : "#212529",
-                          border: userBookmarks.includes(selectedEvent.event_id)
+                          border: userBookmarks.includes(selectedEvent.eventId)
                             ? "none"
                             : "1px solid #ced4da",
                         borderRadius: "4px",
                         cursor: "pointer",
                       }}
                     >
-                      {userBookmarks.includes(selectedEvent.event_id)
+                      {userBookmarks.includes(selectedEvent.eventId)
                         ? "Bookmarked"
                         : "🏷️ Bookmark"}
                     </button>
@@ -957,7 +988,7 @@ export default function EventMap() {
                 {/* Only show markers for events with valid coordinates */}
                 {mapEvents.map((event) => (
                   <Marker
-                    key={event.event_id}
+                    key={event.eventId}
                     longitude={event.longitude}
                     latitude={event.latitude}
                     onClick={(e) => {
@@ -1021,12 +1052,12 @@ export default function EventMap() {
                       {new Date(selectedEvent.time).toLocaleString()}
                     </p>
                     {/* Categories info in popup */}
-                    <p style={{ margin: "4px 0" }}>
+                    {/* <p style={{ margin: "4px 0" }}>
                       <strong>Categories:</strong>{" "}
                       {selectedEvent.categories
                         .map((cat) => getShortCategoryName(cat))
                         .join(", ")}
-                    </p>
+                    </p> */}
                     {/* View, Like button and bookmark button */}
                     <div
                       style={{
@@ -1038,17 +1069,17 @@ export default function EventMap() {
                       <div>
                         {/* Viewed count */}
                         <span style={{ marginRight: "10px" }}>
-                          👁️ {selectedEvent.viewed_count}
+                          👁️ {selectedEvent.viewedCount}
                         </span>
                         {/* Like button */}
                         <button
                           onClick={() =>
-                            handleLikeEvent(selectedEvent.event_id)
+                            handleLikeEvent(selectedEvent.eventId)
                           }
                           style={{
                             padding: "5px 10px",
                             backgroundColor: userLikes.includes(
-                              selectedEvent.event_id
+                              selectedEvent.eventId
                             )
                               ? "#dc3545"
                               : "#007bff",
@@ -1058,21 +1089,21 @@ export default function EventMap() {
                             cursor: "pointer",
                           }}
                         >
-                          {userLikes.includes(selectedEvent.event_id)
+                          {userLikes.includes(selectedEvent.eventId)
                             ? "❤️"
                             : "👍"}{" "}
-                          {selectedEvent.liked_count}
+                          {selectedEvent.likedCount}
                         </button>
                       </div>
                       {/* Bookmark button */}
                       <button
                         onClick={() =>
-                          handleBookmarkEvent(selectedEvent.event_id)
+                          handleBookmarkEvent(selectedEvent.eventId)
                         }
                         style={{
                           padding: "5px 10px",
                           backgroundColor: userBookmarks.includes(
-                            selectedEvent.event_id
+                            selectedEvent.eventId
                           )
                             ? "#dc3545"
                             : "#28a745",
@@ -1082,7 +1113,7 @@ export default function EventMap() {
                           cursor: "pointer",
                         }}
                       >
-                        {userBookmarks.includes(selectedEvent.event_id)
+                        {userBookmarks.includes(selectedEvent.eventId)
                           ? "Bookmarked"
                           : "🏷️ Bookmark"}
                       </button>
@@ -1156,16 +1187,16 @@ export default function EventMap() {
               ) : (
                 filteredEvents.map((event) => (
                   <div
-                    key={event.event_id}
+                    key={event.eventId}
                     className="event-card"
                     style={{
                       border: "1px solid #ddd",
                       borderRadius: "8px",
                       padding: "15px",
                       cursor: "pointer",
-                        borderLeft: `4px solid ${getCategoryColor(
-                          event.categories
-                        )}`,
+                        // borderLeft: `4px solid ${getCategoryColor(
+                        //   event.categories
+                        // )}`,
                       transition: "transform 0.2s, box-shadow 0.2s",
                       backgroundColor: "white",
                     }}
@@ -1246,25 +1277,25 @@ export default function EventMap() {
                         <span
                           style={{ fontSize: "14px", marginRight: "10px" }}
                         >
-                          👁️ {event.viewed_count}
+                          👁️ {event.viewedCount}
                         </span>
                         {/* Like button */}
                         <button
                           onClick={(e) => {
                             e.stopPropagation();
-                            handleLikeEvent(event.event_id);
+                            handleLikeEvent(event.eventId);
                           }}
                           style={{
                             padding: "5px 8px",
                             backgroundColor: userLikes.includes(
-                              event.event_id
+                              event.eventId
                             )
                               ? "#dc3545"
                               : "#f8f9fa",
-                            color: userLikes.includes(event.event_id)
+                            color: userLikes.includes(event.eventId)
                               ? "white"
                               : "#212529",
-                            border: userLikes.includes(event.event_id)
+                            border: userLikes.includes(event.eventId)
                               ? "none"
                               : "1px solid #ced4da",
                             borderRadius: "4px",
@@ -1272,27 +1303,27 @@ export default function EventMap() {
                             fontSize: "14px",
                           }}
                         >
-                          {userLikes.includes(event.event_id) ? "❤️" : "👍"}{" "}
-                          {event.liked_count}
+                          {userLikes.includes(event.eventId) ? "❤️" : "👍"}{" "}
+                          {event.likedCount}
                         </button>
                       </div>
                       {/* Bookmark button */}
                       <button
                         onClick={(e) => {
                           e.stopPropagation();
-                          handleBookmarkEvent(event.event_id);
+                          handleBookmarkEvent(event.eventId);
                         }}
                         style={{
                           padding: "5px 8px",
                           backgroundColor: userBookmarks.includes(
-                            event.event_id
+                            event.eventId
                           )
                             ? "#dc3545"
                             : "#f8f9fa",
-                          color: userBookmarks.includes(event.event_id)
+                          color: userBookmarks.includes(event.eventId)
                             ? "white"
                             : "#212529",
-                          border: userBookmarks.includes(event.event_id)
+                          border: userBookmarks.includes(event.eventId)
                             ? "none"
                             : "1px solid #ced4da",
                           borderRadius: "4px",
@@ -1300,7 +1331,7 @@ export default function EventMap() {
                           fontSize: "14px",
                         }}
                       >
-                        {userBookmarks.includes(event.event_id)
+                        {userBookmarks.includes(event.eventId)
                           ? "Bookmarked"
                           : "🏷️ Bookmark"}
                       </button>
@@ -1357,18 +1388,18 @@ export default function EventMap() {
             }}
           >
             {events
-              .filter((event) => userLikes.includes(event.event_id))
+              .filter((event) => userLikes.includes(event.eventId))
               .map((event) => (
                 <div
-                  key={event.event_id}
+                  key={event.eventId}
                   className="event-card"
                   style={{
                     border: "1px solid #ddd",
                     borderRadius: "8px",
                     padding: "20px",
-                    borderLeft: `4px solid ${getCategoryColor(
-                      event.categories
-                    )}`,
+                    // borderLeft: `4px solid ${getCategoryColor(
+                    //   event.categories
+                    // )}`,
                     boxShadow: "0 2px 5px rgba(0,0,0,0.1)",
                   }}
                 >
@@ -1401,12 +1432,12 @@ export default function EventMap() {
                       <strong>Time:</strong>{" "}
                       {new Date(event.time).toLocaleString()}
                     </p>
-                    <p>
+                    {/* <p>
                       <strong>Categories:</strong>{" "}
                       {event.categories
                         .map((cat) => getShortCategoryName(cat))
                         .join(", ")}
-                    </p>
+                    </p> */}
                   </div>
                   <div
                     style={{
@@ -1418,7 +1449,7 @@ export default function EventMap() {
                     }}
                   >
                     <button
-                      onClick={() => handleLikeEvent(event.event_id)}
+                      onClick={() => handleLikeEvent(event.eventId)}
                       style={{
                         padding: "8px 15px",
                         backgroundColor: "#dc3545",
@@ -1500,18 +1531,18 @@ export default function EventMap() {
             }}
           >
             {events
-              .filter((event) => userBookmarks.includes(event.event_id))
+              .filter((event) => userBookmarks.includes(event.eventId))
               .map((event) => (
                 <div
-                  key={event.event_id}
+                  key={event.eventId}
                   className="event-card"
                   style={{
                     border: "1px solid #ddd",
                     borderRadius: "8px",
                     padding: "20px",
-                    borderLeft: `4px solid ${getCategoryColor(
-                      event.categories
-                    )}`,
+                    // borderLeft: `4px solid ${getCategoryColor(
+                    //   event.categories
+                    // )}`,
                     boxShadow: "0 2px 5px rgba(0,0,0,0.1)",
                   }}
                 >
@@ -1544,12 +1575,12 @@ export default function EventMap() {
                       <strong>Time:</strong>{" "}
                       {new Date(event.time).toLocaleString()}
                     </p>
-                    <p>
+                    {/* <p>
                       <strong>Categories:</strong>{" "}
                       {event.categories
                         .map((cat) => getShortCategoryName(cat))
                         .join(", ")}
-                    </p>
+                    </p> */}
                   </div>
                   <div
                     style={{
@@ -1561,7 +1592,7 @@ export default function EventMap() {
                     }}
                   >
                     <button
-                      onClick={() => handleBookmarkEvent(event.event_id)}
+                      onClick={() => handleBookmarkEvent(event.eventId)}
                       style={{
                         padding: "8px 15px",
                         backgroundColor: "#dc3545",

@@ -1,0 +1,63 @@
+[
+  {
+    "id": "https://events.brown.edu/event/308183-adoration-confession-and-daily-mass-brown-risd",
+    "name": "Adoration, Confession and Daily Mass - Brown RISD Catholic Community",
+    "start_time": "2025-05-02T10:00:00",
+    "end_time": null,
+    "timezone": "EDT",
+    "description": "Please join us for adoration, confession and daily mass every Thursday at the Brown-RISD Catholic Center, located at 51 Prospect Street.\n10:45-11:45 AM - Adoration and Confession\n12:05 PM - Mass",
+    "location": "51 Prospect Street",
+    "event_type": null,
+    "latitude": null,
+    "longitude": null,
+    "group": "Office of the Chaplains and Religious Life",
+    "categories": [
+      "Faith, Spirituality, Worship",
+      "OCRL"
+    ]
+  },
+  {
+    "id": "https://events.brown.edu/event/309602-anesthesia-mampm-conference",
+    "name": "Anesthesia M&M Conference",
+    "start_time": "2025-05-02T07:00:00",
+    "end_time": "2025-05-02T08:00:00",
+    "timezone": "EDT",
+    "description": "Michelle Gorgone, MD, Alexander Ip & Spiros Kulubis, MD will present a \u201cDiscussion of Morbidity & Mortality\u201d",
+    "location": "Zoom Video Conference",
+    "event_type": "Online only",
+    "latitude": null,
+    "longitude": null,
+    "group": "Department of Anesthesiology",
+    "categories": []
+  },
+  {
+    "id": "https://events.brown.edu/event/306226-building-bridges-topics-in-arabic-literatur",
+    "name": "Building Bridges: Topics in Arabic Literature in Translation",
+    "start_time": "2025-05-02T09:00:00",
+    "end_time": null,
+    "timezone": "EDT",
+    "description": "The New University in Exile Consortium is delighted to offer a range of free and open Spring 2025 co-led online seminars. \nTaught by two displaced, endangered scholars, these seminars are an important way for Consortium scholars to reconnect with students, the classroom, and the academic world more generally. While safe from threats of violence and retribution, many of our scholars remain in a second exile on the campuses of their host universities.\nBuilding Bridges: Topics in Arabic Literature in Translation\nEvery Thursday, March 6 \u2013 May 8, 2025 | 9:00 -10:30 AM ET\nThis free 10-week course will delve into the profound role of translated Arabic literature in fostering a connection between Arab and Western cultures, aiming to transcend stereotypes and Orientalism. Over ten weeks, the seminar will examine the evolution of the translation movement for Arabic literary texts, probing the barriers that hinder the rightful recognition of Arabic literature in the broader literary canon. The curriculum is designed to assess how translated Arabic literature can contribute to enriching Arab cultural identity, countering historical stereotypes rooted in the Western consciousness.\nEmphasizing the bridging of ages and cultures, the course explores seminal works like The Arabian Nights and Kalila Wa Dimnah while also delving into modern themes such as the intersection of Arabic literature and ecofeminism, and contemporary Arabic exile literature. Through engaging debates and readings, students are invited to cultivate a nuanced understanding of the challenges, controversies, and transformative potential inherent in the translation and reception of Arabic literary texts, ultimately fostering a meaningful connection between Arab and Western societies through the powerful medium of literature.",
+    "location": null,
+    "event_type": "Online only",
+    "latitude": null,
+    "longitude": null,
+    "group": "Office of Global Engagement",
+    "categories": []
+  },
+  {
+    "id": "https://events.brown.edu/event/308097-staff-learning-and-development-resource-fair",
+    "name": "Staff Learning and Development Resource Fair",
+    "start_time": "2025-05-02T09:00:00",
+    "end_time": null,
+    "timezone": "EDT",
+    "description": "SPH staff members are invited to join us for an informative presentation about resources to help you continue to grow professionally. Judy Nabb from the university\u2019s Learning, Development and Engagement (LDE) team will share an overview of self-directed learning tools, LDE program offerings, and more. You\u2019ll leave the session with new information and with tools to create an individual learning plan for yourself or your direct reports. \nLight refreshments will be served and there will be time to socialize with colleagues before the program starts at 9:15am.  Please RSVP below.",
+    "location": "School of Public Health",
+    "event_type": null,
+    "latitude": null,
+    "longitude": null,
+    "group": "School of Public Health",
+    "categories": [
+      "Brown University School of Public Health"
+    ]
+  }
+]
