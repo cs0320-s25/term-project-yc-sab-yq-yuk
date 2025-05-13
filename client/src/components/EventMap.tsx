@@ -229,7 +229,22 @@ export default function EventMap() {
           data = await api.getEvents(filters);
         }
         
-        setEvents(data);
+        // setEvents(data);
+        // Process events to ensure all required fields exist
+      const processedEvents = data.map(event => ({
+        ...event,
+        // Provide default values for fields that might be null
+        name: event.name || 'Unnamed Event',
+        description: event.description || '',
+        location: event.location || '',
+        link: event.link || '',
+        likedCount: event.likedCount || 0,
+        viewedCount: event.viewedCount || 0,
+        trendingScore: event.trendingScore || 0,
+        categories: event.categories || [],
+      }));
+      
+      setEvents(processedEvents);
       } catch (error) {
         console.error("Error fetching events:", error);
         setEvents([]);
