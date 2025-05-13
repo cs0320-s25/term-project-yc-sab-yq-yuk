@@ -22,7 +22,7 @@ public class UserServiceImpl implements UserService {
     private EventMapper eventMapper;
 
     @Override
-    public UserProfileVO getUserProfile(Integer userId) {
+    public UserProfileVO getUserProfile(String userId) {
         if (userId == null) {
             logger.warn("Attempted to get profile for null user ID");
             return null;
@@ -56,7 +56,7 @@ public class UserServiceImpl implements UserService {
      * @return
      */
     @Override
-    public List<UserLikeDTO> getUserLikeEntries(Integer userId) {
+    public List<UserLikeDTO> getUserLikeEntries(String userId) {
       return userMapper.getUserLikesWithTimestamps(userId);
     }
 
@@ -65,7 +65,7 @@ public class UserServiceImpl implements UserService {
      * @param userId
      * @param eventId
      */
-    public void likeEvent(Integer userId, Integer eventId){
+    public void likeEvent(String userId, Integer eventId){
       userMapper.likeEvent(userId, eventId);
       eventMapper.incrementLikedCount(eventId);
     }
@@ -75,7 +75,7 @@ public class UserServiceImpl implements UserService {
      * @param userId
      * @param eventId
      */
-    public void delikeEvent(Integer userId, Integer eventId){
+    public void delikeEvent(String userId, Integer eventId){
       userMapper.delikeEvent(userId, eventId);
       eventMapper.decrementLikedCount(eventId);
     }
@@ -85,7 +85,7 @@ public class UserServiceImpl implements UserService {
      * @param userId
      * @param eventId
      */
-    public void bookmarkEvent(Integer userId, Integer eventId){
+    public void bookmarkEvent(String userId, Integer eventId){
       userMapper.bookmarkEvent(userId, eventId);
     }
 
@@ -94,7 +94,7 @@ public class UserServiceImpl implements UserService {
      * @param userId
      * @param eventId
      */
-    public void debookmarkEvent(Integer userId, Integer eventId){
+    public void debookmarkEvent(String userId, Integer eventId){
       userMapper.debookmarkEvent(userId, eventId);
     }
 }

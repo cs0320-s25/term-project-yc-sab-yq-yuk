@@ -32,7 +32,7 @@ public class RecommendationController {
      */
     @GetMapping("/{userId}")
     public Result<List<Event>> fetchRecommendations(
-        @PathVariable Integer userId,
+        @PathVariable String userId,
         @RequestParam(required = false) String category,
         @RequestParam(required = false) String time,
         @RequestParam(required = false) String near

@@ -19,7 +19,7 @@ public interface UserMapper {
    */
   @Select("SELECT event_id FROM users JOIN user_likes ON "
       + "users.user_id = user_likes.user_id WHERE users.user_id = #{userId}")
-  List<Integer> getUserLikes(@Param("userId") Integer userId);
+  List<Integer> getUserLikes(@Param("userId") String userId);
 
   /**
    * Extract all events that the user has liked and their timestamps.
@@ -27,7 +27,7 @@ public interface UserMapper {
    * @return
    */
   @Select("SELECT event_id, timestamp FROM user_likes WHERE user_id = #{userId}")
-  List<UserLikeDTO> getUserLikesWithTimestamps(@Param("userId") Integer userId);
+  List<UserLikeDTO> getUserLikesWithTimestamps(@Param("userId") String userId);
 
   /**
    * Extract all events that the user has bookmarked.
@@ -36,7 +36,7 @@ public interface UserMapper {
    */
   @Select("SELECT event_id FROM users JOIN user_bookmarks "
       + "ON users.user_id = user_bookmarks.user_id WHERE users.user_id = #{userId}")
-  List<Integer> getUserBookmarks(@Param("userId") Integer userId);
+  List<Integer> getUserBookmarks(@Param("userId") String userId);
 
   /**
    * Extract the derived category based on users' interaction history.
@@ -44,7 +44,7 @@ public interface UserMapper {
    * @return
    */
   // TODO: figure out the logic!!!!!
-  List<String> getDerivedCategory(@Param("userId") Integer userId);
+  List<String> getDerivedCategory(@Param("userId") String userId);
 
   /**
    * Like an event if it hasn't been liked; else do nothing.
@@ -55,7 +55,7 @@ public interface UserMapper {
   @Insert("INSERT INTO user_likes (user_id, event_id, timestamp) " +
           "VALUES (#{userId}, #{eventId}, CURRENT_TIMESTAMP) " +
           "ON DUPLICATE KEY UPDATE timestamp = CURRENT_TIMESTAMP")
-  void likeEvent(@Param("userId") Integer userId, @Param("eventId") Integer eventId);
+  void likeEvent(@Param("userId") String userId, @Param("eventId") Integer eventId);
 
   /**
    * Remove like for an event if it has been liked; else do nothing.
@@ -63,7 +63,7 @@ public interface UserMapper {
    * @param eventId
    */
   @Delete("DELETE FROM user_likes WHERE user_id = #{userId} AND event_id = #{eventId}")
-  void delikeEvent(@Param("userId") Integer userId, @Param("eventId") Integer eventId);
+  void delikeEvent(@Param("userId") String userId, @Param("eventId") Integer eventId);
 
   /**
    * Bookmark an event if it hasn't been bookmarked; else do nothing.
@@ -73,7 +73,7 @@ public interface UserMapper {
   @Insert("INSERT INTO user_bookmarks (user_id, event_id) " +
           "VALUES (#{userId}, #{eventId}) " +
           "ON DUPLICATE KEY UPDATE user_id = user_id")
-  void bookmarkEvent(@Param("userId") Integer userId, @Param("eventId") Integer eventId);
+  void bookmarkEvent(@Param("userId") String userId, @Param("eventId") Integer eventId);
 
   /**
    * Remove bookmark for an event if it has been bookmarked; else do nothing.
@@ -81,5 +81,5 @@ public interface UserMapper {
    * @param eventId
    */
   @Delete("DELETE FROM user_bookmarks WHERE user_id = #{userId} AND event_id = #{eventId}")
-  void debookmarkEvent(@Param("userId") Integer userId, @Param("eventId") Integer eventId);
+  void debookmarkEvent(@Param("userId") String userId, @Param("eventId") Integer eventId);
 }

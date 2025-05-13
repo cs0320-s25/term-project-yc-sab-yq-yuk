@@ -43,7 +43,7 @@ public class RecommendationServiceImpl implements RecommendationService {
     * @throws Exception
     */
     @Override
-    public List<Event> fetchRecommendations(Integer userId, EventQueryDTO queryDTO) throws Exception{
+    public List<Event> fetchRecommendations(String userId, EventQueryDTO queryDTO) throws Exception{
         /**
         * In the end, getting user will be replaced by /api/user/:user_id/profile and getting events
         * will be replaced by /api/events

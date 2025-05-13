@@ -19,30 +19,30 @@ public class UserController {
   private UserService userService;
 
   @GetMapping("/{userId}/profile")
-  public Result<UserProfileVO> getUserProfile(@PathVariable Integer userId){
+  public Result<UserProfileVO> getUserProfile(@PathVariable String userId){
     return Result.success(userService.getUserProfile(userId));
   }
 
   @PutMapping("/{userId}/like/{eventId}")
-  public Result likeEvent(@PathVariable Integer userId, @PathVariable Integer eventId){
+  public Result likeEvent(@PathVariable String userId, @PathVariable Integer eventId){
     userService.likeEvent(userId, eventId);
     return Result.success();
   }
 
   @DeleteMapping("/{userId}/like/{eventId}")
-  public Result delikeEvent(@PathVariable Integer userId, @PathVariable Integer eventId){
+  public Result delikeEvent(@PathVariable String userId, @PathVariable Integer eventId){
     userService.delikeEvent(userId, eventId);
     return Result.success();
   }
 
   @PutMapping("/{userId}/bookmark/{eventId}")
-  public Result bookmarkEvent(@PathVariable Integer userId, @PathVariable Integer eventId){
+  public Result bookmarkEvent(@PathVariable String userId, @PathVariable Integer eventId){
     userService.bookmarkEvent(userId, eventId);
     return Result.success();
   }
 
   @DeleteMapping("/{userId}/bookmark/{eventId}")
-  public Result debookmarkEvent(@PathVariable Integer userId, @PathVariable Integer eventId){
+  public Result debookmarkEvent(@PathVariable String userId, @PathVariable Integer eventId){
     userService.debookmarkEvent(userId, eventId);
     return Result.success();
   }

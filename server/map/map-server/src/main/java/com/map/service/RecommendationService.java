@@ -16,5 +16,5 @@ public interface RecommendationService {
   * @return
   * @throws Exception
   */
- List<Event> fetchRecommendations(Integer userId, EventQueryDTO queryDTO) throws Exception;
+ List<Event> fetchRecommendations(String userId, EventQueryDTO queryDTO) throws Exception;
 }
