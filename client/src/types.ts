@@ -3,7 +3,8 @@ export interface Event {
   eventId: string;
   name: string;
   categories: string[];
-  time: string;
+  startTime: string;
+  endTime: string; 
   location: string;
   description: string;
   link?: string;

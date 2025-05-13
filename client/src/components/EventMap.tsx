@@ -272,144 +272,90 @@ export default function EventMap() {
   });
 
 
-  // Filter events based on current filters
-  // const filteredEvents = events.filter((event) => {
-  //   // Category filter
-  //   if (selectedCategory && !event.categories.includes(selectedCategory)) {
-  //     return false;
-  //   }
-
-  //   // Simple search implementation
-  //   if (
-  //     searchQuery &&
-  //     !event.name.toLowerCase().includes(searchQuery.toLowerCase()) &&
-  //     !event.description.toLowerCase().includes(searchQuery.toLowerCase())
-  //   ) {
-  //     return false;
-  //   }
-
-  //   // Online/location filter
-  //   if (locationFilter === 'online') {
-  //     if (!isOnlineEvent(event)) {
-  //       return false;
-  //     }
-  //   } else if (locationFilter === 'in_person') {
-  //     if (isOnlineEvent(event)) {
-  //       return false;
-  //     }
-  //   } else if (locationFilter) {
-  //     // Create a mapping of filter values to potential location strings
-  //     const locationMappings: Record<string, string[]> = {
-  //       'main_green': ['main green', 'the green', 'brown green'],
-  //       'cit': ['cit', 'center for information technology', 'computer science'],
-  //       'watson': ['watson', 'watson center', 'watson institute'],
-  //       'sayles': ['sayles', 'sayles hall'],
-  //       'pembroke': ['pembroke', 'pembroke campus', 'pembroke hall']
-  //     };
+  // Helper function to format event time
+  const formatEventTime = (timeString: string): string => {
+    try {
+      // Try to parse the date - this handles ISO strings and properly formatted date strings
+      const date = new Date(timeString);
       
-  //     // Get the list of location keywords to check
-  //     const locationKeywords = locationMappings[locationFilter];
-  //     if (locationKeywords) {
-  //       // Check if any of the keywords match the event location
-  //       const locationMatches = locationKeywords.some(keyword =>
-  //         event.location.toLowerCase().includes(keyword)
-  //       );
-  //       if (!locationMatches) {
-  //         return false;
-  //       }
-  //     } else {
-  //       // Direct match if no mapping exists
-  //       if (!event.location.toLowerCase().includes(locationFilter.toLowerCase())) {
-  //         return false;
-  //       }
-  //     }
-  //   }
-
-  //   // Time filter
-  //   if (timeFilter) {
-  //     const now = new Date();
-  //     const eventDate = new Date(event.time);
+      // Check if the date is valid
+      if (isNaN(date.getTime())) {
+        // If not valid, try manual parsing for "YYYY-MM-DD HH:MM:SS" format
+        const parts = timeString.split(' ');
+        if (parts.length === 2) {
+          const dateParts = parts[0].split('-');
+          const timeParts = parts[1].split(':');
+          
+          if (dateParts.length === 3 && timeParts.length >= 2) {
+            const year = parseInt(dateParts[0]);
+            const month = parseInt(dateParts[1]) - 1; // JS months are 0-based
+            const day = parseInt(dateParts[2]);
+            const hour = parseInt(timeParts[0]);
+            const minute = parseInt(timeParts[1]);
+            const second = timeParts.length > 2 ? parseInt(timeParts[2]) : 0;
+            
+            const parsedDate = new Date(year, month, day, hour, minute, second);
+            return parsedDate.toLocaleString();
+          }
+        }
+        
+        // If we couldn't parse it, return the original string
+        return timeString;
+      }
       
-  //     // Reset hours to compare just the date
-  //     const todayStart = new Date(now);
-  //     todayStart.setHours(0, 0, 0, 0);
+      // If date is valid, return formatted date
+      return date.toLocaleString();
+    } catch (e) {
+      console.error("Error formatting date:", e);
+      return timeString; // Return original on error
+    }
+  };
+  
+  // For compact format (used in event cards)
+  const formatEventTimeCompact = (timeString: string): string => {
+    try {
+      // Use the same parsing logic as above
+      const date = new Date(timeString);
       
-  //     // Tomorrow
-  //     const tomorrowStart = new Date(todayStart);
-  //     tomorrowStart.setDate(todayStart.getDate() + 1);
+      if (isNaN(date.getTime())) {
+        // Manual parsing for "YYYY-MM-DD HH:MM:SS" format
+        const parts = timeString.split(' ');
+        if (parts.length === 2) {
+          const dateParts = parts[0].split('-');
+          const timeParts = parts[1].split(':');
+          
+          if (dateParts.length === 3 && timeParts.length >= 2) {
+            const year = parseInt(dateParts[0]);
+            const month = parseInt(dateParts[1]) - 1; // JS months are 0-based
+            const day = parseInt(dateParts[2]);
+            const hour = parseInt(timeParts[0]);
+            const minute = parseInt(timeParts[1]);
+            
+            const parsedDate = new Date(year, month, day, hour, minute);
+            return parsedDate.toLocaleString(undefined, {
+              month: "short",
+              day: "numeric",
+              hour: "2-digit",
+              minute: "2-digit",
+            });
+          }
+        }
+        
+        return timeString;
+      }
       
-  //     // Day after tomorrow (for end of "tomorrow" range)
-  //     const dayAfterTomorrow = new Date(todayStart);
-  //     dayAfterTomorrow.setDate(todayStart.getDate() + 2);
-      
-  //     // Calculate the start of this week (Sunday)
-  //     const thisWeekStart = new Date(todayStart);
-  //     thisWeekStart.setDate(todayStart.getDate() - todayStart.getDay());
-      
-  //     // Calculate the end of this week (Saturday)
-  //     const thisWeekEnd = new Date(thisWeekStart);
-  //     thisWeekEnd.setDate(thisWeekStart.getDate() + 7);
-      
-  //     // Calculate start of weekend (Friday)
-  //     const weekendStart = new Date(todayStart);
-  //     weekendStart.setDate(todayStart.getDate() + (5 - todayStart.getDay()));
-  //     if (weekendStart < todayStart) {
-  //       // If today is already weekend, use today
-  //       weekendStart.setTime(todayStart.getTime());
-  //     }
-      
-  //     // Calculate end of weekend (Sunday)
-  //     const weekendEnd = new Date(thisWeekStart);
-  //     weekendEnd.setDate(thisWeekStart.getDate() + 7); // Next Sunday
-      
-  //     // Calculate start of next week (next Sunday)
-  //     const nextWeekStart = new Date(thisWeekEnd);
-      
-  //     // Calculate end of next week (next Saturday)
-  //     const nextWeekEnd = new Date(nextWeekStart);
-  //     nextWeekEnd.setDate(nextWeekStart.getDate() + 7);
-      
-  //     switch (timeFilter) {
-  //       case 'today':
-  //         // Event is today
-  //         if (eventDate < todayStart || eventDate >= tomorrowStart) {
-  //           return false;
-  //         }
-  //         break;
-  //       case 'tomorrow':
-  //         // Event is tomorrow
-  //         if (eventDate < tomorrowStart || eventDate >= dayAfterTomorrow) {
-  //           return false;
-  //         }
-  //         break;
-  //       case 'this_week':
-  //         // Event is within this week (Sunday to Saturday)
-  //         if (eventDate < todayStart || eventDate >= thisWeekEnd) {
-  //           return false;
-  //         }
-  //         break;
-  //       case 'weekend':
-  //         // Event is this weekend (Friday to Sunday)
-  //         if (eventDate < weekendStart || eventDate >= weekendEnd) {
-  //           return false;
-  //         }
-  //         break;
-  //       case 'next_week':
-  //         // Event is next week (next Sunday to next Saturday)
-  //         if (eventDate < nextWeekStart || eventDate >= nextWeekEnd) {
-  //           return false;
-  //         }
-  //         break;
-  //       default:
-  //         // No time filter or unknown filter
-  //         break;
-  //     }
-  //   }
-
-  //   // Trending filter logic would be here
-
-  //   return true;
-  // });
+      // Format with month, day, and time
+      return date.toLocaleString(undefined, {
+        month: "short",
+        day: "numeric",
+        hour: "2-digit",
+        minute: "2-digit",
+      });
+    } catch (e) {
+      console.error("Error formatting compact date:", e);
+      return timeString;
+    }
+  };
 
   // Filter events to only show those with valid coordinates for map display
   const mapEvents = filteredEvents.filter(event => hasValidCoordinates(event));
@@ -863,7 +809,7 @@ export default function EventMap() {
                     marginBottom: "20px",
                   }}>
                     <strong>Time:</strong>
-                    <span>{new Date(selectedEvent.time).toLocaleString()}</span>
+                    {selectedEvent?.startTime ? formatEventTime(selectedEvent.startTime) : 'No date available'}
                     
                     <strong>Categories:</strong>
                     {/* <span>
@@ -1049,7 +995,7 @@ export default function EventMap() {
                     {/* Time info in popup */}
                     <p style={{ margin: "4px 0" }}>
                       <strong>Time:</strong>{" "}
-                      {new Date(selectedEvent.time).toLocaleString()}
+                      {selectedEvent?.startTime ? formatEventTime(selectedEvent.startTime) : 'No date available'}
                     </p>
                     {/* Categories info in popup */}
                     {/* <p style={{ margin: "4px 0" }}>
@@ -1253,14 +1199,7 @@ export default function EventMap() {
                       }}
                     >
                       <span>{event.location}</span>
-                      <span>
-                        {new Date(event.time).toLocaleString(undefined, {
-                          month: "short",
-                          day: "numeric",
-                          hour: "2-digit",
-                          minute: "2-digit",
-                        })}
-                      </span>
+                      {event?.startTime ? formatEventTimeCompact(event.startTime) : 'No date available'}
                     </div>
                     <div
                       style={{
@@ -1430,7 +1369,7 @@ export default function EventMap() {
                     </p>
                     <p>
                       <strong>Time:</strong>{" "}
-                      {new Date(event.time).toLocaleString()}
+                      {event?.startTime ? formatEventTimeCompact(event.startTime) : 'No date available'}
                     </p>
                     {/* <p>
                       <strong>Categories:</strong>{" "}
@@ -1573,7 +1512,7 @@ export default function EventMap() {
                     </p>
                     <p>
                       <strong>Time:</strong>{" "}
-                      {new Date(event.time).toLocaleString()}
+                      {event?.startTime ? formatEventTimeCompact(event.startTime) : 'No date available'}
                     </p>
                     {/* <p>
                       <strong>Categories:</strong>{" "}

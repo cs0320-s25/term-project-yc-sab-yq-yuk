@@ -47,7 +47,7 @@ public class RecommendationServiceImpl implements RecommendationService {
 public List<Event> fetchRecommendations(String userId, EventQueryDTO queryDTO) throws Exception {
     // Fetch events and the target user profile
     List<Event> events = new ArrayList<>(eventService.fetchEvents(queryDTO).stream()
-        // .filter(e -> e.getStartTime().isAfter(LocalDateTime.now()))
+        .filter(e -> e.getStartTime().isAfter(LocalDateTime.now()))
         .collect(Collectors.toList()));
 
     logger.debug("Fetched {} events for recommendation filtering", events.size());
