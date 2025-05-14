@@ -126,32 +126,42 @@ export default function EventMap() {
     }
   }, [userId]);
 
-   // Main effect for fetching events based on filters
+  // Main effect for fetching events based on filters
   // Fetch events based on filters
   useEffect(() => {
     const fetchEvents = async () => {
       setLoading(true);
       try {
-        const filters = {
-          category: selectedCategory,
-          time: timeFilter,
-          near: locationFilter === 'online' || locationFilter === 'in-person' ? '' : locationFilter, // Don't send 'online' or 'in-person' to API
-        };
+        // Only apply filters in map view
+        let filters = {};
+        
+        if (activeView === "map") {
+          filters = {
+            category: selectedCategory,
+            time: timeFilter,
+            near: locationFilter === 'online' || locationFilter === 'in-person' ? '' : locationFilter,
+          };
+        }
         
         let data: Event[] = [];
         
-        // Different API endpoints based on view mode and query params
-        if (showTrending) {
-          data = await api.getTrendingEvents(filters);
-        } else if (userId && !searchQuery) {
-          data = await api.getRecommendations(userId, filters);
-        } else if (searchQuery) {
-          data = await api.searchEvents(searchQuery);
+        // Different API calls based on view
+        if (activeView === "map") {
+          // Only in map view, check for trending/recommendations
+          if (showTrending) {
+            data = await api.getTrendingEvents(filters);
+          } else if (userId && !searchQuery) {
+            data = await api.getRecommendations(userId, filters);
+          } else if (searchQuery) {
+            data = await api.searchEvents(searchQuery);
+          } else {
+            data = await api.getEvents(filters);
+          }
         } else {
-          data = await api.getEvents(filters);
+          // For likes and bookmarks views, get all events without filters
+          data = await api.getEvents({});
         }
         
-        // Process events to ensure all required fields exist
         const processedEvents = processEvents(data);
         setEvents(processedEvents);
       } catch (error) {
@@ -170,6 +180,7 @@ export default function EventMap() {
     timeFilter,
     locationFilter,
     searchQuery,
+    activeView, // Add this to trigger fetch when view changes
   ]);
 
   // Filter events client-side based on the locationFilter
@@ -372,7 +383,15 @@ export default function EventMap() {
           {/* Each button toggles the activeView state to switch between interface modes */}
           {/* My Likes Button */}
           <button
-            onClick={() => setActiveView("likes")}
+            onClick={() => {
+              setActiveView("likes");
+              // Reset filters when switching to likes view
+              setSelectedCategory("");
+              setTimeFilter("");
+              setLocationFilter("");
+              setSearchQuery("");
+              setShowTrending(false);
+            }}
             style={{
               backgroundColor:
                 activeView === "likes" ? "#8B2A2A" : "transparent",
@@ -387,7 +406,15 @@ export default function EventMap() {
           </button>
           {/* My Bookmarks Button */}
           <button
-            onClick={() => setActiveView("bookmarks")}
+            onClick={() => {
+              setActiveView("bookmarks");
+              // Reset filters when switching to bookmarks view
+              setSelectedCategory("");
+              setTimeFilter("");
+              setLocationFilter("");
+              setSearchQuery("");
+              setShowTrending(false);
+            }}
             style={{
               backgroundColor:
                 activeView === "bookmarks" ? "#8B2A2A" : "transparent",
@@ -559,9 +586,9 @@ export default function EventMap() {
                 <option value="">Any Time</option>
                 <option value="Today">Today</option>
                 <option value="Tomorrow">Tomorrow</option>
-                <option value="This Week">This Week</option>
-                <option value="This Weekend">This Weekend</option>
-                <option value="Next Week">Next Week</option>
+                <option value="This_week">This Week</option>
+                <option value="Weekend">This Weekend</option>
+                <option value="Next_week">Next Week</option>
               </select>
             </div>
             
@@ -851,7 +878,7 @@ export default function EventMap() {
                 ))}
 
                 {/* Popup for selected event */}
-              {/* Only shows when an event is selected and has valid coordinates */}
+                {/* Only shows when an event is selected and has valid coordinates */}
                 {selectedEvent && hasValidCoordinates(selectedEvent) && (
                   <Popup
                     longitude={selectedEvent.longitude}
@@ -1285,9 +1312,9 @@ export default function EventMap() {
                         : event.description}
                     </p>
                     <div style={{ marginTop: "15px" }}>
-                      <p>
+                      {/* <p>
                         <strong>Location:</strong> {event.location}
-                      </p>
+                      </p> */}
                       <p>
                         <strong>Time:</strong>{" "}
                         {event?.startTime
