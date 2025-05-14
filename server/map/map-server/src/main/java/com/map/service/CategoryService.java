@@ -5,7 +5,7 @@ import java.util.List;
 public interface CategoryService {
 
   /**
-   * Fecth all categories.
+   * Fetch all categories.
    * @return
    */
   List<String> fetchCategories();

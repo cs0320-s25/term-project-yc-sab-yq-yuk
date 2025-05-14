@@ -10,21 +10,21 @@ public interface EventService {
   /**
    * Fetch events by specifications.
    * @param queryDTO
-   * @return
+   * @return list of events matching the specifications.
    */
   List<Event> fetchEvents(EventQueryDTO queryDTO);
 
   /**
    * Search for a particular event by id.
    * @param eventId
-   * @return
+   * @return event object if found, else null.
    */
   Event getEventById(Integer eventId);
 
   /**
    * Search for event(s) by roughly matching the value with the event name/event description.
    * @param query
-   * @return
+   * @return list of matching events
    */
   List<Event> getEventByMatching(String query);
 
@@ -43,7 +43,7 @@ public interface EventService {
 
   /**
    * Return all event locations.
-   * @return
+   * @return list of all event locations.
    */
   List<String> getAllLocations();
 
@@ -54,5 +54,4 @@ public interface EventService {
    * @return list of event-category pairs
    */
   List<EventCategoryDTO> getCategoriesForEvents(List<Integer> eventIds);
-
 }
