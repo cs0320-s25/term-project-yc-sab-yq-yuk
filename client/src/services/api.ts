@@ -4,8 +4,11 @@ import { Event, UserProfile } from "../types";
 const API_BASE_URL = "http://localhost:8080";
 
 // Event-related API calls
+// We export an 'api' object with all our API methods organized in one place
+// This makes it easy to import and use throughout the application
 export const api = {
   // Get all categories
+  // This endpoint returns all available event categories for filter dropdowns
   getCategories: async (): Promise<string[]> => {
     try {
       const response = await fetch(`${API_BASE_URL}/categories`);
@@ -21,6 +24,7 @@ export const api = {
   },
 
   // Get distinct locations
+  // This powers our location filter dropdown in the UI
   getLocations: async (): Promise<string[]> => {
     try {
       const response = await fetch(`${API_BASE_URL}/events/locations`);
@@ -36,6 +40,7 @@ export const api = {
   },
 
   // Get user profile
+  // This fetches the user's profile including their event preferences
   getUserProfile: async (userId: string): Promise<UserProfile | null> => {
     try {
       console.log('Fetching profile for userId:', userId);
@@ -52,6 +57,8 @@ export const api = {
   },
 
   // Get filtered events
+  // This is our main endpoint for regular event browsing
+  // It accepts optional filters for category, time, and location
   getEvents: async (
     filters: {
       category?: string;
@@ -80,6 +87,7 @@ export const api = {
   },
 
   // Get events by search query
+  // This powers our search bar functionality
   searchEvents: async (query: string): Promise<Event[]> => {
     try {
       const url = `${API_BASE_URL}/events?query=${encodeURIComponent(query)}`;
@@ -97,6 +105,7 @@ export const api = {
   },
 
   // Get trending events
+  // This fetches events sorted by popularity metrics (Recalculate trending before fetching)
   getTrendingEvents: async (
     filters: {
       category?: string;
@@ -105,15 +114,28 @@ export const api = {
     } = {}
   ): Promise<Event[]> => {
     try {
+      // First, trigger the recalculation of trending events
+      try {
+        const recalculateResponse = await fetch(`${API_BASE_URL}/trending/recalculate`, {
+          method: 'POST', // or 'GET' depending on your API design
+        });
+        const recalculateData = await recalculateResponse.json();
+        console.log("Trending recalculation:", recalculateData.code === 1 ? "successful" : "failed");
+      } catch (recalcError) {
+        // Log error but continue with fetching - don't block if recalculation fails
+        console.error("Error recalculating trending events:", recalcError);
+      }
+      
+      // Then proceed with fetching trending events 
       const params = new URLSearchParams();
       if (filters.category) params.append("category", filters.category);
       if (filters.time) params.append("time", filters.time);
       if (filters.near) params.append("near", filters.near);
-
+  
       const url = `${API_BASE_URL}/trending?${params.toString()}`;
       const response = await fetch(url);
       const data = await response.json();
-
+  
       if (data.code === 1 && data.data) {
         return data.data;
       }
@@ -125,6 +147,7 @@ export const api = {
   },
 
   // Get personalized recommendations
+  // This powers our "For You" section with personalized content
   getRecommendations: async (
     userId: string,
     filters: {
@@ -153,7 +176,9 @@ export const api = {
     }
   },
 
+
   // Get a specific event by ID
+  // This is used when we need full details for a single event
   getEvent: async (eventId: string): Promise<Event | null> => {
     try {
       const response = await fetch(`${API_BASE_URL}/events/${eventId}`);
@@ -169,6 +194,7 @@ export const api = {
   },
 
   // Record a view for an event
+  // This increments the view count whenever a user views an event
   recordView: async (eventId: string): Promise<boolean> => {
     try {
       const response = await fetch(`${API_BASE_URL}/events/views/${eventId}`, {
@@ -183,6 +209,7 @@ export const api = {
   },
 
   // Like an event
+  // This adds an event to a user's liked events list
   likeEvent: async (userId: string, eventId: string): Promise<boolean> => {
     try {
       const response = await fetch(`${API_BASE_URL}/users/${userId}/likes`, {
@@ -201,6 +228,7 @@ export const api = {
   },
 
   // Unlike an event
+  // This removes an event from a user's liked events list
   unlikeEvent: async (userId: string, eventId: string): Promise<boolean> => {
     try {
       const response = await fetch(`${API_BASE_URL}/users/${userId}/likes`, {
@@ -219,6 +247,7 @@ export const api = {
   },
 
   // Bookmark an event
+  // This adds an event to a user's bookmarked events list
   bookmarkEvent: async (userId: string, eventId: string): Promise<boolean> => {
     try {
       const response = await fetch(`${API_BASE_URL}/users/${userId}/bookmarks`, {
@@ -237,6 +266,7 @@ export const api = {
   },
 
   // Remove bookmark
+  // This removes an event from a user's bookmarked events list
   unbookmarkEvent: async (userId: string, eventId: string): Promise<boolean> => {
     try {
       const response = await fetch(`${API_BASE_URL}/users/${userId}/bookmarks`, {

@@ -5,7 +5,24 @@ import Map, { ViewStateChangeEvent, Popup, Marker } from "react-map-gl";
 import { useAuth } from "@clerk/clerk-react";
 import { Event, UserProfile } from "../types";
 import { api } from "../services/api";
+import {
+  formatCategories,
+  categoryColors,
+  CATEGORIES,
+  getCategoryColor,
+  getShortCategoryName,
+} from "../utils/categoryUtils";
+import {
+  formatEventTime,
+  formatEventTimeCompact,
+} from "../utils/dateFormatters";
+import {
+  processEvents,
+  hasValidCoordinates,
+  isOnlineEvent,
+} from "../utils/eventHelpers";
 
+// Configuration & Constants
 // Mapbox API key
 const MAPBOX_API_KEY = process.env.MAPBOX_TOKEN;
 if (!MAPBOX_API_KEY) {
@@ -17,128 +34,19 @@ export interface LatLong {
   long: number;
 }
 
+// Default coordinates for Brown University campus (map center point)
 const BrownUniversityLatLong: LatLong = {
   lat: 41.8268,
   long: -71.4025,
 };
 const initialZoom = 15;
 
-// Category color mapping (shorter names for display)
-const categoryColors: Record<string, string> = {
-  "Academic Calendar": "#8B2A2A", // Brown University's color
-  Advising: "#007bff",
-  Arts: "#e83e8c",
-  Athletics: "#28a745",
-  Biology: "#17a2b8",
-  Careers: "#fd7e14",
-  Education: "#6f42c1",
-  Entrepreneurship: "#20c997",
-  Faculty: "#6c757d",
-  Faith: "#ffc107",
-  Government: "#dc3545",
-  "Graduate School": "#343a40",
-  "Greek Houses": "#7952b3",
-  History: "#ff6b6b",
-  Housing: "#fd7e14",
-  "Human Resources": "#6c757d",
-  Humanities: "#4dabf7",
-  Identity: "#cc5de8",
-  International: "#339af0",
-  Libraries: "#20c997",
-  Mathematics: "#845ef7",
-  Philosophy: "#adb5bd",
-  "Physical Sciences": "#51cf66",
-  Psychology: "#ff922b",
-  Research: "#a5d8ff",
-  Service: "#69db7c",
-  "Social Sciences": "#fcc419",
-  "Student Clubs": "#748ffc",
-  "Student Publications": "#9775fa",
-  Training: "#5c7cfa",
-  "University Services": "#6c757d",
-  default: "#495057",
-};
-
-// Helper function to get shorter category name for display
-const getShortCategoryName = (fullName: string): string => {
-  const parts = fullName.split(",");
-  return parts[0].trim();
-};
-
-// Get color for category
-const getCategoryColor = (categories: string[]): string => {
-  if (!categories || categories.length === 0) {
-    return categoryColors.default;
-  }
-
-  const shortName = getShortCategoryName(categories[0]);
-  return categoryColors[shortName] || categoryColors.default;
-};
-
-// Main categories list
-const CATEGORIES = [
-  "Academic Calendar, University Dates & Events",
-  "Advising, Mentorship",
-  "Arts, Performance",
-  "Athletics, Sports, Wellness",
-  "Biology, Medicine, Public Health",
-  "Careers, Recruiting, Internships",
-  "Education, Teaching, Instruction",
-  "Entrepreneurship",
-  "Faculty Governance",
-  "Faith, Spirituality, Worship",
-  "Government, Public & International Affairs",
-  "Graduate School, Postgraduate Education",
-  "Greek & Program Houses",
-  "History, Cultural Studies, Languages",
-  "Housing, Dining",
-  "Human Resources, Benefits",
-  "Humanities",
-  "Identity, Culture, Inclusion",
-  "International, Global Engagement",
-  "Libraries",
-  "Mathematics, Technology, Engineering",
-  "Philosophy, Religious Studies",
-  "Physical & Earth Sciences",
-  "Psychology & Cognitive Sciences",
-  "Research",
-  "Service, Engagement, Volunteering",
-  "Social Sciences",
-  "Student Clubs, Organizations & Activities",
-  "Student Publications",
-  "Training, Professional Development",
-  "University Services & Operations",
-];
-
-
-
-// Helper function to check if an event is online
-const isOnlineEvent = (event: Event): boolean => {
-  if (!event.location) return false;
-  
-  const locationLower = event.location.toLowerCase();
-  return locationLower.includes('online only') || 
-         locationLower.includes('online-only') || 
-         locationLower.includes('virtual') ||
-         locationLower === 'online' ||
-         event.latitude === 0 || 
-         event.longitude === 0;
-};
-
-// Helper function to check if an event has valid coordinates for map display
-const hasValidCoordinates = (event: Event): boolean => {
-  return typeof event.latitude === 'number' && 
-         typeof event.longitude === 'number' && 
-         !isNaN(event.latitude) && 
-         !isNaN(event.longitude) &&
-         event.latitude !== 0 &&
-         event.longitude !== 0 ;
-};
-
+// Main component definition
 export default function EventMap() {
-  const { userId } = useAuth(); // Get user ID from Clerk auth
-  // Debug loggings
-  console.log('Clerk userId:', userId);
+  // Authentication - get user ID from Clerk
+  const { userId } = useAuth(); 
+  console.log("Clerk userId:", userId);
+  // Map related state
   const mapRef = useRef<any>(null);
   const [mapLoaded, setMapLoaded] = useState(false);
   const [viewState, setViewState] = useState({
@@ -148,6 +56,7 @@ export default function EventMap() {
   });
 
   // UI states
+  // These states manage the core UI elements like events, selected events, and view modes
   const [events, setEvents] = useState<Event[]>([]);
   const [selectedEvent, setSelectedEvent] = useState<Event | null>(null);
   const [loading, setLoading] = useState(false);
@@ -155,43 +64,54 @@ export default function EventMap() {
   const [showFullDescription, setShowFullDescription] = useState(false);
   const [activeView, setActiveView] = useState<"map" | "likes" | "bookmarks">(
     "map"
-  ); // states for tracking navigation
+  ); 
+  const [displayedEvents, setDisplayedEvents] = useState<Event[]>([]);
+
 
   // Filter states
+  // These control the different filtering options available to users
   const [selectedCategory, setSelectedCategory] = useState<string>("");
   const [timeFilter, setTimeFilter] = useState<string>("");
   const [locationFilter, setLocationFilter] = useState<string>("");
   const [searchQuery, setSearchQuery] = useState<string>("");
-  const [showOnlineEvents, setShowOnlineEvents] = useState<boolean>(true);
-  const [categories, setCategories] = useState<string[]>([]);
+  // const [showOnlineEvents, setShowOnlineEvents] = useState<boolean>(true);
+  // const [categories, setCategories] = useState<string[]>([]);
   const [locations, setLocations] = useState<string[]>([]);
- 
-  // User state (mock for now, will be replaced with real data)
+
+  // User state (tracking likes and bookmarks)
   const [userLikes, setUserLikes] = useState<string[]>([]);
   const [userBookmarks, setUserBookmarks] = useState<string[]>([]);
 
-  
-  // Fetch categories
-  useEffect(() => {
-    const fetchCategories = async () => {
-      const data = await api.getCategories();
-      setCategories(data);
-    };
-
-    fetchCategories();
-  }, []);
-
-  // Fetch locations
+  // Effect for fetching locations from our API
+  // This powers our location filter dropdown in the UI
   useEffect(() => {
     const fetchLocations = async () => {
-      const data = await api.getLocations();
-      setLocations(data);
+      try {
+        // Fetch the data - response.data is already an array of strings (string[])
+        const response = await api.getLocations();
+        console.log("API response:", response);
+
+        // Since response.data is already the array of strings, we don't need to access response.data.data
+        // Your API is returning the array directly
+        let locationData = response;
+
+        // Filter out null and empty values
+        const filteredLocations = locationData.filter(
+          (loc) => loc !== null && loc !== undefined && loc !== ""
+        );
+
+        // Set the locations state
+        setLocations(filteredLocations);
+      } catch (error) {
+        console.error("Error fetching locations:", error);
+        setLocations([]);
+      }
     };
 
     fetchLocations();
   }, []);
 
-  // Fetch user profile
+  // Effect for loading user profile - likes and bookmarks
   useEffect(() => {
     if (userId) {
       const fetchUserProfile = async () => {
@@ -206,6 +126,7 @@ export default function EventMap() {
     }
   }, [userId]);
 
+   // Main effect for fetching events based on filters
   // Fetch events based on filters
   useEffect(() => {
     const fetchEvents = async () => {
@@ -214,11 +135,12 @@ export default function EventMap() {
         const filters = {
           category: selectedCategory,
           time: timeFilter,
-          near: locationFilter,
+          near: locationFilter === 'online' || locationFilter === 'in-person' ? '' : locationFilter, // Don't send 'online' or 'in-person' to API
         };
-
+        
         let data: Event[] = [];
         
+        // Different API endpoints based on view mode and query params
         if (showTrending) {
           data = await api.getTrendingEvents(filters);
         } else if (userId && !searchQuery) {
@@ -229,22 +151,9 @@ export default function EventMap() {
           data = await api.getEvents(filters);
         }
         
-        // setEvents(data);
         // Process events to ensure all required fields exist
-      const processedEvents = data.map(event => ({
-        ...event,
-        // Provide default values for fields that might be null
-        name: event.name || 'Unnamed Event',
-        description: event.description || '',
-        location: event.location || '',
-        link: event.link || '',
-        likedCount: event.likedCount || 0,
-        viewedCount: event.viewedCount || 0,
-        trendingScore: event.trendingScore || 0,
-        categories: event.categories || [],
-      }));
-      
-      setEvents(processedEvents);
+        const processedEvents = processEvents(data);
+        setEvents(processedEvents);
       } catch (error) {
         console.error("Error fetching events:", error);
         setEvents([]);
@@ -252,133 +161,69 @@ export default function EventMap() {
         setLoading(false);
       }
     };
-
+    
     fetchEvents();
-  }, [userId, showTrending, selectedCategory, timeFilter, locationFilter, searchQuery]);
+  }, [
+    userId,
+    showTrending,
+    selectedCategory,
+    timeFilter,
+    locationFilter,
+    searchQuery,
+  ]);
 
-  // Record view when event is selected
+  // Filter events client-side based on the locationFilter
+  useEffect(() => {
+    if (locationFilter === 'online') {
+      // Filter for online events using our comprehensive isOnlineEvent function
+      setDisplayedEvents(events.filter(event => isOnlineEvent(event)));
+    }else {
+      // Show all events or those matching other filters
+      setDisplayedEvents(events);
+    }
+  }, [events, locationFilter]);
+
+
+  // Effect to record views when a user selects an event
   useEffect(() => {
     if (selectedEvent) {
       const recordView = async () => {
         await api.recordView(selectedEvent.eventId);
-        
+
         // Update local state to reflect the view
-        setEvents(prev => 
-          prev.map(event => 
-            event.eventId === selectedEvent.eventId 
-              ? { ...event, viewedCount: event.viewedCount + 1 } 
+        setEvents((prev) =>
+          prev.map((event) =>
+            event.eventId === selectedEvent.eventId
+              ? { ...event, viewedCount: event.viewedCount + 1 }
               : event
           )
         );
       };
-      
+
       recordView();
     }
   }, [selectedEvent]);
 
-  // Filter events based on current filters and search
+  // Additional filtering（online or not） beyond what the API provides
   const filteredEvents = events.filter((event) => {
     // Online/location filter
-    if (locationFilter === 'online' && !isOnlineEvent(event)) {
+    if (locationFilter === "online" && !isOnlineEvent(event)) {
       return false;
     }
 
     return true;
   });
 
-
-  // Helper function to format event time
-  const formatEventTime = (timeString: string): string => {
-    try {
-      // Try to parse the date - this handles ISO strings and properly formatted date strings
-      const date = new Date(timeString);
-      
-      // Check if the date is valid
-      if (isNaN(date.getTime())) {
-        // If not valid, try manual parsing for "YYYY-MM-DD HH:MM:SS" format
-        const parts = timeString.split(' ');
-        if (parts.length === 2) {
-          const dateParts = parts[0].split('-');
-          const timeParts = parts[1].split(':');
-          
-          if (dateParts.length === 3 && timeParts.length >= 2) {
-            const year = parseInt(dateParts[0]);
-            const month = parseInt(dateParts[1]) - 1; // JS months are 0-based
-            const day = parseInt(dateParts[2]);
-            const hour = parseInt(timeParts[0]);
-            const minute = parseInt(timeParts[1]);
-            const second = timeParts.length > 2 ? parseInt(timeParts[2]) : 0;
-            
-            const parsedDate = new Date(year, month, day, hour, minute, second);
-            return parsedDate.toLocaleString();
-          }
-        }
-        
-        // If we couldn't parse it, return the original string
-        return timeString;
-      }
-      
-      // If date is valid, return formatted date
-      return date.toLocaleString();
-    } catch (e) {
-      console.error("Error formatting date:", e);
-      return timeString; // Return original on error
-    }
-  };
-  
-  // For compact format (used in event cards)
-  const formatEventTimeCompact = (timeString: string): string => {
-    try {
-      // Use the same parsing logic as above
-      const date = new Date(timeString);
-      
-      if (isNaN(date.getTime())) {
-        // Manual parsing for "YYYY-MM-DD HH:MM:SS" format
-        const parts = timeString.split(' ');
-        if (parts.length === 2) {
-          const dateParts = parts[0].split('-');
-          const timeParts = parts[1].split(':');
-          
-          if (dateParts.length === 3 && timeParts.length >= 2) {
-            const year = parseInt(dateParts[0]);
-            const month = parseInt(dateParts[1]) - 1; // JS months are 0-based
-            const day = parseInt(dateParts[2]);
-            const hour = parseInt(timeParts[0]);
-            const minute = parseInt(timeParts[1]);
-            
-            const parsedDate = new Date(year, month, day, hour, minute);
-            return parsedDate.toLocaleString(undefined, {
-              month: "short",
-              day: "numeric",
-              hour: "2-digit",
-              minute: "2-digit",
-            });
-          }
-        }
-        
-        return timeString;
-      }
-      
-      // Format with month, day, and time
-      return date.toLocaleString(undefined, {
-        month: "short",
-        day: "numeric",
-        hour: "2-digit",
-        minute: "2-digit",
-      });
-    } catch (e) {
-      console.error("Error formatting compact date:", e);
-      return timeString;
-    }
-  };
-
   // Filter events to only show those with valid coordinates for map display
-  const mapEvents = filteredEvents.filter(event => hasValidCoordinates(event));
+  const mapEvents = filteredEvents.filter((event) =>
+    hasValidCoordinates(event)
+  );
 
-  // Handle viewing an event, whether online or in-person
+  // Event handlers
+  // Handle viewing an event(flies to location), whether online or in-person
   const handleViewEvent = (event: Event) => {
     setSelectedEvent(event);
-    
+
     // If the event has valid coordinates, fly to its location on the map
     if (hasValidCoordinates(event) && mapRef.current) {
       mapRef.current.flyTo({
@@ -389,29 +234,29 @@ export default function EventMap() {
     }
   };
 
-  // Handle like/unlike event
+  // Handle like/unlike event - updates local state and calls API
   const handleLikeEvent = async (eventId: string) => {
     if (!userId) return;
-    
+
     const isLiked = userLikes.includes(eventId);
     let success = false;
-    
+
     if (isLiked) {
       success = await api.unlikeEvent(userId, eventId);
       if (success) {
-        setUserLikes(prev => prev.filter(id => id !== eventId));
+        setUserLikes((prev) => prev.filter((id) => id !== eventId));
       }
     } else {
       success = await api.likeEvent(userId, eventId);
       if (success) {
-        setUserLikes(prev => [...prev, eventId]);
+        setUserLikes((prev) => [...prev, eventId]);
       }
     }
-    
+
     if (success) {
       // Update events list with new like count
-      setEvents(prev =>
-        prev.map(event =>
+      setEvents((prev) =>
+        prev.map((event) =>
           event.eventId === eventId
             ? {
                 ...event,
@@ -422,7 +267,7 @@ export default function EventMap() {
             : event
         )
       );
-      
+
       // Update selected event if it's being liked/unliked
       if (selectedEvent?.eventId === eventId) {
         setSelectedEvent({
@@ -435,23 +280,22 @@ export default function EventMap() {
     }
   };
 
-
-  // Handle bookmark/unbookmark event
+  // Handle bookmark/unbookmark event - updates local state and calls API
   const handleBookmarkEvent = async (eventId: string) => {
     if (!userId) return;
-    
+
     const isBookmarked = userBookmarks.includes(eventId);
     let success = false;
-    
+
     if (isBookmarked) {
       success = await api.unbookmarkEvent(userId, eventId);
       if (success) {
-        setUserBookmarks(prev => prev.filter(id => id !== eventId));
+        setUserBookmarks((prev) => prev.filter((id) => id !== eventId));
       }
     } else {
       success = await api.bookmarkEvent(userId, eventId);
       if (success) {
-        setUserBookmarks(prev => [...prev, eventId]);
+        setUserBookmarks((prev) => [...prev, eventId]);
       }
     }
   };
@@ -462,9 +306,10 @@ export default function EventMap() {
     // The actual search occurs in the useEffect that watches searchQuery
   };
 
+  // UI rendering
   return (
     <div className="event-map-container">
-      {/* Header with search bar */}
+      {/* Header section with app title, search bar, and navigation buttons */}
       <div
         className="header"
         style={{
@@ -479,6 +324,7 @@ export default function EventMap() {
         <div className="logo">
           <h1 style={{ margin: 0 }}>Brown Events</h1>
         </div>
+        {/* We have three main views that we conditionally render */}
         {/* Only show search in map view */}
         {activeView === "map" && (
           <form
@@ -519,7 +365,11 @@ export default function EventMap() {
             </button>
           </form>
         )}
+
+        {/* Navigation buttons for switching between views */}
         <div className="navigation" style={{ display: "flex", gap: "10px" }}>
+          {/* Likes, Bookmarks, and Map View buttons */}
+          {/* Each button toggles the activeView state to switch between interface modes */}
           {/* My Likes Button */}
           <button
             onClick={() => setActiveView("likes")}
@@ -550,7 +400,8 @@ export default function EventMap() {
           >
             My Bookmarks
           </button>
-          {/* Show Map Button - only visible when in likes or bookmarks view */}
+          
+          {/* Only show "Map View" button when not already in map view */}
           {activeView !== "map" && (
             <button
               onClick={() => setActiveView("map")}
@@ -568,7 +419,11 @@ export default function EventMap() {
           )}
         </div>
       </div>
-      {/* Conditional rendering based on active view */}
+      
+      
+      {/* Main content area - conditionally rendered based on activeView */}
+      {/* ------------------------------------------------------------ */}
+      {/* MAP VIEW */}
       {activeView === "map" && (
         <div
           className="content"
@@ -590,6 +445,7 @@ export default function EventMap() {
             <div style={{ marginBottom: "20px", display: "flex", gap: "10px" }}>
               <button
                 onClick={() => {
+                  // Reset all filters and show personalized recommendations
                   setShowTrending(false);
                   setSelectedCategory("");
                   setTimeFilter("");
@@ -624,6 +480,7 @@ export default function EventMap() {
               </button>
               <button
                 onClick={() => {
+                  // Reset all filters and show trending events
                   setShowTrending(true);
                   setSelectedCategory("");
                   setTimeFilter("");
@@ -643,7 +500,9 @@ export default function EventMap() {
                 Trending
               </button>
             </div>
-            {/* Category filter */}
+            
+            {/* Category filter dropdown */}
+            {/* When changed, this triggers a new API call via useEffect */}
             <div style={{ marginBottom: "20px" }}>
               <label
                 style={{
@@ -673,7 +532,9 @@ export default function EventMap() {
                 ))}
               </select>
             </div>
-            {/* Time filter */}
+
+            {/* Time filter dropdown */}
+            {/* This also triggers API calls via the dependency array in useEffect */}
             <div style={{ marginBottom: "20px" }}>
               <label
                 style={{
@@ -696,14 +557,16 @@ export default function EventMap() {
                 }}
               >
                 <option value="">Any Time</option>
-                <option value="today">Today</option>
-                <option value="tomorrow">Tomorrow</option>
-                <option value="this_week">This Week</option>
-                <option value="weekend">This Weekend</option>
-                <option value="next_week">Next Week</option>
+                <option value="Today">Today</option>
+                <option value="Tomorrow">Tomorrow</option>
+                <option value="This Week">This Week</option>
+                <option value="This Weekend">This Weekend</option>
+                <option value="Next Week">Next Week</option>
               </select>
             </div>
-            {/* Location filter - Updated with online/in-person options */}
+            
+            {/* Location filter dropdown */}
+            {/* Combines hardcoded options (All/Online) with dynamic API-fetched locations */} 
             <div style={{ marginBottom: "20px" }}>
               <label
                 style={{
@@ -727,14 +590,14 @@ export default function EventMap() {
               >
                 <option value="">All Locations</option>
                 <option value="online">Online Only</option>
-                <option value="main_green">Main Green</option>
-                <option value="cit">CIT Building</option>
-                <option value="watson">Watson Center</option>
-                <option value="sayles">Sayles Hall</option>
-                <option value="pembroke">Pembroke Campus</option>
+            
+
+                
               </select>
             </div>
+            
             {/* Reset filters button */}
+            {/* Allows users to quickly clear all filters and start fresh */}
             <button
               onClick={() => {
                 setSelectedCategory("");
@@ -757,6 +620,8 @@ export default function EventMap() {
               Reset Filters
             </button>
           </div>
+          
+          
           {/* Main content area with map and event list */}
           <div
             className="main-content"
@@ -767,7 +632,8 @@ export default function EventMap() {
               className="map-container"
               style={{ height: "60%", position: "relative" }}
             >
-              {/* Online event details overlay - show when online event is selected */}
+              {/* Overlay for online events (they don't have map markers) */}
+              {/* This provides detailed info for online events when selected */}
               {selectedEvent && isOnlineEvent(selectedEvent) && (
                 <div
                   style={{
@@ -786,17 +652,26 @@ export default function EventMap() {
                     overflow: "auto",
                   }}
                 >
-                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "15px" }}>
+                  <div
+                    style={{
+                      display: "flex",
+                      justifyContent: "space-between",
+                      alignItems: "center",
+                      marginBottom: "15px",
+                    }}
+                  >
                     <h2 style={{ margin: 0 }}>
                       {selectedEvent.name}
-                      <span style={{ 
-                        fontSize: "14px",
-                        marginLeft: "10px",
-                        padding: "3px 8px",
-                        backgroundColor: "#17a2b8",
-                        color: "white",
-                        borderRadius: "4px",
-                      }}>
+                      <span
+                        style={{
+                          fontSize: "14px",
+                          marginLeft: "10px",
+                          padding: "3px 8px",
+                          backgroundColor: "#17a2b8",
+                          color: "white",
+                          borderRadius: "4px",
+                        }}
+                      >
                         ONLINE EVENT
                       </span>
                     </h2>
@@ -812,38 +687,46 @@ export default function EventMap() {
                       ×
                     </button>
                   </div>
-                  
+
                   <div style={{ marginBottom: "15px" }}>
                     <p>{selectedEvent.description}</p>
                   </div>
-                  
-                  <div style={{ 
-                    display: "grid", 
-                    gridTemplateColumns: "auto 1fr", 
-                    gap: "10px",
-                    marginBottom: "20px",
-                  }}>
+
+                  <div
+                    style={{
+                      display: "grid",
+                      gridTemplateColumns: "auto 1fr",
+                      gap: "10px",
+                      marginBottom: "20px",
+                    }}
+                  >
+                    {/* Online event details card with title, description, etc. */}
+                    {/* Includes actions like like/bookmark and "Join Event" link */}
+                    {/* ... (online event overlay details) ... */}
                     <strong>Time:</strong>
-                    {selectedEvent?.startTime ? formatEventTime(selectedEvent.startTime) : 'No date available'}
-                    
+                    {selectedEvent?.startTime
+                      ? formatEventTime(selectedEvent.startTime)
+                      : "No date available"}
+
                     <strong>Categories:</strong>
                     {/* <span>
                       {selectedEvent.categories
                         .map((cat) => getShortCategoryName(cat))
                         .join(", ")}
                     </span> */}
-                    
-                    <strong>Location:</strong>
-                    <span>{selectedEvent.location}</span>
+
+             
                   </div>
-                  
-                  <div style={{ 
-                    display: "flex", 
-                    justifyContent: "space-between",
-                    marginTop: "15px", 
-                    borderTop: "1px solid #eee",
-                    paddingTop: "15px",
-                  }}>
+
+                  <div
+                    style={{
+                      display: "flex",
+                      justifyContent: "space-between",
+                      marginTop: "15px",
+                      borderTop: "1px solid #eee",
+                      paddingTop: "15px",
+                    }}
+                  >
                     <div>
                       <span style={{ marginRight: "15px" }}>
                         👁️ {selectedEvent.viewedCount} views
@@ -852,10 +735,12 @@ export default function EventMap() {
                         onClick={() => handleLikeEvent(selectedEvent.eventId)}
                         style={{
                           padding: "5px 10px",
-                          backgroundColor: userLikes.includes(selectedEvent.eventId)
+                          backgroundColor: userLikes.includes(
+                            selectedEvent.eventId
+                          )
                             ? "#dc3545"
-                            :  "#f8f9fa",
-                            color: userLikes.includes(selectedEvent.eventId)
+                            : "#f8f9fa",
+                          color: userLikes.includes(selectedEvent.eventId)
                             ? "white"
                             : "#212529",
                           border: userLikes.includes(selectedEvent.eventId)
@@ -865,24 +750,28 @@ export default function EventMap() {
                           cursor: "pointer",
                         }}
                       >
-                        {userLikes.includes(selectedEvent.eventId) ? "❤️" : "👍"}{" "}
+                        {userLikes.includes(selectedEvent.eventId)
+                          ? "❤️"
+                          : "👍"}{" "}
                         {selectedEvent.likedCount}
                       </button>
                     </div>
-                    
+
                     <button
                       onClick={() => handleBookmarkEvent(selectedEvent.eventId)}
                       style={{
                         padding: "5px 10px",
-                        backgroundColor: userBookmarks.includes(selectedEvent.eventId)
+                        backgroundColor: userBookmarks.includes(
+                          selectedEvent.eventId
+                        )
                           ? "#dc3545"
-                          :  "#f8f9fa",
-                          color: userBookmarks.includes(selectedEvent.eventId)
-                            ? "white"
-                            : "#212529",
-                          border: userBookmarks.includes(selectedEvent.eventId)
-                            ? "none"
-                            : "1px solid #ced4da",
+                          : "#f8f9fa",
+                        color: userBookmarks.includes(selectedEvent.eventId)
+                          ? "white"
+                          : "#212529",
+                        border: userBookmarks.includes(selectedEvent.eventId)
+                          ? "none"
+                          : "1px solid #ced4da",
                         borderRadius: "4px",
                         cursor: "pointer",
                       }}
@@ -892,7 +781,7 @@ export default function EventMap() {
                         : "🏷️ Bookmark"}
                     </button>
                   </div>
-                  
+
                   {selectedEvent.link && (
                     <a
                       href={selectedEvent.link}
@@ -914,7 +803,9 @@ export default function EventMap() {
                   )}
                 </div>
               )}
-              
+
+            {/* Loading indicator */}
+            {/* Shows when API requests are in progress */}
               {loading && (
                 <div
                   style={{
@@ -946,7 +837,7 @@ export default function EventMap() {
                 }}
                 ref={mapRef}
               >
-                {/* Only show markers for events with valid coordinates */}
+                {/* Event markers - for each event with valid coordinates */}
                 {mapEvents.map((event) => (
                   <Marker
                     key={event.eventId}
@@ -958,7 +849,9 @@ export default function EventMap() {
                     }}
                   />
                 ))}
-                {/* Selected event popup */}
+
+                {/* Popup for selected event */}
+              {/* Only shows when an event is selected and has valid coordinates */}
                 {selectedEvent && hasValidCoordinates(selectedEvent) && (
                   <Popup
                     longitude={selectedEvent.longitude}
@@ -1003,253 +896,287 @@ export default function EventMap() {
                           </button>
                         )}
                       </p>
-                    {/* Location info in popup */}
-                    <p style={{ margin: "4px 0" }}>
-                      <strong>Location:</strong> {selectedEvent.location}
-                    </p>
-                    {/* Time info in popup */}
-                    <p style={{ margin: "4px 0" }}>
-                      <strong>Time:</strong>{" "}
-                      {selectedEvent?.startTime ? formatEventTime(selectedEvent.startTime) : 'No date available'}
-                    </p>
-                    {/* Categories info in popup */}
-                    {/* <p style={{ margin: "4px 0" }}>
+                      {/* Location info in popup */}
+                      <p style={{ margin: "4px 0" }}>
+                        <strong>Location:</strong> {selectedEvent.location}
+                      </p>
+                      {/* Time info in popup */}
+                      <p style={{ margin: "4px 0" }}>
+                        <strong>Time:</strong>{" "}
+                        {selectedEvent?.startTime
+                          ? formatEventTime(selectedEvent.startTime)
+                          : "No date available"}
+                      </p>
+                      {/* Categories info in popup */}
+                      {/* <p style={{ margin: "4px 0" }}>
                       <strong>Categories:</strong>{" "}
                       {selectedEvent.categories
                         .map((cat) => getShortCategoryName(cat))
                         .join(", ")}
                     </p> */}
-                    {/* View, Like button and bookmark button */}
-                    <div
-                      style={{
-                        display: "flex",
-                        justifyContent: "space-between",
-                        marginTop: "10px",
-                      }}
-                    >
-                      <div>
-                        {/* Viewed count */}
-                        <span style={{ marginRight: "10px" }}>
-                          👁️ {selectedEvent.viewedCount}
-                        </span>
-                        {/* Like button */}
+                      {/* View, Like button and bookmark button */}
+                      <div
+                        style={{
+                          display: "flex",
+                          justifyContent: "space-between",
+                          marginTop: "10px",
+                        }}
+                      >
+                        <div>
+                          {/* Viewed count */}
+                          <span style={{ marginRight: "10px" }}>
+                            👁️ {selectedEvent.viewedCount}
+                          </span>
+                          {/* Like button */}
+                          <button
+                            onClick={() =>
+                              handleLikeEvent(selectedEvent.eventId)
+                            }
+                            style={{
+                              padding: "5px 10px",
+                              backgroundColor: userLikes.includes(
+                                selectedEvent.eventId
+                              )
+                                ? "#dc3545"
+                                : "#007bff",
+                              color: "white",
+                              border: "none",
+                              borderRadius: "4px",
+                              cursor: "pointer",
+                            }}
+                          >
+                            {userLikes.includes(selectedEvent.eventId)
+                              ? "❤️"
+                              : "👍"}{" "}
+                            {selectedEvent.likedCount}
+                          </button>
+                        </div>
+                        {/* Bookmark button */}
                         <button
                           onClick={() =>
-                            handleLikeEvent(selectedEvent.eventId)
+                            handleBookmarkEvent(selectedEvent.eventId)
                           }
                           style={{
                             padding: "5px 10px",
-                            backgroundColor: userLikes.includes(
+                            backgroundColor: userBookmarks.includes(
                               selectedEvent.eventId
                             )
                               ? "#dc3545"
-                              : "#007bff",
+                              : "#28a745",
                             color: "white",
                             border: "none",
                             borderRadius: "4px",
                             cursor: "pointer",
                           }}
                         >
-                          {userLikes.includes(selectedEvent.eventId)
-                            ? "❤️"
-                            : "👍"}{" "}
-                          {selectedEvent.likedCount}
+                          {userBookmarks.includes(selectedEvent.eventId)
+                            ? "Bookmarked"
+                            : "🏷️ Bookmark"}
                         </button>
                       </div>
-                      {/* Bookmark button */}
-                      <button
-                        onClick={() =>
-                          handleBookmarkEvent(selectedEvent.eventId)
-                        }
-                        style={{
-                          padding: "5px 10px",
-                          backgroundColor: userBookmarks.includes(
-                            selectedEvent.eventId
-                          )
-                            ? "#dc3545"
-                            : "#28a745",
-                          color: "white",
-                          border: "none",
-                          borderRadius: "4px",
-                          cursor: "pointer",
-                        }}
-                      >
-                        {userBookmarks.includes(selectedEvent.eventId)
-                          ? "Bookmarked"
-                          : "🏷️ Bookmark"}
-                      </button>
+                      {/* Link to event details */}
+                      {selectedEvent.link && (
+                        <a
+                          href={selectedEvent.link}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          style={{
+                            display: "block",
+                            textAlign: "center",
+                            marginTop: "10px",
+                            padding: "5px",
+                            backgroundColor: "#f8f9fa",
+                            textDecoration: "none",
+                            color: "#007bff",
+                            borderRadius: "4px",
+                          }}
+                        >
+                          Event Details
+                        </a>
+                      )}
                     </div>
-                    {/* Link to event details */}
-                    {selectedEvent.link && (
-                      <a
-                        href={selectedEvent.link}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        style={{
-                          display: "block",
-                          textAlign: "center",
-                          marginTop: "10px",
-                          padding: "5px",
-                          backgroundColor: "#f8f9fa",
-                          textDecoration: "none",
-                          color: "#007bff",
-                          borderRadius: "4px",
-                        }}
-                      >
-                        Event Details
-                      </a>
-                    )}
-                  </div>
-                </Popup>
-              )}
-            </Map>
-          </div>
+                  </Popup>
+                )}
+              </Map>
+            </div>
 
-          {/* Event list */}
-          <div
-            className="event-list-container"
-            style={{ height: "40%", padding: "20px", overflowY: "auto" }}
-          >
-            {/* Heading section */}
-            <h2>
-              {showTrending
-                ? "Trending Events"
-                : !selectedCategory &&
-                  !timeFilter &&
-                  !locationFilter &&
-                  !searchQuery
-                ? "Recommended For You"
-                : searchQuery
-                ? `Search Results for "${searchQuery}"`
-                : "Upcoming Events"}
-            </h2>
+            {/* Event list */}
+            {/* Shows cards for all filtered events */}
             <div
-              className="event-list"
-              style={{
-                display: "grid",
-                gridTemplateColumns: "repeat(auto-fill, minmax(300px, 1fr))",
-                gap: "15px",
-              }}
+              className="event-list-container"
+              style={{ height: "40%", padding: "20px", overflowY: "auto" }}
             >
-              {/* Check if filteredEvents is empty */}
-              {filteredEvents.length === 0 ? (
-                <div
-                  style={{
-                    gridColumn: "1 / -1",
-                    textAlign: "center",
-                    padding: "30px",
-                    backgroundColor: "#f8f9fa",
-                    borderRadius: "8px",
-                  }}
-                >
-                  <h3>No events found</h3>
-                  <p>Try adjusting your filters or search terms</p>
-                </div>
-              ) : (
-                filteredEvents.map((event) => (
+              {/* Dynamic heading based on current view/filters */}
+              <h2>
+                {showTrending
+                  ? "Trending Events"
+                  : !selectedCategory &&
+                    !timeFilter &&
+                    !locationFilter &&
+                    !searchQuery
+                  ? "Recommended For You"
+                  : searchQuery
+                  ? `Search Results for "${searchQuery}"`
+                  : "Upcoming Events"}
+              </h2>
+              <div
+                className="event-list"
+                style={{
+                  display: "grid",
+                  gridTemplateColumns: "repeat(auto-fill, minmax(300px, 1fr))",
+                  gap: "15px",
+                }}
+              >
+                {/* Check if filteredEvents is empty */}
+                {filteredEvents.length === 0 ? (
                   <div
-                    key={event.eventId}
-                    className="event-card"
                     style={{
-                      border: "1px solid #ddd",
+                      gridColumn: "1 / -1",
+                      textAlign: "center",
+                      padding: "30px",
+                      backgroundColor: "#f8f9fa",
                       borderRadius: "8px",
-                      padding: "15px",
-                      cursor: "pointer",
+                    }}
+                  >
+                    <h3>No events found</h3>
+                    <p>Try adjusting your filters or search terms</p>
+                  </div>
+                ) : (
+                  // Map through filtered events to create cards
+                  filteredEvents.map((event) => (
+                    <div
+                      key={event.eventId}
+                      className="event-card"
+                      style={{
+                        border: "1px solid #ddd",
+                        borderRadius: "8px",
+                        padding: "15px",
+                        cursor: "pointer",
                         // borderLeft: `4px solid ${getCategoryColor(
                         //   event.categories
                         // )}`,
-                      transition: "transform 0.2s, box-shadow 0.2s",
-                      backgroundColor: "white",
-                    }}
-                    // On click, handle the event view appropriately
-                    onClick={() => handleViewEvent(event)}
-                    // On mouse over, add hover effect, showing focus on the card.
-                    onMouseOver={(e) => {
-                      const target = e.currentTarget;
-                      target.style.transform = "translateY(-5px)";
-                      target.style.boxShadow = "0 5px 15px rgba(0,0,0,0.1)";
-                    }}
-                    onMouseOut={(e) => {
-                      const target = e.currentTarget;
-                      target.style.transform = "translateY(0)";
-                      target.style.boxShadow = "none";
-                    }}
-                  >
-                    {/* Event name in card*/}
-                    <h3 style={{ margin: "0 0 10px 0" }}>
-                      {event.name}
-                      {isOnlineEvent(event) && (
-                        <span style={{ 
-                          fontSize: "12px",
-                          marginLeft: "8px",
-                          padding: "2px 6px",
-                          backgroundColor: "#17a2b8",
-                          color: "white",
-                          borderRadius: "4px",
-                          verticalAlign: "middle",
-                        }}>
-                          ONLINE
-                        </span>
-                      )}
-                    </h3>
-                    {/* Event description in card */}
-                    <p
-                      style={{
-                        margin: "0 0 10px 0",
-                        fontSize: "14px",
-                        color: "#6c757d",
+                        transition: "transform 0.2s, box-shadow 0.2s",
+                        backgroundColor: "white",
+                      }}
+                      // On click, handle the event view appropriately
+                      onClick={() => handleViewEvent(event)}
+                      // On mouse over, add hover effect, showing focus on the card.
+                      onMouseOver={(e) => {
+                        const target = e.currentTarget;
+                        target.style.transform = "translateY(-5px)";
+                        target.style.boxShadow = "0 5px 15px rgba(0,0,0,0.1)";
+                      }}
+                      onMouseOut={(e) => {
+                        const target = e.currentTarget;
+                        target.style.transform = "translateY(0)";
+                        target.style.boxShadow = "none";
                       }}
                     >
-                      {event.description.length > 100
-                        ? `${event.description.substring(0, 100)}...`
-                        : event.description}
-                    </p>
-                    {/* Event location and time in card */}
-                    <div
-                      style={{
-                        display: "flex",
-                        justifyContent: "space-between",
-                        fontSize: "14px",
-                        marginBottom: "10px",
-                      }}
-                    >
-                      <span>{event.location}</span>
-                      {event?.startTime ? formatEventTimeCompact(event.startTime) : 'No date available'}
-                    </div>
-                    <div
-                      style={{
-                        display: "flex",
-                        justifyContent: "space-between",
-                        alignItems: "center",
-                        marginTop: "10px",
-                        borderTop: "1px solid #eee",
-                        paddingTop: "10px",
-                      }}
-                    >
-                      <div>
-                        {/* Viewed count */}
-                        <span
-                          style={{ fontSize: "14px", marginRight: "10px" }}
-                        >
-                          👁️ {event.viewedCount}
-                        </span>
-                        {/* Like button */}
+                      {/* Event name in card*/}
+                      <h3 style={{ margin: "0 0 10px 0" }}>
+                        {event.name}
+                        {isOnlineEvent(event) && (
+                          <span
+                            style={{
+                              fontSize: "12px",
+                              marginLeft: "8px",
+                              padding: "2px 6px",
+                              backgroundColor: "#17a2b8",
+                              color: "white",
+                              borderRadius: "4px",
+                              verticalAlign: "middle",
+                            }}
+                          >
+                            ONLINE
+                          </span>
+                        )}
+                      </h3>
+                      {/* Event description in card */}
+                      <p
+                        style={{
+                          margin: "0 0 10px 0",
+                          fontSize: "14px",
+                          color: "#6c757d",
+                        }}
+                      >
+                        {event.description.length > 100
+                          ? `${event.description.substring(0, 100)}...`
+                          : event.description}
+                      </p>
+                      {/* Event location and time in card */}
+                      <div
+                        style={{
+                          display: "flex",
+                          justifyContent: "space-between",
+                          fontSize: "14px",
+                          marginBottom: "10px",
+                        }}
+                      >
+                        <span>{event.location}</span>
+                        {event?.startTime
+                          ? formatEventTimeCompact(event.startTime)
+                          : "No date available"}
+                      </div>
+                      <div
+                        style={{
+                          display: "flex",
+                          justifyContent: "space-between",
+                          alignItems: "center",
+                          marginTop: "10px",
+                          borderTop: "1px solid #eee",
+                          paddingTop: "10px",
+                        }}
+                      >
+                        <div>
+                          {/* Viewed count */}
+                          <span
+                            style={{ fontSize: "14px", marginRight: "10px" }}
+                          >
+                            👁️ {event.viewedCount}
+                          </span>
+                          {/* Like button */}
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleLikeEvent(event.eventId);
+                            }}
+                            style={{
+                              padding: "5px 8px",
+                              backgroundColor: userLikes.includes(event.eventId)
+                                ? "#dc3545"
+                                : "#f8f9fa",
+                              color: userLikes.includes(event.eventId)
+                                ? "white"
+                                : "#212529",
+                              border: userLikes.includes(event.eventId)
+                                ? "none"
+                                : "1px solid #ced4da",
+                              borderRadius: "4px",
+                              cursor: "pointer",
+                              fontSize: "14px",
+                            }}
+                          >
+                            {userLikes.includes(event.eventId) ? "❤️" : "👍"}{" "}
+                            {event.likedCount}
+                          </button>
+                        </div>
+                        {/* Bookmark button */}
                         <button
                           onClick={(e) => {
                             e.stopPropagation();
-                            handleLikeEvent(event.eventId);
+                            handleBookmarkEvent(event.eventId);
                           }}
                           style={{
                             padding: "5px 8px",
-                            backgroundColor: userLikes.includes(
+                            backgroundColor: userBookmarks.includes(
                               event.eventId
                             )
                               ? "#dc3545"
                               : "#f8f9fa",
-                            color: userLikes.includes(event.eventId)
+                            color: userBookmarks.includes(event.eventId)
                               ? "white"
                               : "#212529",
-                            border: userLikes.includes(event.eventId)
+                            border: userBookmarks.includes(event.eventId)
                               ? "none"
                               : "1px solid #ced4da",
                             borderRadius: "4px",
@@ -1257,332 +1184,321 @@ export default function EventMap() {
                             fontSize: "14px",
                           }}
                         >
-                          {userLikes.includes(event.eventId) ? "❤️" : "👍"}{" "}
-                          {event.likedCount}
+                          {userBookmarks.includes(event.eventId)
+                            ? "Bookmarked"
+                            : "🏷️ Bookmark"}
                         </button>
                       </div>
-                      {/* Bookmark button */}
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleBookmarkEvent(event.eventId);
-                        }}
-                        style={{
-                          padding: "5px 8px",
-                          backgroundColor: userBookmarks.includes(
-                            event.eventId
-                          )
-                            ? "#dc3545"
-                            : "#f8f9fa",
-                          color: userBookmarks.includes(event.eventId)
-                            ? "white"
-                            : "#212529",
-                          border: userBookmarks.includes(event.eventId)
-                            ? "none"
-                            : "1px solid #ced4da",
-                          borderRadius: "4px",
-                          cursor: "pointer",
-                          fontSize: "14px",
-                        }}
-                      >
-                        {userBookmarks.includes(event.eventId)
-                          ? "Bookmarked"
-                          : "🏷️ Bookmark"}
-                      </button>
                     </div>
-                  </div>
-                ))
-              )}
+                  ))
+                )}
+              </div>
             </div>
           </div>
         </div>
-      </div>
-    )}
-    {activeView === "likes" && (
-      <div
-        className="likes-view"
-        style={{ padding: "20px", maxWidth: "1200px", margin: "0 auto" }}
-      >
-        <h2>My Liked Events</h2>
+      )}
 
-        {userLikes.length === 0 ? (
-          <div
-            style={{
-              textAlign: "center",
-              padding: "50px",
-              backgroundColor: "#f8f9fa",
-              borderRadius: "8px",
-              marginTop: "20px",
-            }}
-          >
-            <h3>You haven't liked any events yet</h3>
-            <p>Like events that interest you to see them here!</p>
-            <button
-              onClick={() => setActiveView("map")}
+
+      {/* LIKES VIEW */}
+      {/* Shows events the user has liked */}
+      {activeView === "likes" && (
+        <div
+          className="likes-view"
+          style={{ padding: "20px", maxWidth: "1200px", margin: "0 auto" }}
+        >
+          <h2>My Liked Events</h2>
+
+          {userLikes.length === 0 ? (
+            <div
               style={{
-                padding: "10px 20px",
-                backgroundColor: "#8B2A2A",
-                color: "white",
-                border: "none",
-                borderRadius: "4px",
-                cursor: "pointer",
+                textAlign: "center",
+                padding: "50px",
+                backgroundColor: "#f8f9fa",
+                borderRadius: "8px",
                 marginTop: "20px",
               }}
             >
-              Explore Events
-            </button>
-          </div>
-        ) : (
-          <div
-            style={{
-              display: "grid",
-              gridTemplateColumns: "repeat(auto-fill, minmax(350px, 1fr))",
-              gap: "20px",
-              marginTop: "20px",
-            }}
-          >
-            {events
-              .filter((event) => userLikes.includes(event.eventId))
-              .map((event) => (
-                <div
-                  key={event.eventId}
-                  className="event-card"
-                  style={{
-                    border: "1px solid #ddd",
-                    borderRadius: "8px",
-                    padding: "20px",
-                    // borderLeft: `4px solid ${getCategoryColor(
-                    //   event.categories
-                    // )}`,
-                    boxShadow: "0 2px 5px rgba(0,0,0,0.1)",
-                  }}
-                >
-                  <h3>
-                    {event.name}
-                    {isOnlineEvent(event) && (
-                      <span style={{ 
-                        fontSize: "12px",
-                        marginLeft: "8px",
-                        padding: "2px 6px",
-                        backgroundColor: "#17a2b8",
-                        color: "white",
-                        borderRadius: "4px",
-                        verticalAlign: "middle",
-                      }}>
-                        ONLINE
-                      </span>
-                    )}
-                  </h3>
-                  <p style={{ margin: "10px 0" }}>
-                    {event.description.length > 150
-                      ? `${event.description.substring(0, 150)}...`
-                      : event.description}
-                  </p>
-                  <div style={{ marginTop: "15px" }}>
-                    <p>
-                      <strong>Location:</strong> {event.location}
+              <h3>You haven't liked any events yet</h3>
+              <p>Like events that interest you to see them here!</p>
+              <button
+                onClick={() => setActiveView("map")}
+                style={{
+                  padding: "10px 20px",
+                  backgroundColor: "#8B2A2A",
+                  color: "white",
+                  border: "none",
+                  borderRadius: "4px",
+                  cursor: "pointer",
+                  marginTop: "20px",
+                }}
+              >
+                Explore Events
+              </button>
+            </div>
+          ) : (
+            <div
+              style={{
+                display: "grid",
+                gridTemplateColumns: "repeat(auto-fill, minmax(350px, 1fr))",
+                gap: "20px",
+                marginTop: "20px",
+              }}
+            >
+              {/* Filter events to show only liked ones */}
+              {events
+                .filter((event) => userLikes.includes(event.eventId))
+                .map((event) => (
+                  <div
+                    key={event.eventId}
+                    className="event-card"
+                    style={{
+                      border: "1px solid #ddd",
+                      borderRadius: "8px",
+                      padding: "20px",
+                      // borderLeft: `4px solid ${getCategoryColor(
+                      //   event.categories
+                      // )}`,
+                      boxShadow: "0 2px 5px rgba(0,0,0,0.1)",
+                    }}
+                  >
+                    <h3>
+                      {event.name}
+                      {isOnlineEvent(event) && (
+                        <span
+                          style={{
+                            fontSize: "12px",
+                            marginLeft: "8px",
+                            padding: "2px 6px",
+                            backgroundColor: "#17a2b8",
+                            color: "white",
+                            borderRadius: "4px",
+                            verticalAlign: "middle",
+                          }}
+                        >
+                          ONLINE
+                        </span>
+                      )}
+                    </h3>
+                    <p style={{ margin: "10px 0" }}>
+                      {event.description.length > 150
+                        ? `${event.description.substring(0, 150)}...`
+                        : event.description}
                     </p>
-                    <p>
-                      <strong>Time:</strong>{" "}
-                      {event?.startTime ? formatEventTimeCompact(event.startTime) : 'No date available'}
-                    </p>
-                    {/* <p>
+                    <div style={{ marginTop: "15px" }}>
+                      <p>
+                        <strong>Location:</strong> {event.location}
+                      </p>
+                      <p>
+                        <strong>Time:</strong>{" "}
+                        {event?.startTime
+                          ? formatEventTimeCompact(event.startTime)
+                          : "No date available"}
+                      </p>
+                      {/* <p>
                       <strong>Categories:</strong>{" "}
                       {event.categories
                         .map((cat) => getShortCategoryName(cat))
                         .join(", ")}
                     </p> */}
-                  </div>
-                  <div
-                    style={{
-                      display: "flex",
-                      justifyContent: "space-between",
-                      marginTop: "20px",
-                      borderTop: "1px solid #eee",
-                      paddingTop: "15px",
-                    }}
-                  >
-                    <button
-                      onClick={() => handleLikeEvent(event.eventId)}
+                    </div>
+                    <div
                       style={{
-                        padding: "8px 15px",
-                        backgroundColor: "#dc3545",
-                        color: "white",
-                        border: "none",
-                        borderRadius: "4px",
-                        cursor: "pointer",
+                        display: "flex",
+                        justifyContent: "space-between",
+                        marginTop: "20px",
+                        borderTop: "1px solid #eee",
+                        paddingTop: "15px",
                       }}
                     >
-                      Unlike
-                    </button>
-                    <button
-                      onClick={() => {
-                        setActiveView("map");
-                        setTimeout(() => {
-                          handleViewEvent(event);
-                        }, 100);
-                      }}
-                      style={{
-                        padding: "8px 15px",
-                        backgroundColor: "#6c757d",
-                        color: "white",
-                        border: "none",
-                        borderRadius: "4px",
-                        cursor: "pointer",
-                      }}
-                    >
-                      View on Map
-                    </button>
+                      <button
+                        onClick={() => handleLikeEvent(event.eventId)}
+                        style={{
+                          padding: "8px 15px",
+                          backgroundColor: "#dc3545",
+                          color: "white",
+                          border: "none",
+                          borderRadius: "4px",
+                          cursor: "pointer",
+                        }}
+                      >
+                        Unlike
+                      </button>
+                      <button
+                        onClick={() => {
+                          setActiveView("map");
+                          setTimeout(() => {
+                            handleViewEvent(event);
+                          }, 100);
+                        }}
+                        style={{
+                          padding: "8px 15px",
+                          backgroundColor: "#6c757d",
+                          color: "white",
+                          border: "none",
+                          borderRadius: "4px",
+                          cursor: "pointer",
+                        }}
+                      >
+                        View on Map
+                      </button>
+                    </div>
                   </div>
-                </div>
-              ))}
-          </div>
-        )}
-      </div>
-    )}
+                ))}
+            </div>
+          )}
+        </div>
+      )}
 
-    {activeView === "bookmarks" && (
-      <div
-        className="bookmarks-view"
-        style={{ padding: "20px", maxWidth: "1200px", margin: "0 auto" }}
-      >
-        <h2>My Bookmarked Events</h2>
 
-        {userBookmarks.length === 0 ? (
-          <div
-            style={{
-              textAlign: "center",
-              padding: "50px",
-              backgroundColor: "#f8f9fa",
-              borderRadius: "8px",
-              marginTop: "20px",
-            }}
-          >
-            <h3>You haven't bookmarked any events yet</h3>
-            <p>Bookmark events you want to attend to see them here!</p>
-            <button
-              onClick={() => setActiveView("map")}
+      {/* BOOKMARKS VIEW */}
+      {/* Shows events the user has bookmarked */}
+      {activeView === "bookmarks" && (
+        <div
+          className="bookmarks-view"
+          style={{ padding: "20px", maxWidth: "1200px", margin: "0 auto" }}
+        >
+          <h2>My Bookmarked Events</h2>
+
+          {userBookmarks.length === 0 ? (
+            <div
               style={{
-                padding: "10px 20px",
-                backgroundColor: "#8B2A2A",
-                color: "white",
-                border: "none",
-                borderRadius: "4px",
-                cursor: "pointer",
+                textAlign: "center",
+                padding: "50px",
+                backgroundColor: "#f8f9fa",
+                borderRadius: "8px",
                 marginTop: "20px",
               }}
             >
-              Explore Events
-            </button>
-          </div>
-        ) : (
-          <div
-            style={{
-              display: "grid",
-              gridTemplateColumns: "repeat(auto-fill, minmax(350px, 1fr))",
-              gap: "20px",
-              marginTop: "20px",
-            }}
-          >
-            {events
-              .filter((event) => userBookmarks.includes(event.eventId))
-              .map((event) => (
-                <div
-                  key={event.eventId}
-                  className="event-card"
-                  style={{
-                    border: "1px solid #ddd",
-                    borderRadius: "8px",
-                    padding: "20px",
-                    // borderLeft: `4px solid ${getCategoryColor(
-                    //   event.categories
-                    // )}`,
-                    boxShadow: "0 2px 5px rgba(0,0,0,0.1)",
-                  }}
-                >
-                  <h3>
-                    {event.name}
-                    {isOnlineEvent(event) && (
-                      <span style={{ 
-                        fontSize: "12px",
-                        marginLeft: "8px",
-                        padding: "2px 6px",
-                        backgroundColor: "#17a2b8",
-                        color: "white",
-                        borderRadius: "4px",
-                        verticalAlign: "middle",
-                      }}>
-                        ONLINE
-                      </span>
-                    )}
-                  </h3>
-                  <p style={{ margin: "10px 0" }}>
-                    {event.description.length > 150
-                      ? `${event.description.substring(0, 150)}...`
-                      : event.description}
-                  </p>
-                  <div style={{ marginTop: "15px" }}>
-                    <p>
-                      <strong>Location:</strong> {event.location}
+              <h3>You haven't bookmarked any events yet</h3>
+              <p>Bookmark events you want to attend to see them here!</p>
+              <button
+                onClick={() => setActiveView("map")}
+                style={{
+                  padding: "10px 20px",
+                  backgroundColor: "#8B2A2A",
+                  color: "white",
+                  border: "none",
+                  borderRadius: "4px",
+                  cursor: "pointer",
+                  marginTop: "20px",
+                }}
+              >
+                Explore Events
+              </button>
+            </div>
+          ) : (
+            <div
+              style={{
+                display: "grid",
+                gridTemplateColumns: "repeat(auto-fill, minmax(350px, 1fr))",
+                gap: "20px",
+                marginTop: "20px",
+              }}
+            >
+              {/* Filter events to show only bookmarked ones */}
+              {events
+                .filter((event) => userBookmarks.includes(event.eventId))
+                .map((event) => (
+                  <div
+                    key={event.eventId}
+                    className="event-card"
+                    style={{
+                      border: "1px solid #ddd",
+                      borderRadius: "8px",
+                      padding: "20px",
+                      // borderLeft: `4px solid ${getCategoryColor(
+                      //   event.categories
+                      // )}`,
+                      boxShadow: "0 2px 5px rgba(0,0,0,0.1)",
+                    }}
+                  >
+                    <h3>
+                      {event.name}
+                      {isOnlineEvent(event) && (
+                        <span
+                          style={{
+                            fontSize: "12px",
+                            marginLeft: "8px",
+                            padding: "2px 6px",
+                            backgroundColor: "#17a2b8",
+                            color: "white",
+                            borderRadius: "4px",
+                            verticalAlign: "middle",
+                          }}
+                        >
+                          ONLINE
+                        </span>
+                      )}
+                    </h3>
+                    <p style={{ margin: "10px 0" }}>
+                      {event.description.length > 150
+                        ? `${event.description.substring(0, 150)}...`
+                        : event.description}
                     </p>
-                    <p>
-                      <strong>Time:</strong>{" "}
-                      {event?.startTime ? formatEventTimeCompact(event.startTime) : 'No date available'}
-                    </p>
-                    {/* <p>
+                    <div style={{ marginTop: "15px" }}>
+                      <p>
+                        <strong>Location:</strong> {event.location}
+                      </p>
+                      <p>
+                        <strong>Time:</strong>{" "}
+                        {event?.startTime
+                          ? formatEventTimeCompact(event.startTime)
+                          : "No date available"}
+                      </p>
+                      {/* <p>
                       <strong>Categories:</strong>{" "}
                       {event.categories
                         .map((cat) => getShortCategoryName(cat))
                         .join(", ")}
                     </p> */}
-                  </div>
-                  <div
-                    style={{
-                      display: "flex",
-                      justifyContent: "space-between",
-                      marginTop: "20px",
-                      borderTop: "1px solid #eee",
-                      paddingTop: "15px",
-                    }}
-                  >
-                    <button
-                      onClick={() => handleBookmarkEvent(event.eventId)}
+                    </div>
+                    <div
                       style={{
-                        padding: "8px 15px",
-                        backgroundColor: "#dc3545",
-                        color: "white",
-                        border: "none",
-                        borderRadius: "4px",
-                        cursor: "pointer",
+                        display: "flex",
+                        justifyContent: "space-between",
+                        marginTop: "20px",
+                        borderTop: "1px solid #eee",
+                        paddingTop: "15px",
                       }}
                     >
-                      Remove Bookmark
-                    </button>
-                    <button
-                      onClick={() => {
-                        setActiveView("map");
-                        setTimeout(() => {
-                          handleViewEvent(event);
-                        }, 100);
-                      }}
-                      style={{
-                        padding: "8px 15px",
-                        backgroundColor: "#6c757d",
-                        color: "white",
-                        border: "none",
-                        borderRadius: "4px",
-                        cursor: "pointer",
-                      }}
-                    >
-                      View on Map
-                    </button>
+                      <button
+                        onClick={() => handleBookmarkEvent(event.eventId)}
+                        style={{
+                          padding: "8px 15px",
+                          backgroundColor: "#dc3545",
+                          color: "white",
+                          border: "none",
+                          borderRadius: "4px",
+                          cursor: "pointer",
+                        }}
+                      >
+                        Remove Bookmark
+                      </button>
+                      <button
+                        onClick={() => {
+                          setActiveView("map");
+                          setTimeout(() => {
+                            handleViewEvent(event);
+                          }, 100);
+                        }}
+                        style={{
+                          padding: "8px 15px",
+                          backgroundColor: "#6c757d",
+                          color: "white",
+                          border: "none",
+                          borderRadius: "4px",
+                          cursor: "pointer",
+                        }}
+                      >
+                        View on Map
+                      </button>
+                    </div>
                   </div>
-                </div>
-              ))}
-          </div>
-        )}
-      </div>
-    )}
-  </div>
-);
-} 
+                ))}
+            </div>
+          )}
+        </div>
+      )}
+    </div>
+  );
+}

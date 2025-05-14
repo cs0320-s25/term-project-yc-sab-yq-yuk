@@ -1,4 +1,4 @@
-// types.ts
+// types.ts - define the core data structures
 export interface Event {
   eventId: string;
   name: string;
