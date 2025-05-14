@@ -586,9 +586,9 @@ export default function EventMap() {
                 <option value="">Any Time</option>
                 <option value="Today">Today</option>
                 <option value="Tomorrow">Tomorrow</option>
-                <option value="This_week">This Week</option>
-                <option value="Weekend">This Weekend</option>
-                <option value="Next_week">Next Week</option>
+                <option value="This Week">This Week</option>
+                <option value="This Weekend">This Weekend</option>
+                <option value="Next Week">Next Week</option>
               </select>
             </div>
             
