@@ -30,6 +30,7 @@ public class RecommendationUtils {
    // For each like the user has
    for (UserLikeDTO like : userLikes) {
 
+    // for some liked events, there are no categories?
     List<String> categories = eventCategoryMap.get(like.getEventId());
 
      // Apply time decay based on how many days ago the like occurred

@@ -9,12 +9,13 @@ import com.map.service.EventService;
 import com.map.service.UserService;
 import com.map.service.RecommendationService;
 import com.map.utils.RecommendationUtils;
-//import com.map.utils.RecommendationUtils.ScoredEvent;
 import com.map.vo.UserProfileVO;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet; // Add this import
 import java.util.List;
 import java.util.Map;
+import java.util.Set;     // Add this import
 import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -43,61 +44,64 @@ public class RecommendationServiceImpl implements RecommendationService {
     * @throws Exception
     */
     @Override
-    public List<Event> fetchRecommendations(String userId, EventQueryDTO queryDTO) throws Exception{
-        /**
-        * In the end, getting user will be replaced by /api/user/:user_id/profile and getting events
-        * will be replaced by /api/events
-        */
-
-        // Fetch events and the target user profile
-        List<Event> events = eventService.fetchEvents(queryDTO).stream()
+public List<Event> fetchRecommendations(String userId, EventQueryDTO queryDTO) throws Exception {
+    // Fetch events and the target user profile
+    List<Event> events = new ArrayList<>(eventService.fetchEvents(queryDTO).stream()
         .filter(e -> e.getStartTime().isAfter(LocalDateTime.now()))
-        .toList(); // filtered events from now onward will be returned
-        logger.debug("Fetched {} events for recommendation filtering", events.size());
-        UserProfileVO user = userService.getUserProfile(userId);
+        .collect(Collectors.toList()));
 
-        // Fetch user like entries (event id + timestamp) to be used in personal score calc
-        List<UserLikeDTO> userLikeEntries = userService.getUserLikeEntries(userId);
+    logger.debug("Fetched {} events for recommendation filtering", events.size());
+    UserProfileVO user = userService.getUserProfile(userId);
 
-        // Batch load event-category mappings to be used in personal score calc
-        List<Integer> eventIds = events.stream().map(Event::getEventId).toList();
-        List<EventCategoryDTO> pairs = eventService.getCategoriesForEvents(eventIds);
-
-        Map<Integer, List<String>> eventCategoryMap = new HashMap<>();
-        for (EventCategoryDTO pair : pairs) {
-            eventCategoryMap.computeIfAbsent(pair.getEventId(), k -> new ArrayList<>()).add(pair.getCategoryName());
-        }
-
-        // Edge case, user doesn't exist! technically this shouldn't happen in real interaction
-        if (user == null) {
-        // TODO: for later, please (1) throw a custom UserNotFoundException
-        // and (2) add a @ControllerAdvice class to catch that exception and return a 404 response
-        // System.out.println("No user found for userId: " + userId);
-            logger.warn("No user found for userId: {}", userId);
-            return Collections.emptyList(); // return empty list for now
-        // throw new Exception("No user found!");
-        }
-
-        // Cold Start Handling (for new users with no likes)
-        if (userLikeEntries == null || userLikeEntries.isEmpty()) {
-        // trending 90% + random 10%, no personal match score since there's no history
-        // System.out.println(
-        //     "Welcome to BrunoMap! Generating fresh recommendations to get you started...");
-            logger.info("Cold start: no like history for userId {}", userId);
-            return RecommendationUtils.getColdStartRecommendations(events);
-        }
-
-        // System.out.println("Welcome back! Generating new recommendations...");
-        logger.info("Generating personalized recommendations for userId {}", userId);
-        // Keep going!
-        // Compute intermediate scores:
-        // Personal match score for all events for the user
-        Map<Integer, Double> personalMatchScores =
-        RecommendationUtils.computePersonalMatchScores(userLikeEntries, events, eventCategoryMap);
-
-        return RecommendationUtils.scoreAndSortEvents(events, personalMatchScores, 0.7, 0.2, 0.1);
+    // Edge case, user doesn't exist! technically this shouldn't happen in real interaction
+    if (user == null) {
+        logger.warn("No user found for userId: {}", userId);
+        return Collections.emptyList(); // return empty list for now
     }
 
+    // Fetch user like entries (event id + timestamp) to be used in personal score calc
+    List<UserLikeDTO> userLikeEntries = userService.getUserLikeEntries(userId);
+
+    // Cold Start Handling (for new users with no likes)
+    if (userLikeEntries == null || userLikeEntries.isEmpty()) {
+        logger.info("Cold start: no like history for userId {}", userId);
+        return RecommendationUtils.getColdStartRecommendations(events);
+    }
+
+    // Get all event IDs we need categories for (current events + liked events)
+    List<Integer> currentEventIds = new ArrayList<>(events.stream()
+        .map(Event::getEventId)
+        .collect(Collectors.toList()));
+    
+    List<Integer> likedEventIds = new ArrayList<>(userLikeEntries.stream()
+        .map(UserLikeDTO::getEventId)
+        .collect(Collectors.toList()));
+    
+    // Combine the lists to get all needed event IDs
+    Set<Integer> allNeededEventIds = new HashSet<>();
+    allNeededEventIds.addAll(currentEventIds);
+    allNeededEventIds.addAll(likedEventIds);
+    
+    // Fetch categories for ALL needed events
+    List<EventCategoryDTO> pairs = eventService.getCategoriesForEvents(
+        new ArrayList<>(allNeededEventIds)
+    );
+
+    // Build the map of event IDs to their categories
+    Map<Integer, List<String>> eventCategoryMap = new HashMap<>();
+    for (EventCategoryDTO pair : pairs) {
+        eventCategoryMap.computeIfAbsent(pair.getEventId(), k -> new ArrayList<>())
+            .add(pair.getCategoryName());
+    }
+
+    logger.info("Generating personalized recommendations for userId {}", userId);
+    
+    // Compute personal match scores
+    Map<Integer, Double> personalMatchScores =
+        RecommendationUtils.computePersonalMatchScores(userLikeEntries, events, eventCategoryMap);
+
+    return RecommendationUtils.scoreAndSortEvents(events, personalMatchScores, 0.7, 0.2, 0.1);
+}
     // /**
     //  * For new user with no like history, give cold start recommendations (trending + random)
     // *

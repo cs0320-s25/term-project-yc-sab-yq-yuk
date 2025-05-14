@@ -13,6 +13,14 @@ import org.apache.ibatis.annotations.Delete;
 public interface UserMapper {
 
   /**
+   * Check if a user exists in the database.
+   * @param userId
+   * @return true if the user exists, false otherwise
+   */
+  @Select("SELECT COUNT(*) > 0 FROM users WHERE user_id = #{userId}")
+  boolean checkUserExists(@Param("userId") String userId);
+
+  /**
    * Extract all events that the user has liked.
    * @param userId
    * @return

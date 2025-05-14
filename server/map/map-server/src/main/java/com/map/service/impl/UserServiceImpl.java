@@ -28,7 +28,13 @@ public class UserServiceImpl implements UserService {
             return null;
         }
 
+        if (!userMapper.checkUserExists(userId)) {
+          logger.warn("No user found for userId: {}", userId);
+          return null;
+        }
+
         try {
+
             // Get user's liked events
             List<Integer> likes = userMapper.getUserLikes(userId);
             
