@@ -12,11 +12,14 @@ import java.util.List;
 import com.map.dataload.EventRecord;
 import com.map.entity.Event;
 
+/**
+ * Event Mapper.
+ */
 @Mapper
 public interface EventMapper{
 
   /**
-   * Insert event record to the Event table.
+   * Insert an event to the Event table.
    * @param event
    */
   void insertEventRecord(Event event);
@@ -24,14 +27,14 @@ public interface EventMapper{
   /**
    * Select all matching events by the query.
    * @param queryDTO
-   * @return
+   * @return list of events matching the query.
    */
   List<Event> selectEvents(EventQueryDTO queryDTO);
 
   /**
    * Select an event by its ID.
    * @param eventId
-   * @return 
+   * @return event object if found, else null.
    */
   @Select("SELECT * FROM Events WHERE event_id = #{eventId}")
   Event selectEventById(@Param("eventId") Integer eventId);
@@ -52,7 +55,7 @@ public interface EventMapper{
    * @param trendingScore
    */
   @Update("UPDATE events SET trending_score = #{trendingScore} WHERE event_id = #{eventId}")
-  void updateTrendingScore(@Param("eventId") Integer eventId, @Param("trendingScore") Double trendingScore);  
+  void updateTrendingScore(@Param("eventId") Integer eventId, @Param("trendingScore") Double trendingScore);
 
   /**
    * Increment the view count for a specific event by 1.
@@ -78,6 +81,7 @@ public interface EventMapper{
   /**
    * Return locations of all events.
    * @param
+   * @return list of locations of all events.
    */
   @Select("SELECT DISTINCT location FROM Events")
   List<String> getAllLocations();
