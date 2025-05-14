@@ -8,6 +8,9 @@ import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
 
+/**
+ * User profile view object.
+ */
 @Data
 @Builder
 @NoArgsConstructor
@@ -15,5 +18,4 @@ import java.io.Serializable;
 public class UserProfileVO implements Serializable{
   private List<Integer> likes;
   private List<Integer> bookmarks;
-//  private List<String> derivedCategories;
 }

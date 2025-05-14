@@ -6,6 +6,9 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import java.io.Serializable;
 
+/**
+ * Event query DTO.
+ */
 @Data
 @Builder
 @NoArgsConstructor
