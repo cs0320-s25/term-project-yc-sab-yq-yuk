@@ -139,7 +139,7 @@ export default function EventMap() {
           filters = {
             category: selectedCategory,
             time: timeFilter,
-            near: locationFilter === 'online' || locationFilter === 'in-person' ? '' : locationFilter,
+            near: locationFilter === 'online' ? '' : locationFilter,
           };
         }
         
