@@ -9,7 +9,7 @@ public interface UserService {
   /**
    * Fetch the user profile by id.
    * @param userId
-   * @return
+   * @return user profile if found, else error message.
    */
   UserProfileVO getUserProfile(String userId);
 

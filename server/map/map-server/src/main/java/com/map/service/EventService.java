@@ -47,7 +47,6 @@ public interface EventService {
    */
   List<String> getAllLocations();
 
-
   /**
    * Batch fetch categories for a list of event IDs.
    * @param eventIds list of event IDs
