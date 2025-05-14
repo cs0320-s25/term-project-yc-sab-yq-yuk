@@ -19,4 +19,14 @@ public class CategorySerciceImpl implements CategoryService {
   public List<String> fetchCategories(){
     return categoryMapper.fetchAllCategories();
   }
+
+  /**
+   * Fetch categories for an event.
+   * @param eventId
+   * @return list of categories for the event.
+   */
+  @Override
+  public List<String> fetchCategoriesForEvent(Integer eventId){
+    return categoryMapper.getCategoriesForEvent(eventId);
+  }
 }

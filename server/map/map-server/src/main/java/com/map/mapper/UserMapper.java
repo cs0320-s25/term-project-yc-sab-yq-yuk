@@ -20,6 +20,16 @@ public interface UserMapper {
   @Select("SELECT COUNT(*) > 0 FROM users WHERE user_id = #{userId}")
   boolean checkUserExists(@Param("userId") String userId);
 
+
+  /**
+   * Check if a user has liked a specific event.
+   * @param userId
+   * @param eventId
+   * @return true if the user has liked the event, false otherwise
+   */
+  @Select("SELECT COUNT(*) > 0 FROM user_likes WHERE user_id = #{userId} AND event_id = #{eventId}")
+  boolean checkIfUserLiked(@Param("userId") String userId, @Param("eventId") Integer eventId);
+
   /**
    * Extract all events that the user has liked.
    * @param userId
@@ -47,19 +57,10 @@ public interface UserMapper {
   List<Integer> getUserBookmarks(@Param("userId") String userId);
 
   /**
-   * Extract the derived category based on users' interaction history.
-   * @param userId
-   * @return
-   */
-  // TODO: figure out the logic!!!!!
-  List<String> getDerivedCategory(@Param("userId") String userId);
-
-  /**
    * Like an event if it hasn't been liked; else do nothing.
    * @param userId
    * @param eventId
    */
-  // TODO: Double check the current_timestamp!!!! May use AOP to solve.
   @Insert("INSERT INTO user_likes (user_id, event_id, timestamp) " +
           "VALUES (#{userId}, #{eventId}, CURRENT_TIMESTAMP) " +
           "ON DUPLICATE KEY UPDATE timestamp = CURRENT_TIMESTAMP")

@@ -11,7 +11,7 @@ spring:
       driver-class-name: com.mysql.cj.jdbc.Driver
       url: jdbc:mysql://localhost:3306/map_db?serverTimezone=America/New_York&useUnicode=true&characterEncoding=utf-8&zeroDateTimeBehavior=convertToNull&useSSL=false&allowPublicKeyRetrieval=true
       username: root
-      password: "********" #TODO: fill in this field!!!!
+      password: "" #TODO: fill in this field!!!!
 
 springdoc:
   api-docs:

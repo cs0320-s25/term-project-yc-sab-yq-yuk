@@ -18,10 +18,12 @@ import com.map.entity.Event;
 public interface EventMapper{
 
   /**
-   * Insert an event to the Event table.
-   * @param event
+   * Check if an event exists in the database.
+   * @param eventId
+   * @return true if the event exists, false otherwise
    */
-  void insertEventRecord(Event event);
+  @Select("SELECT COUNT(*) > 0 FROM Events WHERE event_id = #{eventId}")
+  boolean checkIfEventExists(@Param("eventId") Integer eventId);
 
   /**
    * Select all matching events by the query.

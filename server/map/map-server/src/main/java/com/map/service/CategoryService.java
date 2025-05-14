@@ -6,7 +6,14 @@ public interface CategoryService {
 
   /**
    * Fetch all categories.
-   * @return
+   * @return list of all categories.
    */
   List<String> fetchCategories();
+
+  /**
+   * Fetch categories for an event.
+   * @param eventId
+   * @return list of categories for the event.
+   */
+  List<String> fetchCategoriesForEvent(Integer eventId);
 }

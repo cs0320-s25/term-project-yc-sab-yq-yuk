@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.map.dto.UserLikeDTO;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -21,37 +22,35 @@ public class UserServiceImpl implements UserService {
     @Autowired
     private EventMapper eventMapper;
 
+    /**
+     * Fetch the user profile by id.
+     * @param userId
+     * @return user profile if found, else error message.
+     * @throws Exception for invalid user id or no user found.
+     */
     @Override
-    public UserProfileVO getUserProfile(String userId) {
+    public UserProfileVO getUserProfile(String userId) throws Exception{
         if (userId == null) {
-            logger.warn("Attempted to get profile for null user ID");
-            return null;
+            throw new IllegalArgumentException("User ID cannot be null");
         }
 
         if (!userMapper.checkUserExists(userId)) {
-          logger.warn("No user found for userId: {}", userId);
-          return null;
+          throw new Exception("User not found: " + userId);
         }
 
         try {
-
             // Get user's liked events
             List<Integer> likes = userMapper.getUserLikes(userId);
             
             // Get user's bookmarked events
             List<Integer> bookmarks = userMapper.getUserBookmarks(userId);
-            
-            // Get user's derived categories
-//            List<String> derivedCategories = userMapper.getDerivedCategory(userId);
 
             // Build and return the UserProfileVO
             return UserProfileVO.builder()
                     .likes(likes)
                     .bookmarks(bookmarks)
-//                    .derivedCategories(derivedCategories)
                     .build();
         } catch (Exception e) {
-            logger.error("Error retrieving profile for user ID: {}", userId, e);
             throw new RuntimeException("Failed to retrieve user profile", e);
         }
     }
@@ -70,37 +69,80 @@ public class UserServiceImpl implements UserService {
      * Like an event if it hasn't been liked; else do nothing.
      * @param userId
      * @param eventId
+     * @throws Exception for user/event not found.
      */
-    public void likeEvent(String userId, Integer eventId){
-      userMapper.likeEvent(userId, eventId);
-      eventMapper.incrementLikedCount(eventId);
+    @Transactional
+    public void likeEvent(String userId, Integer eventId) throws Exception{
+        if(!userMapper.checkUserExists(userId)){
+            throw new IllegalArgumentException("User not found: " + userId);
+        }
+
+        if(!eventMapper.checkIfEventExists(eventId)){
+            throw new IllegalArgumentException("Event not found: " + eventId);
+        }
+
+        // check if the user has already liked the event
+        if(!userMapper.checkIfUserLiked(userId, eventId)){
+            eventMapper.incrementLikedCount(eventId);
+        }
+        // if already liked, then update the timestamp
+        userMapper.likeEvent(userId, eventId);
     }
 
     /**
      * Remove like for an event if it has been liked; else do nothing.
      * @param userId
      * @param eventId
+     * @throws Exception for user/event not found.
      */
+    @Transactional
     public void delikeEvent(String userId, Integer eventId){
-      userMapper.delikeEvent(userId, eventId);
-      eventMapper.decrementLikedCount(eventId);
+        if(!userMapper.checkUserExists(userId)){
+            throw new IllegalArgumentException("User not found: " + userId);
+        }
+
+        if(!eventMapper.checkIfEventExists(eventId)){
+            throw new IllegalArgumentException("Event not found: " + eventId);
+        }
+
+        // check if the user has already liked the event
+        if(userMapper.checkIfUserLiked(userId, eventId)){
+            eventMapper.decrementLikedCount(eventId);
+            userMapper.delikeEvent(userId, eventId);
+        }
     }
 
     /**
      * Bookmark an event if it hasn't been bookmarked; else do nothing.
      * @param userId
      * @param eventId
+     * @throws Exception for user/event not found.
      */
-    public void bookmarkEvent(String userId, Integer eventId){
-      userMapper.bookmarkEvent(userId, eventId);
+    public void bookmarkEvent(String userId, Integer eventId) throws Exception{
+        if(!userMapper.checkUserExists(userId)){
+            throw new IllegalArgumentException("User not found: " + userId);
+        }
+        if(!eventMapper.checkIfEventExists(eventId)){
+            throw new IllegalArgumentException("Event not found: " + eventId);
+        }
+
+        userMapper.bookmarkEvent(userId, eventId);
     }
 
     /**
      * Remove bookmark for an event if it has been bookmarked; else do nothing.
      * @param userId
      * @param eventId
+     * @throws Exception for user/event not found.
      */
-    public void debookmarkEvent(String userId, Integer eventId){
-      userMapper.debookmarkEvent(userId, eventId);
+    public void debookmarkEvent(String userId, Integer eventId) throws Exception{
+        if(!userMapper.checkUserExists(userId)){
+            throw new IllegalArgumentException("User not found: " + userId);
+        }
+        if(!eventMapper.checkIfEventExists(eventId)){
+            throw new IllegalArgumentException("Event not found: " + eventId);
+        }
+
+        userMapper.debookmarkEvent(userId, eventId);
     }
 }

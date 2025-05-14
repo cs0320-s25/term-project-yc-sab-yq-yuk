@@ -10,8 +10,9 @@ public interface UserService {
    * Fetch the user profile by id.
    * @param userId
    * @return user profile if found, else error message.
+   * @throws Exception for invalid user id or no user found.
    */
-  UserProfileVO getUserProfile(String userId);
+  UserProfileVO getUserProfile(String userId) throws Exception;
 
   /**
    * Fetch the user like entries --- event ids and timestamps.
@@ -24,27 +25,31 @@ public interface UserService {
    * Like an event if it hasn't been liked; else do nothing.
    * @param userId
    * @param eventId
+   * @throws Exception for user/event not found.
    */
-  void likeEvent(String userId, Integer eventId);
+  void likeEvent(String userId, Integer eventId) throws Exception;
 
   /**
    * Remove like for an event if it has been liked; else do nothing.
    * @param userId
    * @param eventId
+   * @throws Exception for user/event not found.
    */
-  void delikeEvent(String userId, Integer eventId);
+  void delikeEvent(String userId, Integer eventId) throws Exception;
 
   /**
    * Bookmark an event if it hasn't been bookmarked; else do nothing.
    * @param userId
    * @param eventId
+   * @throws Exception for user/event not found.
    */
-  void bookmarkEvent(String userId, Integer eventId);
+  void bookmarkEvent(String userId, Integer eventId) throws Exception;
 
   /**
    * Remove bookmark for an event if it has been bookmarked; else do nothing.
    * @param userId
    * @param eventId
+   * @throws Exception for user/event not found.
    */
-  void debookmarkEvent(String userId, Integer eventId);
+  void debookmarkEvent(String userId, Integer eventId) throws Exception;
 }
