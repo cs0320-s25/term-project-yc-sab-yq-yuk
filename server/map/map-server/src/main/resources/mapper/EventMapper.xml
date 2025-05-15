@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.map.mapper.EventMapper">
+
+<!--  useGeneratedKeys="true"-->
+<insert id="insertEventRecord" parameterType="com.map.entity.Event">
+  INSERT INTO Event (
+    event_id, name, start_time, end_time, timezone, location, description, link,
+    liked_count, viewed_count, trending_score, latitude, longitude
+  ) VALUES (
+             #{eventId}, #{name}, #{startTime}, #{endTime}, #{timezone}, #{location},
+             #{description}, #{link}, #{likedCount},
+             #{viewedCount}, #{trendingScore}, #{latitude}, #{longitude}
+           )
+</insert>
+
+<select id="getCategoriesForEvents" resultType="com.map.dto.EventCategoryDTO" parameterType="java.util.List">
+    SELECT ec.event_id AS eventId, c.category_name AS categoryName
+    FROM event_categories ec
+    JOIN categories c ON ec.category_id = c.category_id
+    <where>
+        <if test="list != null and list.size() > 0">
+            ec.event_id IN
+            <foreach collection="list" item="id" open="(" separator="," close=")">
+                #{id}
+            </foreach>
+        </if>
+        <if test="list == null or list.size() == 0">
+            1=0 <!-- Always false condition if no event IDs, returns empty result -->
+        </if>
+    </where>
+</select>
+
+<select id="selectEvents" resultType="com.map.entity.Event">
+    SELECT DISTINCT e.*
+    FROM Events e
+    JOIN Event_Categories ec ON e.event_id = ec.event_id
+    JOIN Categories c ON ec.category_id = c.category_id
+    WHERE 1=1
+    <if test="category != null and category != '' and category != 'All Categories'">
+        AND LOWER(category_name) = LOWER(#{category})
+    </if>
+    <if test="time != null and time != '' and time != 'Any Time'">
+        AND e.start_time BETWEEN
+        <choose>
+            <when test="time == 'Today'">
+                CURRENT_DATE AND DATE_ADD(CURRENT_DATE, INTERVAL 1 DAY)
+            </when>
+            <when test="time == 'Tomorrow'">
+                DATE_ADD(CURRENT_DATE, INTERVAL 1 DAY) AND DATE_ADD(CURRENT_DATE, INTERVAL 2 DAY)
+            </when>
+            <when test="time == 'This Week'">
+                CURRENT_DATE AND DATE_ADD(CURRENT_DATE, INTERVAL 7 DAY)
+            </when>
+            <when test="time == 'This Weekend'">
+                DATE_ADD(CURRENT_DATE, INTERVAL (6 - WEEKDAY(CURRENT_DATE)) DAY)
+                AND DATE_ADD(CURRENT_DATE, INTERVAL (8 - WEEKDAY(CURRENT_DATE)) DAY)
+            </when>
+            <when test="time == 'Next Week'">
+                DATE_ADD(CURRENT_DATE, INTERVAL 7 DAY) AND DATE_ADD(CURRENT_DATE, INTERVAL 14 DAY)
+            </when>
+        </choose>
+    </if>
+    <if test="near != null and near != '' and near != 'All Locations'">
+        AND LOWER(location) = LOWER(#{near})
+    </if>
+    ORDER BY start_time ASC
+</select>
+</mapper>
