@@ -51,8 +51,14 @@ public List<Event> fetchRecommendations(String userId, EventQueryDTO queryDTO) t
         .collect(Collectors.toList()));
 
     logger.debug("Fetched {} events for recommendation filtering", events.size());
-    UserProfileVO user = userService.getUserProfile(userId);
-
+    UserProfileVO user;
+    try {
+        user = userService.getUserProfile(userId);
+    } catch (Exception e) {
+        logger.warn("User profile retrieval failed for userId {}: {}", userId, e.getMessage());
+        return Collections.emptyList(); // safely return empty list on missing user
+    }
+    
     // Edge case, user doesn't exist! technically this shouldn't happen in real interaction
     if (user == null) {
         logger.warn("No user found for userId: {}", userId);

@@ -44,7 +44,7 @@ const initialZoom = 15;
 // Main component definition
 export default function EventMap() {
   // Authentication - get user ID from Clerk
-  const { userId } = useAuth(); 
+  const { userId } = useAuth();
   console.log("Clerk userId:", userId);
   // Map related state
   const mapRef = useRef<any>(null);
@@ -64,9 +64,11 @@ export default function EventMap() {
   const [showFullDescription, setShowFullDescription] = useState(false);
   const [activeView, setActiveView] = useState<"map" | "likes" | "bookmarks">(
     "map"
-  ); 
+  );
   const [displayedEvents, setDisplayedEvents] = useState<Event[]>([]);
-
+  const [eventCategories, setEventCategories] = useState<
+    Record<string, string[]>
+  >({});
 
   // Filter states
   // These control the different filtering options available to users
@@ -134,17 +136,17 @@ export default function EventMap() {
       try {
         // Only apply filters in map view
         let filters = {};
-        
+
         if (activeView === "map") {
           filters = {
             category: selectedCategory,
             time: timeFilter,
-            near: locationFilter === 'online' ? '' : locationFilter,
+            near: locationFilter === "online" ? "" : locationFilter,
           };
         }
-        
+
         let data: Event[] = [];
-        
+
         // Different API calls based on view
         if (activeView === "map") {
           // Only in map view, check for trending/recommendations
@@ -161,7 +163,7 @@ export default function EventMap() {
           // For likes and bookmarks views, get all events without filters
           data = await api.getEvents({});
         }
-        
+
         const processedEvents = processEvents(data);
         setEvents(processedEvents);
       } catch (error) {
@@ -171,7 +173,7 @@ export default function EventMap() {
         setLoading(false);
       }
     };
-    
+
     fetchEvents();
   }, [
     userId,
@@ -185,15 +187,14 @@ export default function EventMap() {
 
   // Filter events client-side based on the locationFilter
   useEffect(() => {
-    if (locationFilter === 'online') {
+    if (locationFilter === "online") {
       // Filter for online events using our comprehensive isOnlineEvent function
-      setDisplayedEvents(events.filter(event => isOnlineEvent(event)));
-    }else {
+      setDisplayedEvents(events.filter((event) => isOnlineEvent(event)));
+    } else {
       // Show all events or those matching other filters
       setDisplayedEvents(events);
     }
   }, [events, locationFilter]);
-
 
   // Effect to record views when a user selects an event
   useEffect(() => {
@@ -230,11 +231,31 @@ export default function EventMap() {
     hasValidCoordinates(event)
   );
 
+  // Create a function to fetch categories for an event
+  const fetchEventCategories = async (eventId: string) => {
+    // Skip fetching if we already have categories for this event
+    if (eventCategories[eventId]) return;
+
+    try {
+      // Use our API service to fetch categories
+      const categories = await api.fetchCategoriesForEvent(eventId);
+
+      // Update state with the fetched categories
+      setEventCategories((prev) => ({
+        ...prev,
+        [eventId]: categories,
+      }));
+    } catch (error) {
+      console.error(`Error fetching categories for event ${eventId}:`, error);
+    }
+  };
+
   // Event handlers
   // Handle viewing an event(flies to location), whether online or in-person
   const handleViewEvent = (event: Event) => {
     setSelectedEvent(event);
-
+    // Fetch categories for the selected event
+    // fetchEventCategories(event.eventId);
     // If the event has valid coordinates, fly to its location on the map
     if (hasValidCoordinates(event) && mapRef.current) {
       mapRef.current.flyTo({
@@ -315,6 +336,27 @@ export default function EventMap() {
   const handleSearchSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     // The actual search occurs in the useEffect that watches searchQuery
+  };
+
+  // Effect to fetch categories for visible events
+  // This runs whenever the event list changes
+  useEffect(() => {
+    // Only proceed if we have events and they're displayed
+    if (displayedEvents.length > 0) {
+      // Limit to the first 10 events to avoid too many API calls
+      const visibleEvents = displayedEvents.slice(0, 10);
+
+      // Fetch categories for each visible event
+      visibleEvents.forEach((event) => {
+        fetchEventCategories(event.eventId);
+      });
+    }
+  }, [displayedEvents]);
+
+  // Helper function to get categories for an event
+  // This retrieves categories from our local state
+  const getEventCategories = (eventId: string): string[] => {
+    return eventCategories[eventId] || [];
   };
 
   // UI rendering
@@ -427,7 +469,7 @@ export default function EventMap() {
           >
             My Bookmarks
           </button>
-          
+
           {/* Only show "Map View" button when not already in map view */}
           {activeView !== "map" && (
             <button
@@ -446,8 +488,7 @@ export default function EventMap() {
           )}
         </div>
       </div>
-      
-      
+
       {/* Main content area - conditionally rendered based on activeView */}
       {/* ------------------------------------------------------------ */}
       {/* MAP VIEW */}
@@ -527,7 +568,7 @@ export default function EventMap() {
                 Trending
               </button>
             </div>
-            
+
             {/* Category filter dropdown */}
             {/* When changed, this triggers a new API call via useEffect */}
             <div style={{ marginBottom: "20px" }}>
@@ -591,9 +632,9 @@ export default function EventMap() {
                 <option value="Next Week">Next Week</option>
               </select>
             </div>
-            
+
             {/* Location filter dropdown */}
-            {/* Combines hardcoded options (All/Online) with dynamic API-fetched locations */} 
+            {/* Combines hardcoded options (All/Online) with dynamic API-fetched locations */}
             <div style={{ marginBottom: "20px" }}>
               <label
                 style={{
@@ -617,12 +658,9 @@ export default function EventMap() {
               >
                 <option value="">All Locations</option>
                 <option value="online">Online Only</option>
-            
-
-                
               </select>
             </div>
-            
+
             {/* Reset filters button */}
             {/* Allows users to quickly clear all filters and start fresh */}
             <button
@@ -647,8 +685,7 @@ export default function EventMap() {
               Reset Filters
             </button>
           </div>
-          
-          
+
           {/* Main content area with map and event list */}
           <div
             className="main-content"
@@ -736,13 +773,11 @@ export default function EventMap() {
                       : "No date available"}
 
                     <strong>Categories:</strong>
-                    {/* <span>
-                      {selectedEvent.categories
+                    <span>
+                      {getEventCategories(selectedEvent.eventId)
                         .map((cat) => getShortCategoryName(cat))
                         .join(", ")}
-                    </span> */}
-
-             
+                    </span>
                   </div>
 
                   <div
@@ -831,8 +866,8 @@ export default function EventMap() {
                 </div>
               )}
 
-            {/* Loading indicator */}
-            {/* Shows when API requests are in progress */}
+              {/* Loading indicator */}
+              {/* Shows when API requests are in progress */}
               {loading && (
                 <div
                   style={{
@@ -935,12 +970,12 @@ export default function EventMap() {
                           : "No date available"}
                       </p>
                       {/* Categories info in popup */}
-                      {/* <p style={{ margin: "4px 0" }}>
-                      <strong>Categories:</strong>{" "}
-                      {selectedEvent.categories
-                        .map((cat) => getShortCategoryName(cat))
-                        .join(", ")}
-                    </p> */}
+                      <p style={{ margin: "4px 0" }}>
+                        <strong>Categories:</strong>{" "}
+                        {getEventCategories(selectedEvent.eventId)
+                          .map((cat) => getShortCategoryName(cat))
+                          .join(", ")}
+                      </p>
                       {/* View, Like button and bookmark button */}
                       <div
                         style={{
@@ -1079,10 +1114,8 @@ export default function EventMap() {
                         borderRadius: "8px",
                         padding: "15px",
                         cursor: "pointer",
-                        // borderLeft: `4px solid ${getCategoryColor(
-                        //   event.categories
-                        // )}`,
-                        transition: "transform 0.2s, box-shadow 0.2s",
+                        borderLeft: `4px solid ${getCategoryColor(getEventCategories(event.eventId))}`,
+transition: "transform 0.2s, box-shadow 0.2s",
                         backgroundColor: "white",
                       }}
                       // On click, handle the event view appropriately
@@ -1225,7 +1258,6 @@ export default function EventMap() {
         </div>
       )}
 
-
       {/* LIKES VIEW */}
       {/* Shows events the user has liked */}
       {activeView === "likes" && (
@@ -1282,9 +1314,7 @@ export default function EventMap() {
                       border: "1px solid #ddd",
                       borderRadius: "8px",
                       padding: "20px",
-                      // borderLeft: `4px solid ${getCategoryColor(
-                      //   event.categories
-                      // )}`,
+                      borderLeft: `4px solid ${getCategoryColor(getEventCategories(event.eventId))}`,
                       boxShadow: "0 2px 5px rgba(0,0,0,0.1)",
                     }}
                   >
@@ -1321,12 +1351,12 @@ export default function EventMap() {
                           ? formatEventTimeCompact(event.startTime)
                           : "No date available"}
                       </p>
-                      {/* <p>
-                      <strong>Categories:</strong>{" "}
-                      {event.categories
-                        .map((cat) => getShortCategoryName(cat))
-                        .join(", ")}
-                    </p> */}
+                      <p>
+                        <strong>Categories:</strong>{" "}
+                        {getEventCategories(event.eventId)
+                          .map((cat) => getShortCategoryName(cat))
+                          .join(", ")}
+                      </p>
                     </div>
                     <div
                       style={{
@@ -1375,7 +1405,6 @@ export default function EventMap() {
           )}
         </div>
       )}
-
 
       {/* BOOKMARKS VIEW */}
       {/* Shows events the user has bookmarked */}
@@ -1433,9 +1462,7 @@ export default function EventMap() {
                       border: "1px solid #ddd",
                       borderRadius: "8px",
                       padding: "20px",
-                      // borderLeft: `4px solid ${getCategoryColor(
-                      //   event.categories
-                      // )}`,
+                      borderLeft: `4px solid ${getCategoryColor(getEventCategories(event.eventId))}`,
                       boxShadow: "0 2px 5px rgba(0,0,0,0.1)",
                     }}
                   >
@@ -1472,12 +1499,12 @@ export default function EventMap() {
                           ? formatEventTimeCompact(event.startTime)
                           : "No date available"}
                       </p>
-                      {/* <p>
-                      <strong>Categories:</strong>{" "}
-                      {event.categories
-                        .map((cat) => getShortCategoryName(cat))
-                        .join(", ")}
-                    </p> */}
+                      <p>
+                        <strong>Categories:</strong>{" "}
+                        {getEventCategories(event.eventId)
+                          .map((cat) => getShortCategoryName(cat))
+                          .join(", ")}
+                      </p>
                     </div>
                     <div
                       style={{

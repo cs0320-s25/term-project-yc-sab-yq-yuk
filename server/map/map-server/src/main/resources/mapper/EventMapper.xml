@@ -14,15 +14,6 @@
            )
 </insert>
 
-<!-- <select id="getCategoriesForEvents" resultType="com.map.dto.EventCategoryDTO" parameterType="java.util.List">
-    SELECT ec.event_id, c.category_name
-    FROM event_categories ec
-    JOIN categories c ON ec.category_id = c.category_id
-    WHERE ec.event_id IN
-    <foreach collection="list" item="id" open="(" separator="," close=")">
-      #{id}
-    </foreach>
-  </select> -->
 <select id="getCategoriesForEvents" resultType="com.map.dto.EventCategoryDTO" parameterType="java.util.List">
     SELECT ec.event_id AS eventId, c.category_name AS categoryName
     FROM event_categories ec

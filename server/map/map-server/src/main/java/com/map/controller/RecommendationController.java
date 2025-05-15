@@ -18,7 +18,7 @@ public class RecommendationController {
     private RecommendationService recommendationService;
 
 //  @GetMapping("/{userId}")
-//  public Result<List<Event>> getRecommendations(@PathVariable String userId){
+//  public Result<List<Event>> getRecommendations(@PathVariable Integer userId){
 //    return Result.success(recommendationService.getRecommendations(userId));
 //  }
     /**

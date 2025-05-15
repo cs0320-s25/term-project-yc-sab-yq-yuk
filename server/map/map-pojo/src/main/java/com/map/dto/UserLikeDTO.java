@@ -6,6 +6,9 @@ import lombok.NoArgsConstructor;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 
+/**
+ * Userlike DTO.
+ */
 @Data
 @NoArgsConstructor
 @AllArgsConstructor

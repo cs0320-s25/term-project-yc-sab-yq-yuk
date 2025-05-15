@@ -9,29 +9,33 @@ import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Update;
 
 import java.util.List;
-import com.map.dataload.EventRecord;
 import com.map.entity.Event;
 
+/**
+ * Event Mapper.
+ */
 @Mapper
 public interface EventMapper{
 
   /**
-   * Insert event record to the Event table.
-   * @param event
+   * Check if an event exists in the database.
+   * @param eventId
+   * @return true if the event exists, false otherwise
    */
-  void insertEventRecord(Event event);
+  @Select("SELECT COUNT(*) > 0 FROM Events WHERE event_id = #{eventId}")
+  boolean checkIfEventExists(@Param("eventId") Integer eventId);
 
   /**
    * Select all matching events by the query.
    * @param queryDTO
-   * @return
+   * @return list of events matching the query.
    */
   List<Event> selectEvents(EventQueryDTO queryDTO);
 
   /**
    * Select an event by its ID.
    * @param eventId
-   * @return 
+   * @return event object if found, else null.
    */
   @Select("SELECT * FROM Events WHERE event_id = #{eventId}")
   Event selectEventById(@Param("eventId") Integer eventId);
@@ -52,7 +56,7 @@ public interface EventMapper{
    * @param trendingScore
    */
   @Update("UPDATE events SET trending_score = #{trendingScore} WHERE event_id = #{eventId}")
-  void updateTrendingScore(@Param("eventId") Integer eventId, @Param("trendingScore") Double trendingScore);  
+  void updateTrendingScore(@Param("eventId") Integer eventId, @Param("trendingScore") Double trendingScore);
 
   /**
    * Increment the view count for a specific event by 1.
@@ -78,6 +82,7 @@ public interface EventMapper{
   /**
    * Return locations of all events.
    * @param
+   * @return list of locations of all events.
    */
   @Select("SELECT DISTINCT location FROM Events")
   List<String> getAllLocations();

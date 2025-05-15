@@ -282,5 +282,23 @@ export const api = {
       console.error("Error removing bookmark:", error);
       return false;
     }
+  },
+  // Fetch categories for a specific event
+  fetchCategoriesForEvent: async (eventId: string): Promise<string[]> => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/categories/${eventId}`);
+      const data = await response.json();
+      
+      // Match your existing API response pattern
+      if (data.code === 1 && data.data) {
+        return data.data;
+      }
+      
+      return [];
+    } catch (error) {
+      console.error(`Error fetching categories for event ${eventId}:`, error);
+      return [];
+    }
   }
+
 };
