@@ -21,4 +21,5 @@ playwright/.cache/
 # mac
 .DS_Store
 
+application.yml
 application-test.yml
