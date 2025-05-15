@@ -1,0 +1,374 @@
+2025-05-08 03:34:15,990 [INFO] 
+📅 Date: 20250508 - Found 36 event links
+2025-05-08 03:35:26,804 [WARNING] Skipping event with missing start_time (url: http://brown.edu/go/workday)
+2025-05-08 03:36:17,304 [WARNING] Skipping event with missing start_time (url: https://events.brown.edu/event/292243-alchemy-imagining-social-justice-art-exhibi)
+2025-05-08 03:36:21,492 [WARNING] Skipping event with missing start_time (url: https://events.brown.edu/event/260613-final-examination-period-no-exams-on-sunday-may-11)
+2025-05-08 03:36:25,268 [WARNING] Skipping event with missing start_time (url: https://events.brown.edu/event/305206-julien-creuzet-attila-cataract-your-source-)
+2025-05-08 03:36:29,397 [WARNING] Skipping event with missing start_time (url: https://events.brown.edu/event/308911-leslie-bostrom-wild-stories)
+2025-05-08 03:36:33,600 [WARNING] Skipping event with missing start_time (url: https://events.brown.edu/event/309933-presence-of-absence-mural-installation)
+2025-05-08 03:36:37,594 [WARNING] Skipping event with missing start_time (url: https://events.brown.edu/event/304509-registration-period-for-summer-courses-for-)
+2025-05-08 03:36:37,594 [INFO] [✓] Done crawling 20250508: 36 events inserted.
+2025-05-08 03:36:40,372 [INFO] 
+📅 Date: 20250509 - Found 39 event links
+2025-05-08 03:38:31,004 [WARNING] Skipping event with missing start_time (url: https://events.brown.edu/event/292244-alchemy-imagining-social-justice-art-exhibi)
+2025-05-08 03:38:34,651 [WARNING] Skipping event with missing start_time (url: https://events.brown.edu/event/310952-brown-university-softball-vs-ivy-league)
+2025-05-08 03:38:38,543 [WARNING] Skipping event with missing start_time (url: https://events.brown.edu/event/260613-final-examination-period-no-exams-on-sunday-may-11)
+2025-05-08 03:38:43,580 [WARNING] Skipping event with missing start_time (url: https://events.brown.edu/event/305206-julien-creuzet-attila-cataract-your-source-)
+2025-05-08 03:38:47,446 [WARNING] Skipping event with missing start_time (url: https://events.brown.edu/event/308912-leslie-bostrom-wild-stories)
+2025-05-08 03:38:50,931 [WARNING] Skipping event with missing start_time (url: https://events.brown.edu/event/309934-presence-of-absence-mural-installation)
+2025-05-08 03:38:54,772 [WARNING] Skipping event with missing start_time (url: https://events.brown.edu/event/304509-registration-period-for-summer-courses-for-)
+2025-05-08 03:38:58,143 [WARNING] Skipping event with missing start_time (url: https://events.brown.edu/event/304063-seniors-last-day-for-prior-term-incomplete-)
+2025-05-08 03:39:01,702 [WARNING] Skipping event with missing start_time (url: https://events.brown.edu/event/304064-seniors-last-day-to-have-prior-term-transfe)
+2025-05-08 03:39:01,702 [INFO] [✓] Done crawling 20250509: 39 events inserted.
+2025-05-08 03:39:04,226 [INFO] 
+📅 Date: 20250510 - Found 21 event links
+2025-05-08 03:39:58,447 [WARNING] Skipping event with missing start_time (url: https://events.brown.edu/event/309983-a4-la-regional-event-korean-bbq-karaoke-bash)
+2025-05-08 03:40:02,015 [WARNING] Skipping event with missing start_time (url: https://events.brown.edu/event/292245-alchemy-imagining-social-justice-art-exhibi)
+2025-05-08 03:40:05,469 [WARNING] Skipping event with missing start_time (url: https://events.brown.edu/event/260613-final-examination-period-no-exams-on-sunday-may-11)
+2025-05-08 03:40:08,941 [WARNING] Skipping event with missing start_time (url: https://events.brown.edu/event/305206-julien-creuzet-attila-cataract-your-source-)
+2025-05-08 03:40:13,291 [WARNING] Skipping event with missing start_time (url: https://events.brown.edu/event/308913-leslie-bostrom-wild-stories)
+2025-05-08 03:40:16,916 [WARNING] Skipping event with missing start_time (url: https://events.brown.edu/event/309935-presence-of-absence-mural-installation)
+2025-05-08 03:40:20,353 [WARNING] Skipping event with missing start_time (url: https://events.brown.edu/event/304509-registration-period-for-summer-courses-for-)
+2025-05-08 03:40:20,353 [INFO] [✓] Done crawling 20250510: 21 events inserted.
+2025-05-08 03:40:22,847 [INFO] 
+📅 Date: 20250511 - Found 15 event links
+2025-05-08 03:41:00,123 [WARNING] Skipping event with missing start_time (url: https://events.brown.edu/event/292246-alchemy-imagining-social-justice-art-exhibi)
+2025-05-08 03:41:03,544 [WARNING] Skipping event with missing start_time (url: https://events.brown.edu/event/260613-final-examination-period-no-exams-on-sunday-may-11)
+2025-05-08 03:41:07,053 [WARNING] Skipping event with missing start_time (url: https://events.brown.edu/event/305206-julien-creuzet-attila-cataract-your-source-)
+2025-05-08 03:41:10,793 [WARNING] Skipping event with missing start_time (url: https://events.brown.edu/event/308914-leslie-bostrom-wild-stories)
+2025-05-08 03:41:15,695 [WARNING] Skipping event with missing start_time (url: https://events.brown.edu/event/309936-presence-of-absence-mural-installation)
+2025-05-08 03:41:19,274 [WARNING] Skipping event with missing start_time (url: https://events.brown.edu/event/304509-registration-period-for-summer-courses-for-)
+2025-05-08 03:41:19,275 [INFO] [✓] Done crawling 20250511: 15 events inserted.
+2025-05-08 03:41:21,580 [INFO] 
+📅 Date: 20250512 - Found 18 event links
+2025-05-08 03:42:10,815 [WARNING] Skipping event with missing start_time (url: https://events.brown.edu/event/292247-alchemy-imagining-social-justice-art-exhibi)
+2025-05-08 03:42:14,646 [WARNING] Skipping event with missing start_time (url: https://events.brown.edu/event/260613-final-examination-period-no-exams-on-sunday-may-11)
+2025-05-08 03:42:18,104 [WARNING] Skipping event with missing start_time (url: https://events.brown.edu/event/305206-julien-creuzet-attila-cataract-your-source-)
+2025-05-08 03:42:21,464 [WARNING] Skipping event with missing start_time (url: https://events.brown.edu/event/308915-leslie-bostrom-wild-stories)
+2025-05-08 03:42:25,431 [WARNING] Skipping event with missing start_time (url: https://events.brown.edu/event/309937-presence-of-absence-mural-installation)
+2025-05-08 03:42:28,853 [WARNING] Skipping event with missing start_time (url: https://events.brown.edu/event/304509-registration-period-for-summer-courses-for-)
+2025-05-08 03:42:28,853 [INFO] [✓] Done crawling 20250512: 18 events inserted.
+2025-05-08 03:42:31,346 [INFO] 
+📅 Date: 20250513 - Found 27 event links
+2025-05-08 03:42:47,437 [ERROR] Failed to scrape https://events.brown.edu/event/304800-office-hours-rev-delphain-demosthenes-assoc: Message: invalid session id: session deleted as the browser has closed the connection
+from disconnected: Unable to receive message from renderer
+  (Session info: chrome=136.0.7103.92)
+Stacktrace:
+0   chromedriver                        0x00000001053303bc cxxbridge1$str$ptr + 2829900
+1   chromedriver                        0x0000000105328684 cxxbridge1$str$ptr + 2797844
+2   chromedriver                        0x0000000104e65fbc cxxbridge1$string$len + 90140
+3   chromedriver                        0x0000000104e50fcc cxxbridge1$string$len + 4140
+4   chromedriver                        0x0000000104e50d44 cxxbridge1$string$len + 3492
+5   chromedriver                        0x0000000104e4eb24 chromedriver + 191268
+6   chromedriver                        0x0000000104e4f580 chromedriver + 193920
+7   chromedriver                        0x0000000104e69018 cxxbridge1$string$len + 102520
+8   chromedriver                        0x0000000104eeeab0 cxxbridge1$string$len + 650000
+9   chromedriver                        0x0000000104eee044 cxxbridge1$string$len + 647332
+10  chromedriver                        0x0000000104ea13f8 cxxbridge1$string$len + 332888
+11  chromedriver                        0x00000001052f47e0 cxxbridge1$str$ptr + 2585200
+12  chromedriver                        0x00000001052f7ab0 cxxbridge1$str$ptr + 2598208
+13  chromedriver                        0x00000001052d5db4 cxxbridge1$str$ptr + 2459716
+14  chromedriver                        0x00000001052f8328 cxxbridge1$str$ptr + 2600376
+15  chromedriver                        0x00000001052c7640 cxxbridge1$str$ptr + 2400464
+16  chromedriver                        0x000000010531828c cxxbridge1$str$ptr + 2731292
+17  chromedriver                        0x0000000105318418 cxxbridge1$str$ptr + 2731688
+18  chromedriver                        0x00000001053282d0 cxxbridge1$str$ptr + 2796896
+19  libsystem_pthread.dylib             0x000000019b87c2e4 _pthread_start + 136
+20  libsystem_pthread.dylib             0x000000019b8770fc thread_start + 8
+
+2025-05-08 03:47:40,527 [WARNING] Skipping event with missing start_time (url: http://brown.edu/go/workday)
+2025-05-08 04:03:16,940 [WARNING] Skipping event with missing start_time (url: https://events.brown.edu/event/292248-alchemy-imagining-social-justice-art-exhibi)
+2025-05-08 04:03:20,356 [WARNING] Skipping event with missing start_time (url: https://events.brown.edu/event/260613-final-examination-period-no-exams-on-sunday-may-11)
+2025-05-08 04:03:23,841 [WARNING] Skipping event with missing start_time (url: https://events.brown.edu/event/305206-julien-creuzet-attila-cataract-your-source-)
+2025-05-08 04:03:27,911 [WARNING] Skipping event with missing start_time (url: https://events.brown.edu/event/308916-leslie-bostrom-wild-stories)
+2025-05-08 04:03:32,032 [WARNING] Skipping event with missing start_time (url: https://events.brown.edu/event/309938-presence-of-absence-mural-installation)
+2025-05-08 04:03:36,588 [WARNING] Skipping event with missing start_time (url: https://events.brown.edu/event/304509-registration-period-for-summer-courses-for-)
+2025-05-08 04:03:36,588 [INFO] [✓] Done crawling 20250513: 26 events inserted.
+2025-05-08 12:09:32,770 [INFO] 
+📅 Date: 20250508 - Found 36 event links
+2025-05-08 12:09:32,771 [INFO] [✓] Done crawling 20250508: 0 events inserted.
+2025-05-08 12:09:36,245 [INFO] 
+📅 Date: 20250509 - Found 39 event links
+2025-05-08 12:09:36,245 [INFO] [✓] Done crawling 20250509: 0 events inserted.
+2025-05-08 12:09:38,826 [INFO] 
+📅 Date: 20250510 - Found 21 event links
+2025-05-08 12:09:38,826 [INFO] [✓] Done crawling 20250510: 0 events inserted.
+2025-05-08 12:09:41,435 [INFO] 
+📅 Date: 20250511 - Found 16 event links
+2025-05-08 12:09:48,810 [INFO] [✓] Done crawling 20250511: 1 events inserted.
+2025-05-08 12:09:51,393 [INFO] 
+📅 Date: 20250512 - Found 18 event links
+2025-05-08 12:09:51,393 [INFO] [✓] Done crawling 20250512: 0 events inserted.
+2025-05-08 12:09:54,017 [INFO] 
+📅 Date: 20250513 - Found 27 event links
+2025-05-08 12:09:58,528 [INFO] [✓] Done crawling 20250513: 1 events inserted.
+2025-05-08 12:10:00,846 [INFO] 
+📅 Date: 20250514 - Found 37 event links
+2025-05-08 12:13:43,290 [WARNING] Skipping event with missing start_time (url: https://events.brown.edu/event/292249-alchemy-imagining-social-justice-art-exhibi)
+2025-05-08 12:13:48,515 [WARNING] Skipping event with missing start_time (url: https://events.brown.edu/event/308769-art-at-watson-presents-legacy-of-lies-el-salvador)
+2025-05-08 12:14:52,920 [WARNING] Skipping event with missing start_time (url: https://events.brown.edu/event/308759-looming-in-the-shadows-of-lodz)
+2025-05-08 12:14:57,754 [WARNING] Skipping event with missing start_time (url: https://events.brown.edu/event/260614-last-day-of-spring-risd-classes)
+2025-05-08 12:15:02,108 [WARNING] Skipping event with missing start_time (url: https://events.brown.edu/event/308917-leslie-bostrom-wild-stories)
+2025-05-08 12:15:06,281 [WARNING] Skipping event with missing start_time (url: https://events.brown.edu/event/309939-presence-of-absence-mural-installation)
+2025-05-08 12:15:06,281 [INFO] [✓] Done crawling 20250514: 31 events inserted.
+2025-05-08 12:15:09,366 [INFO] 
+📅 Date: 20250515 - Found 31 event links
+2025-05-08 12:16:05,749 [WARNING] Skipping event with missing start_time (url: https://events.brown.edu/event/310954-the-ends-of-poetry-reflectingrefracting-why-i)
+2025-05-08 12:16:56,184 [WARNING] Skipping event with missing start_time (url: https://events.brown.edu/event/292250-alchemy-imagining-social-justice-art-exhibi)
+2025-05-08 12:17:00,288 [WARNING] Skipping event with missing start_time (url: https://events.brown.edu/event/308918-leslie-bostrom-wild-stories)
+2025-05-08 12:17:04,579 [WARNING] Skipping event with missing start_time (url: https://events.brown.edu/event/309940-presence-of-absence-mural-installation)
+2025-05-08 12:17:04,580 [INFO] [✓] Done crawling 20250515: 26 events inserted.
+2025-05-08 12:17:07,134 [INFO] 
+📅 Date: 20250516 - Found 21 event links
+2025-05-08 12:17:54,974 [WARNING] Skipping event with missing start_time (url: https://events.brown.edu/event/292251-alchemy-imagining-social-justice-art-exhibi)
+2025-05-08 12:17:59,116 [WARNING] Skipping event with missing start_time (url: https://events.brown.edu/event/307246-bwgape-conference)
+2025-05-08 12:18:01,962 [WARNING] Skipping event with missing start_time (url: https://events.brown.edu/event/308919-leslie-bostrom-wild-stories)
+2025-05-08 12:18:04,794 [WARNING] Skipping event with missing start_time (url: https://events.brown.edu/event/309941-presence-of-absence-mural-installation)
+2025-05-08 12:18:09,645 [WARNING] Skipping event with missing start_time (url: https://events.brown.edu/event/304065-seniors-last-day-for-student-loan-borrowers)
+2025-05-08 12:18:13,920 [WARNING] Skipping event with missing start_time (url: https://events.brown.edu/event/304066-seniors-last-day-to-have-current-term-trans)
+2025-05-08 12:18:17,853 [WARNING] Skipping event with missing start_time (url: https://events.brown.edu/event/304067-seniors-last-day-to-have-grades-for-prior-t)
+2025-05-08 12:18:17,854 [INFO] [✓] Done crawling 20250516: 18 events inserted.
+2025-05-08 12:18:20,618 [INFO] 
+📅 Date: 20250517 - Found 9 event links
+2025-05-08 12:18:40,521 [WARNING] Skipping event with missing start_time (url: https://events.brown.edu/event/292252-alchemy-imagining-social-justice-art-exhibi)
+2025-05-08 12:18:44,725 [WARNING] Skipping event with missing start_time (url: https://events.brown.edu/event/305608-brown-university-womens-crew-at-ivy-champio)
+2025-05-08 12:18:49,037 [WARNING] Skipping event with missing start_time (url: https://events.brown.edu/event/308920-leslie-bostrom-wild-stories)
+2025-05-08 12:18:49,038 [INFO] [✓] Done crawling 20250517: 7 events inserted.
+2025-05-08 12:18:51,554 [INFO] 
+📅 Date: 20250518 - Found 12 event links
+2025-05-08 12:19:20,100 [WARNING] Skipping event with missing start_time (url: https://events.brown.edu/event/292253-alchemy-imagining-social-justice-art-exhibi)
+2025-05-08 12:19:24,088 [WARNING] Skipping event with missing start_time (url: https://events.brown.edu/event/303340-brown-university-mens-crew-vs-eastern-sprin)
+2025-05-08 12:19:28,300 [WARNING] Skipping event with missing start_time (url: https://events.brown.edu/event/308921-leslie-bostrom-wild-stories)
+2025-05-08 12:19:28,301 [INFO] [✓] Done crawling 20250518: 10 events inserted.
+2025-05-08 12:19:30,987 [INFO] 
+📅 Date: 20250519 - Found 17 event links
+2025-05-08 12:19:34,885 [WARNING] Skipping event with missing start_time (url: https://events.brown.edu/event/309467-bloc-mattress-electronics-recycling)
+2025-05-08 12:20:19,899 [WARNING] Skipping event with missing start_time (url: https://events.brown.edu/event/292254-alchemy-imagining-social-justice-art-exhibi)
+2025-05-08 12:20:23,962 [WARNING] Skipping event with missing start_time (url: https://events.brown.edu/event/308738-classes-begin-for-summer-2025-for-online-and-professi)
+2025-05-08 12:20:28,058 [WARNING] Skipping event with missing start_time (url: https://events.brown.edu/event/306938-icerm-workshop-applied-math-in-statistics-a)
+2025-05-08 12:20:32,324 [WARNING] Skipping event with missing start_time (url: https://events.brown.edu/event/308922-leslie-bostrom-wild-stories)
+2025-05-08 12:20:32,324 [INFO] [✓] Done crawling 20250519: 15 events inserted.
+2025-05-08 12:20:34,982 [INFO] 
+📅 Date: 20250520 - Found 24 event links
+2025-05-08 12:20:39,265 [WARNING] Skipping event with missing start_time (url: https://events.brown.edu/event/306179-brown-university-womens-sailing-at-icsa-wom)
+2025-05-08 12:21:48,681 [WARNING] Skipping event with missing start_time (url: https://events.brown.edu/event/292255-alchemy-imagining-social-justice-art-exhibi)
+2025-05-08 12:21:52,677 [WARNING] Skipping event with missing start_time (url: https://events.brown.edu/event/309467-bloc-mattress-electronics-recycling)
+2025-05-08 12:21:56,489 [WARNING] Skipping event with missing start_time (url: https://events.brown.edu/event/306938-icerm-workshop-applied-math-in-statistics-a)
+2025-05-08 12:22:00,694 [WARNING] Skipping event with missing start_time (url: https://events.brown.edu/event/308923-leslie-bostrom-wild-stories)
+2025-05-08 12:22:00,695 [INFO] [✓] Done crawling 20250520: 21 events inserted.
+2025-05-08 12:22:03,376 [INFO] 
+📅 Date: 20250521 - Found 0 event links
+2025-05-08 12:22:03,376 [INFO] [✓] Done crawling 20250521: 0 events inserted.
+2025-05-08 12:22:05,946 [INFO] 
+📅 Date: 20250522 - Found 23 event links
+2025-05-08 12:23:17,997 [WARNING] Skipping event with missing start_time (url: https://events.brown.edu/event/292257-alchemy-imagining-social-justice-art-exhibi)
+2025-05-08 12:23:21,926 [WARNING] Skipping event with missing start_time (url: https://events.brown.edu/event/309467-bloc-mattress-electronics-recycling)
+2025-05-08 12:23:25,993 [WARNING] Skipping event with missing start_time (url: https://events.brown.edu/event/306179-brown-university-womens-sailing-at-icsa-wom)
+2025-05-08 12:23:30,339 [WARNING] Skipping event with missing start_time (url: https://events.brown.edu/event/308925-leslie-bostrom-wild-stories)
+2025-05-08 12:23:30,340 [INFO] [✓] Done crawling 20250522: 21 events inserted.
+2025-05-08 12:23:32,943 [INFO] 
+📅 Date: 20250523 - Found 60 event links
+2025-05-08 12:27:24,997 [WARNING] Skipping event with missing start_time (url: https://events.brown.edu/event/292258-alchemy-imagining-social-justice-art-exhibi)
+2025-05-08 12:27:29,254 [WARNING] Skipping event with missing start_time (url: https://events.brown.edu/event/309467-bloc-mattress-electronics-recycling)
+2025-05-08 12:27:33,403 [WARNING] Skipping event with missing start_time (url: https://events.brown.edu/event/308640-honors-presentations)
+2025-05-08 12:27:37,474 [WARNING] Skipping event with missing start_time (url: https://events.brown.edu/event/308926-leslie-bostrom-wild-stories)
+2025-05-08 12:27:37,474 [INFO] [✓] Done crawling 20250523: 58 events inserted.
+2025-05-08 12:27:40,549 [INFO] 
+📅 Date: 20250524 - Found 91 event links
+2025-05-08 12:27:45,304 [WARNING] Skipping event with missing start_time (url: https://events.brown.edu/event/310090-executive-open-house)
+2025-05-08 12:33:01,985 [WARNING] Skipping event with missing start_time (url: https://events.brown.edu/event/307837-the-onyx-rites-of-passage-celebration-onyx)
+2025-05-08 12:33:54,765 [WARNING] Skipping event with missing start_time (url: https://events.brown.edu/event/292259-alchemy-imagining-social-justice-art-exhibi)
+2025-05-08 12:33:59,092 [WARNING] Skipping event with missing start_time (url: https://events.brown.edu/event/308927-leslie-bostrom-wild-stories)
+2025-05-08 12:33:59,092 [INFO] [✓] Done crawling 20250524: 89 events inserted.
+2025-05-08 12:34:02,237 [INFO] 
+📅 Date: 20250525 - Found 27 event links
+2025-05-08 12:35:02,731 [WARNING] Skipping event with missing start_time (url: https://events.brown.edu/event/310039-masters-reception)
+2025-05-08 12:35:36,676 [WARNING] Skipping event with missing start_time (url: https://events.brown.edu/event/292260-alchemy-imagining-social-justice-art-exhibi)
+2025-05-08 12:35:40,823 [WARNING] Skipping event with missing start_time (url: https://events.brown.edu/event/260615-commencement)
+2025-05-08 12:35:43,748 [WARNING] Skipping event with missing start_time (url: https://events.brown.edu/event/308928-leslie-bostrom-wild-stories)
+2025-05-08 12:35:43,748 [INFO] [✓] Done crawling 20250525: 25 events inserted.
+2025-05-08 12:35:46,544 [INFO] 
+📅 Date: 20250526 - Found 5 event links
+2025-05-08 12:35:55,109 [WARNING] Skipping event with missing start_time (url: https://events.brown.edu/event/292261-alchemy-imagining-social-justice-art-exhibi)
+2025-05-08 12:35:59,301 [WARNING] Skipping event with missing start_time (url: https://events.brown.edu/event/308929-leslie-bostrom-wild-stories)
+2025-05-08 12:35:59,301 [INFO] [✓] Done crawling 20250526: 3 events inserted.
+2025-05-08 12:36:02,002 [INFO] 
+📅 Date: 20250527 - Found 10 event links
+2025-05-08 12:36:05,893 [WARNING] Skipping event with missing start_time (url: https://events.brown.edu/event/306140-brown-university-coed-sailing-at-icsa-open-)
+2025-05-08 12:36:28,448 [WARNING] Skipping event with missing start_time (url: https://events.brown.edu/event/292262-alchemy-imagining-social-justice-art-exhibi)
+2025-05-08 12:36:33,383 [WARNING] Skipping event with missing start_time (url: https://events.brown.edu/event/308930-leslie-bostrom-wild-stories)
+2025-05-08 12:36:33,383 [INFO] [✓] Done crawling 20250527: 8 events inserted.
+2025-05-08 12:36:36,346 [INFO] 
+📅 Date: 20250528 - Found 14 event links
+2025-05-08 12:37:01,262 [WARNING] Skipping event with missing start_time (url: https://events.brown.edu/event/292263-alchemy-imagining-social-justice-art-exhibi)
+2025-05-08 12:37:05,512 [WARNING] Skipping event with missing start_time (url: https://events.brown.edu/event/308771-art-at-watson-presents-legacy-of-lies-el-salvador)
+2025-05-08 12:37:08,481 [WARNING] Skipping event with missing start_time (url: https://events.brown.edu/event/308761-looming-in-the-shadows-of-lodz)
+2025-05-08 12:37:12,466 [WARNING] Skipping event with missing start_time (url: https://events.brown.edu/event/306140-brown-university-coed-sailing-at-icsa-open-)
+2025-05-08 12:37:16,307 [WARNING] Skipping event with missing start_time (url: https://events.brown.edu/event/301845-brown-university-mens-track-field-at-ncaa)
+2025-05-08 12:37:19,087 [WARNING] Skipping event with missing start_time (url: https://events.brown.edu/event/301846-brown-university-womens-track-field-at-ncaa)
+2025-05-08 12:37:23,246 [WARNING] Skipping event with missing start_time (url: https://events.brown.edu/event/308931-leslie-bostrom-wild-stories)
+2025-05-08 12:37:23,246 [INFO] [✓] Done crawling 20250528: 12 events inserted.
+2025-05-08 12:37:26,142 [INFO] 
+📅 Date: 20250529 - Found 15 event links
+2025-05-08 12:37:57,726 [WARNING] Skipping event with missing start_time (url: https://events.brown.edu/event/292264-alchemy-imagining-social-justice-art-exhibi)
+2025-05-08 12:38:01,543 [WARNING] Skipping event with missing start_time (url: https://events.brown.edu/event/306140-brown-university-coed-sailing-at-icsa-open-)
+2025-05-08 12:38:05,718 [WARNING] Skipping event with missing start_time (url: https://events.brown.edu/event/301845-brown-university-mens-track-field-at-ncaa)
+2025-05-08 12:38:10,008 [WARNING] Skipping event with missing start_time (url: https://events.brown.edu/event/301846-brown-university-womens-track-field-at-ncaa)
+2025-05-08 12:38:14,039 [WARNING] Skipping event with missing start_time (url: https://events.brown.edu/event/308932-leslie-bostrom-wild-stories)
+2025-05-08 12:38:14,040 [INFO] [✓] Done crawling 20250529: 13 events inserted.
+2025-05-08 12:38:16,661 [INFO] 
+📅 Date: 20250530 - Found 10 event links
+2025-05-08 12:38:28,660 [WARNING] Skipping event with missing start_time (url: https://events.brown.edu/event/292265-alchemy-imagining-social-justice-art-exhibi)
+2025-05-08 12:38:32,529 [WARNING] Skipping event with missing start_time (url: https://events.brown.edu/event/303339-brown-university-mens-crew-vs-ira-champions)
+2025-05-08 12:38:36,220 [WARNING] Skipping event with missing start_time (url: https://events.brown.edu/event/301845-brown-university-mens-track-field-at-ncaa)
+2025-05-08 12:38:39,980 [WARNING] Skipping event with missing start_time (url: https://events.brown.edu/event/301846-brown-university-womens-track-field-at-ncaa)
+2025-05-08 12:38:45,505 [WARNING] Skipping event with missing start_time (url: https://events.brown.edu/event/308933-leslie-bostrom-wild-stories)
+2025-05-08 12:38:45,505 [INFO] [✓] Done crawling 20250530: 7 events inserted.
+2025-05-08 12:38:48,313 [INFO] 
+📅 Date: 20250531 - Found 6 event links
+2025-05-08 12:38:56,584 [WARNING] Skipping event with missing start_time (url: https://events.brown.edu/event/292266-alchemy-imagining-social-justice-art-exhibi)
+2025-05-08 12:39:00,303 [WARNING] Skipping event with missing start_time (url: https://events.brown.edu/event/303339-brown-university-mens-crew-vs-ira-champions)
+2025-05-08 12:39:03,131 [WARNING] Skipping event with missing start_time (url: https://events.brown.edu/event/308934-leslie-bostrom-wild-stories)
+2025-05-08 12:39:03,131 [INFO] [✓] Done crawling 20250531: 4 events inserted.
+2025-05-08 12:39:05,723 [INFO] 
+📅 Date: 20250601 - Found 5 event links
+2025-05-08 12:39:11,518 [WARNING] Skipping event with missing start_time (url: https://events.brown.edu/event/292267-alchemy-imagining-social-justice-art-exhibi)
+2025-05-08 12:39:15,748 [WARNING] Skipping event with missing start_time (url: https://events.brown.edu/event/308935-leslie-bostrom-wild-stories)
+2025-05-08 12:39:15,748 [INFO] [✓] Done crawling 20250601: 3 events inserted.
+2025-05-08 12:39:18,313 [INFO] 
+📅 Date: 20250602 - Found 4 event links
+2025-05-08 12:39:24,988 [WARNING] Skipping event with missing start_time (url: https://events.brown.edu/event/292268-alchemy-imagining-social-justice-art-exhibi)
+2025-05-08 12:39:29,190 [WARNING] Skipping event with missing start_time (url: https://events.brown.edu/event/308936-leslie-bostrom-wild-stories)
+2025-05-08 12:39:29,190 [INFO] [✓] Done crawling 20250602: 3 events inserted.
+2025-05-08 12:39:31,661 [INFO] 
+📅 Date: 20250603 - Found 6 event links
+2025-05-08 12:39:47,649 [WARNING] Skipping event with missing start_time (url: https://events.brown.edu/event/292269-alchemy-imagining-social-justice-art-exhibi)
+2025-05-08 12:39:50,564 [WARNING] Skipping event with missing start_time (url: https://events.brown.edu/event/308937-leslie-bostrom-wild-stories)
+2025-05-08 12:39:50,565 [INFO] [✓] Done crawling 20250603: 5 events inserted.
+2025-05-08 12:39:53,053 [INFO] 
+📅 Date: 20250604 - Found 5 event links
+2025-05-08 12:40:01,517 [WARNING] Skipping event with missing start_time (url: https://events.brown.edu/event/292270-alchemy-imagining-social-justice-art-exhibi)
+2025-05-08 12:40:05,557 [WARNING] Skipping event with missing start_time (url: https://events.brown.edu/event/308938-leslie-bostrom-wild-stories)
+2025-05-08 12:40:05,558 [INFO] [✓] Done crawling 20250604: 3 events inserted.
+2025-05-08 12:40:07,984 [INFO] 
+📅 Date: 20250605 - Found 10 event links
+2025-05-08 12:40:29,369 [WARNING] Skipping event with missing start_time (url: https://events.brown.edu/event/292271-alchemy-imagining-social-justice-art-exhibi)
+2025-05-08 12:40:33,477 [WARNING] Skipping event with missing start_time (url: https://events.brown.edu/event/308939-leslie-bostrom-wild-stories)
+2025-05-08 12:40:37,580 [WARNING] Skipping event with missing start_time (url: https://events.brown.edu/event/304375-political-economy-of-finance-summer-school-)
+2025-05-08 12:40:41,827 [WARNING] Skipping event with missing start_time (url: https://events.brown.edu/event/303414-seventh-annual-dr-samuel-m-nabrit-conferenc)
+2025-05-08 12:40:41,827 [INFO] [✓] Done crawling 20250605: 8 events inserted.
+2025-05-08 12:40:44,433 [INFO] 
+📅 Date: 20250606 - Found 8 event links
+2025-05-08 12:40:53,698 [WARNING] Skipping event with missing start_time (url: https://events.brown.edu/event/297008-brown-in-orbit-60-years-of-planetary-scienc)
+2025-05-08 12:41:01,813 [WARNING] Skipping event with missing start_time (url: https://events.brown.edu/event/292272-alchemy-imagining-social-justice-art-exhibi)
+2025-05-08 12:41:05,971 [WARNING] Skipping event with missing start_time (url: https://events.brown.edu/event/308940-leslie-bostrom-wild-stories)
+2025-05-08 12:41:09,652 [WARNING] Skipping event with missing start_time (url: https://events.brown.edu/event/304375-political-economy-of-finance-summer-school-)
+2025-05-08 12:41:13,414 [WARNING] Skipping event with missing start_time (url: https://events.brown.edu/event/303414-seventh-annual-dr-samuel-m-nabrit-conferenc)
+2025-05-08 12:41:13,414 [INFO] [✓] Done crawling 20250606: 7 events inserted.
+2025-05-08 12:41:16,085 [INFO] 
+📅 Date: 20250607 - Found 7 event links
+2025-05-08 12:41:28,433 [WARNING] Skipping event with missing start_time (url: https://events.brown.edu/event/292273-alchemy-imagining-social-justice-art-exhibi)
+2025-05-08 12:41:33,153 [WARNING] Skipping event with missing start_time (url: https://events.brown.edu/event/297008-brown-in-orbit-60-years-of-planetary-scienc)
+2025-05-08 12:41:37,475 [WARNING] Skipping event with missing start_time (url: https://events.brown.edu/event/308941-leslie-bostrom-wild-stories)
+2025-05-08 12:41:41,691 [WARNING] Skipping event with missing start_time (url: https://events.brown.edu/event/304375-political-economy-of-finance-summer-school-)
+2025-05-08 12:41:41,692 [INFO] [✓] Done crawling 20250607: 6 events inserted.
+2025-05-08 12:41:44,205 [INFO] 
+📅 Date: 20250608 - Found 4 event links
+2025-05-08 12:41:52,578 [WARNING] Skipping event with missing start_time (url: https://events.brown.edu/event/292274-alchemy-imagining-social-justice-art-exhibi)
+2025-05-08 12:41:55,134 [WARNING] Skipping event with missing start_time (url: https://events.brown.edu/event/308942-leslie-bostrom-wild-stories)
+2025-05-08 12:41:55,134 [INFO] [✓] Done crawling 20250608: 3 events inserted.
+2025-05-08 12:41:58,023 [INFO] 
+📅 Date: 20250609 - Found 4 event links
+2025-05-08 12:42:06,864 [WARNING] Skipping event with missing start_time (url: https://events.brown.edu/event/292275-alchemy-imagining-social-justice-art-exhibi)
+2025-05-08 12:42:10,908 [WARNING] Skipping event with missing start_time (url: https://events.brown.edu/event/308943-leslie-bostrom-wild-stories)
+2025-05-08 12:42:10,908 [INFO] [✓] Done crawling 20250609: 3 events inserted.
+2025-05-08 12:42:13,396 [INFO] 
+📅 Date: 20250610 - Found 10 event links
+2025-05-08 12:42:43,904 [WARNING] Skipping event with missing start_time (url: https://events.brown.edu/event/292276-alchemy-imagining-social-justice-art-exhibi)
+2025-05-08 12:42:48,213 [WARNING] Skipping event with missing start_time (url: https://events.brown.edu/event/308944-leslie-bostrom-wild-stories)
+2025-05-08 12:42:48,213 [INFO] [✓] Done crawling 20250610: 8 events inserted.
+2025-05-08 12:42:51,105 [INFO] 
+📅 Date: 20250611 - Found 9 event links
+2025-05-08 12:43:21,975 [WARNING] Skipping event with missing start_time (url: https://events.brown.edu/event/292277-alchemy-imagining-social-justice-art-exhibi)
+2025-05-08 12:43:26,036 [WARNING] Skipping event with missing start_time (url: https://events.brown.edu/event/301843-brown-university-mens-track-field-at-ncaa)
+2025-05-08 12:43:30,152 [WARNING] Skipping event with missing start_time (url: https://events.brown.edu/event/301844-brown-university-womens-track-field-at-ncaa)
+2025-05-08 12:43:34,513 [WARNING] Skipping event with missing start_time (url: https://events.brown.edu/event/308945-leslie-bostrom-wild-stories)
+2025-05-08 12:43:34,514 [INFO] [✓] Done crawling 20250611: 8 events inserted.
+2025-05-08 12:43:37,588 [INFO] 
+📅 Date: 20250612 - Found 14 event links
+2025-05-08 12:44:15,155 [WARNING] Skipping event with missing start_time (url: https://events.brown.edu/event/292278-alchemy-imagining-social-justice-art-exhibi)
+2025-05-08 12:44:19,180 [WARNING] Skipping event with missing start_time (url: https://events.brown.edu/event/301843-brown-university-mens-track-field-at-ncaa)
+2025-05-08 12:44:23,098 [WARNING] Skipping event with missing start_time (url: https://events.brown.edu/event/301844-brown-university-womens-track-field-at-ncaa)
+2025-05-08 12:44:27,297 [WARNING] Skipping event with missing start_time (url: https://events.brown.edu/event/308946-leslie-bostrom-wild-stories)
+2025-05-08 12:44:27,297 [INFO] [✓] Done crawling 20250612: 12 events inserted.
+2025-05-08 12:44:29,947 [INFO] 
+📅 Date: 20250613 - Found 6 event links
+2025-05-08 12:44:46,908 [WARNING] Skipping event with missing start_time (url: https://events.brown.edu/event/292279-alchemy-imagining-social-justice-art-exhibi)
+2025-05-08 12:44:50,909 [WARNING] Skipping event with missing start_time (url: https://events.brown.edu/event/308947-leslie-bostrom-wild-stories)
+2025-05-08 12:44:50,909 [INFO] [✓] Done crawling 20250613: 5 events inserted.
+2025-05-08 12:44:53,388 [INFO] 
+📅 Date: 20250614 - Found 4 event links
+2025-05-08 12:45:01,834 [WARNING] Skipping event with missing start_time (url: https://events.brown.edu/event/310823-san-francisco-opera-night)
+2025-05-08 12:45:06,010 [WARNING] Skipping event with missing start_time (url: https://events.brown.edu/event/292280-alchemy-imagining-social-justice-art-exhibi)
+2025-05-08 12:45:06,010 [INFO] [✓] Done crawling 20250614: 3 events inserted.
+2025-05-08 12:45:08,512 [INFO] 
+📅 Date: 20250615 - Found 5 event links
+2025-05-08 12:45:20,787 [WARNING] Skipping event with missing start_time (url: https://events.brown.edu/event/292281-alchemy-imagining-social-justice-art-exhibi)
+2025-05-08 12:45:25,115 [WARNING] Skipping event with missing start_time (url: https://events.brown.edu/event/304496-residence-halls-open)
+2025-05-08 12:45:25,115 [INFO] [✓] Done crawling 20250615: 4 events inserted.
+2025-05-08 12:45:27,553 [INFO] 
+📅 Date: 20250616 - Found 5 event links
+2025-05-08 12:45:35,614 [WARNING] Skipping event with missing start_time (url: https://events.brown.edu/event/292282-alchemy-imagining-social-justice-art-exhibi)
+2025-05-08 12:45:38,625 [WARNING] Skipping event with missing start_time (url: https://events.brown.edu/event/305845-mock-panel-review-of-your-nsf-career-propos)
+2025-05-08 12:45:42,739 [WARNING] Skipping event with missing start_time (url: https://events.brown.edu/event/304498-summer-session-classes-begin)
+2025-05-08 12:45:42,739 [INFO] [✓] Done crawling 20250616: 4 events inserted.
+2025-05-08 12:45:45,336 [INFO] 
+📅 Date: 20250617 - Found 9 event links
+2025-05-08 12:46:06,500 [WARNING] Skipping event with missing start_time (url: https://events.brown.edu/event/292283-alchemy-imagining-social-justice-art-exhibi)
+2025-05-08 12:46:11,337 [WARNING] Skipping event with missing start_time (url: https://events.brown.edu/event/305846-mock-panel-review-of-your-nsf-career-propos)
+2025-05-08 12:46:11,337 [INFO] [✓] Done crawling 20250617: 6 events inserted.
+2025-05-08 12:46:14,057 [INFO] 
+📅 Date: 20250618 - Found 11 event links
+2025-05-08 12:46:38,464 [WARNING] Skipping event with missing start_time (url: https://events.brown.edu/event/292284-alchemy-imagining-social-justice-art-exhibi)
+2025-05-08 12:46:42,964 [WARNING] Skipping event with missing start_time (url: https://events.brown.edu/event/304499-last-day-to-change-courses-500-pm-edt-deadl)
+2025-05-08 12:46:48,112 [WARNING] Skipping event with missing start_time (url: https://events.brown.edu/event/305847-mock-panel-review-of-your-nsf-career-propos)
+2025-05-08 12:46:52,079 [WARNING] Skipping event with missing start_time (url: https://events.brown.edu/event/310789-tessa-bolsover-tobi-kassim-chloe-zimmerman-a)
+2025-05-08 12:46:52,079 [INFO] [✓] Done crawling 20250618: 9 events inserted.
+2025-05-08 12:46:54,947 [INFO] 
+📅 Date: 20250619 - Found 3 event links
+2025-05-08 12:47:03,067 [WARNING] Skipping event with missing start_time (url: https://events.brown.edu/event/292285-alchemy-imagining-social-justice-art-exhibi)
+2025-05-08 12:47:06,976 [WARNING] Skipping event with missing start_time (url: https://events.brown.edu/event/304497-juneteenth-holiday-no-university-exercises)
+2025-05-08 12:47:06,976 [INFO] [✓] Done crawling 20250619: 3 events inserted.
+2025-05-08 12:47:09,547 [INFO] 
+📅 Date: 20250620 - Found 2 event links
+2025-05-08 12:47:18,793 [WARNING] Skipping event with missing start_time (url: https://events.brown.edu/event/292286-alchemy-imagining-social-justice-art-exhibi)
+2025-05-08 12:47:18,794 [INFO] [✓] Done crawling 20250620: 2 events inserted.
+2025-05-08 12:47:21,254 [INFO] 
+📅 Date: 20250621 - Found 2 event links
+2025-05-08 12:47:29,803 [WARNING] Skipping event with missing start_time (url: https://events.brown.edu/event/292287-alchemy-imagining-social-justice-art-exhibi)
+2025-05-08 12:47:29,803 [INFO] [✓] Done crawling 20250621: 2 events inserted.
+2025-05-08 12:47:32,316 [INFO] 
+📅 Date: 20250622 - Found 2 event links
+2025-05-08 12:47:40,808 [WARNING] Skipping event with missing start_time (url: https://events.brown.edu/event/292288-alchemy-imagining-social-justice-art-exhibi)
+2025-05-08 12:47:40,808 [INFO] [✓] Done crawling 20250622: 2 events inserted.
+2025-05-08 12:47:43,315 [INFO] 
+📅 Date: 20250623 - Found 2 event links
+2025-05-08 12:47:47,544 [WARNING] Skipping event with missing start_time (url: https://events.brown.edu/event/292289-alchemy-imagining-social-justice-art-exhibi)
+2025-05-08 12:47:51,970 [WARNING] Skipping event with missing start_time (url: https://events.brown.edu/event/304500-last-day-to-change-grade-options-500-pm-edt)
+2025-05-08 12:47:51,971 [INFO] [✓] Done crawling 20250623: 2 events inserted.
+2025-05-08 12:47:55,376 [INFO] 
+📅 Date: 20250624 - Found 4 event links
+2025-05-08 12:48:08,243 [WARNING] Skipping event with missing start_time (url: https://events.brown.edu/event/292290-alchemy-imagining-social-justice-art-exhibi)
+2025-05-08 12:48:08,243 [INFO] [✓] Done crawling 20250624: 3 events inserted.
+2025-05-08 12:48:10,892 [INFO] 
+📅 Date: 20250625 - Found 1 event links
+2025-05-08 12:48:15,138 [WARNING] Skipping event with missing start_time (url: https://events.brown.edu/event/292291-alchemy-imagining-social-justice-art-exhibi)
+2025-05-08 12:48:15,138 [INFO] [✓] Done crawling 20250625: 1 events inserted.
+2025-05-08 12:48:17,615 [INFO] 
+📅 Date: 20250626 - Found 4 event links
+2025-05-08 12:48:30,115 [WARNING] Skipping event with missing start_time (url: https://events.brown.edu/event/292292-alchemy-imagining-social-justice-art-exhibi)
+2025-05-08 12:48:30,115 [INFO] [✓] Done crawling 20250626: 3 events inserted.
+2025-05-13 18:40:51,560 [INFO] 
+📅 Date: 20250712 - Found 2 event links
+2025-05-13 18:41:00,660 [WARNING] Skipping event with missing start_time (url: https://events.brown.edu/event/292308-alchemy-imagining-social-justice-art-exhibi)
+2025-05-13 18:41:00,660 [INFO] [✓] Done crawling 20250712: 2 events inserted.
