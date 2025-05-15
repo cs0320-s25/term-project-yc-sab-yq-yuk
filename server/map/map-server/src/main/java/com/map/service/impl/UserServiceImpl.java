@@ -35,6 +35,7 @@ public class UserServiceImpl implements UserService {
         }
 
         if (!userMapper.checkUserExists(userId)) {
+          userMapper.createUser(userId);
           throw new Exception("User not found: " + userId);
         }
 

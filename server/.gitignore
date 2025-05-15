@@ -34,3 +34,6 @@ build/
 
 ### VS Code ###
 .vscode/
+
+application.yml
+application-test.yml

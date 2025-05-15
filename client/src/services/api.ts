@@ -43,7 +43,7 @@ export const api = {
   // This fetches the user's profile including their event preferences
   getUserProfile: async (userId: string): Promise<UserProfile | null> => {
     try {
-      console.log('Fetching profile for userId:', userId);
+      console.log("Fetching profile for userId:", userId);
       const response = await fetch(`${API_BASE_URL}/users/${userId}/profile`);
       const data = await response.json();
       if (data.code === 1 && data.data) {
@@ -116,26 +116,32 @@ export const api = {
     try {
       // First, trigger the recalculation of trending events
       try {
-        const recalculateResponse = await fetch(`${API_BASE_URL}/trending/recalculate`, {
-          method: 'POST', // or 'GET' depending on your API design
-        });
+        const recalculateResponse = await fetch(
+          `${API_BASE_URL}/trending/recalculate`,
+          {
+            method: "POST", // or 'GET' depending on your API design
+          }
+        );
         const recalculateData = await recalculateResponse.json();
-        console.log("Trending recalculation:", recalculateData.code === 1 ? "successful" : "failed");
+        console.log(
+          "Trending recalculation:",
+          recalculateData.code === 1 ? "successful" : "failed"
+        );
       } catch (recalcError) {
         // Log error but continue with fetching - don't block if recalculation fails
         console.error("Error recalculating trending events:", recalcError);
       }
-      
-      // Then proceed with fetching trending events 
+
+      // Then proceed with fetching trending events
       const params = new URLSearchParams();
       if (filters.category) params.append("category", filters.category);
       if (filters.time) params.append("time", filters.time);
       if (filters.near) params.append("near", filters.near);
-  
+
       const url = `${API_BASE_URL}/trending?${params.toString()}`;
       const response = await fetch(url);
       const data = await response.json();
-  
+
       if (data.code === 1 && data.data) {
         return data.data;
       }
@@ -176,7 +182,6 @@ export const api = {
     }
   },
 
-
   // Get a specific event by ID
   // This is used when we need full details for a single event
   getEvent: async (eventId: string): Promise<Event | null> => {
@@ -198,7 +203,7 @@ export const api = {
   recordView: async (eventId: string): Promise<boolean> => {
     try {
       const response = await fetch(`${API_BASE_URL}/events/views/${eventId}`, {
-        method: 'PUT'
+        method: "PUT",
       });
       const data = await response.json();
       return data.code === 1;
@@ -213,11 +218,12 @@ export const api = {
   likeEvent: async (userId: string, eventId: string): Promise<boolean> => {
     try {
       const response = await fetch(`${API_BASE_URL}/users/${userId}/likes`, {
-        method: 'POST',
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
-        body: JSON.stringify({ event_id: eventId }),
+        // body: JSON.stringify({ event_id: eventId }),
+        body: JSON.stringify(eventId),
       });
       const data = await response.json();
       return data.code === 1;
@@ -232,11 +238,12 @@ export const api = {
   unlikeEvent: async (userId: string, eventId: string): Promise<boolean> => {
     try {
       const response = await fetch(`${API_BASE_URL}/users/${userId}/likes`, {
-        method: 'DELETE',
+        method: "DELETE",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
-        body: JSON.stringify({ event_id: eventId }),
+        // body: JSON.stringify({ event_id: eventId }),
+        body: JSON.stringify(eventId),
       });
       const data = await response.json();
       return data.code === 1;
@@ -250,13 +257,17 @@ export const api = {
   // This adds an event to a user's bookmarked events list
   bookmarkEvent: async (userId: string, eventId: string): Promise<boolean> => {
     try {
-      const response = await fetch(`${API_BASE_URL}/users/${userId}/bookmarks`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ event_id: eventId }),
-      });
+      const response = await fetch(
+        `${API_BASE_URL}/users/${userId}/bookmarks`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          // body: JSON.stringify({ event_id: eventId }),
+          body: JSON.stringify(eventId),
+        }
+      );
       const data = await response.json();
       return data.code === 1;
     } catch (error) {
@@ -267,15 +278,22 @@ export const api = {
 
   // Remove bookmark
   // This removes an event from a user's bookmarked events list
-  unbookmarkEvent: async (userId: string, eventId: string): Promise<boolean> => {
+  unbookmarkEvent: async (
+    userId: string,
+    eventId: string
+  ): Promise<boolean> => {
     try {
-      const response = await fetch(`${API_BASE_URL}/users/${userId}/bookmarks`, {
-        method: 'DELETE',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ event_id: eventId }),
-      });
+      const response = await fetch(
+        `${API_BASE_URL}/users/${userId}/bookmarks`,
+        {
+          method: "DELETE",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          // body: JSON.stringify({ event_id: eventId }),
+          body: JSON.stringify(eventId),
+        }
+      );
       const data = await response.json();
       return data.code === 1;
     } catch (error) {
@@ -288,17 +306,16 @@ export const api = {
     try {
       const response = await fetch(`${API_BASE_URL}/categories/${eventId}`);
       const data = await response.json();
-      
+
       // Match your existing API response pattern
       if (data.code === 1 && data.data) {
         return data.data;
       }
-      
+
       return [];
     } catch (error) {
       console.error(`Error fetching categories for event ${eventId}:`, error);
       return [];
     }
-  }
-
+  },
 };

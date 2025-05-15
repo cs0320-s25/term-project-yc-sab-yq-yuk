@@ -12,6 +12,9 @@ import org.apache.ibatis.annotations.Delete;
 @Mapper
 public interface UserMapper {
 
+  @Insert("INSERT INTO users (user_id) VALUES (#{userId})")
+  void createUser(@Param("userId") String userId);
+
   /**
    * Check if a user exists in the database.
    * @param userId
