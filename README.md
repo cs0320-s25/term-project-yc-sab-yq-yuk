@@ -89,7 +89,6 @@ We use MyBatis's `#{}` parameter binding syntax instead of `${}` string substitu
   Then safely bound via PreparedStatement
 
 ##### Why Not `${}`?
-**Security Risks**:
 - Direct text substitution in SQL
 - Vulnerable to SQL injection
 - Example of risk:
