@@ -23,32 +23,39 @@ Here are the snapshots:
 ![My bookmarks](./assets/images/my-bookmarks.png)
 
 # Design Choices
+
+## Diversified recommendation strategy
+
+To make our recommendation system more inclusive and engaging, we intentionally designed it to surface a diverse mix of events. Instead of relying on a single similarity metric, we incorporated multiple signals, such as user preferences, event popularity, and category variety, to ensure users see both relevant and potentially novel events.
+
 ## Frontend Development and Backend Integration
+
 ### Frontend Development
-**React with TypeScript**: 
+
+**React with TypeScript**:
 
 We chose React for its component-based architecture, which allowed us to build reusable UI elements. TypeScript provided type safety, improving code quality and developer experience through early error detection.
 
-**Three-View Architecture**: 
+**Three-View Architecture**:
 
 We implemented a clear separation between the Map view, Likes view, and Bookmarks view to create a focused user experience for each task.
 
-**Mapbox GL Integration**: 
+**Mapbox GL Integration**:
 
 We selected Mapbox for its powerful interactive mapping capabilities, customizable markers, and smooth animations for location transitions.
 State Management: We used React's useState and useEffect hooks for local component state and side effects, avoiding the complexity of additional state management libraries.
 
-**Responsive Design**: 
+**Responsive Design**:
 
 All components were designed to adapt to different screen sizes, ensuring a consistent experience across devices.
 
-**Optimistic UI Updates**: 
+**Optimistic UI Updates**:
 
 User actions like likes and bookmarks immediately update the UI before backend confirmation, creating a more responsive feel.
 
 ### Backend Integration
 
-**Service Layer Pattern**: 
+**Service Layer Pattern**:
 
 We centralized all API communication in api.ts, creating a clean separation between data fetching and UI rendering.
 
@@ -60,21 +67,23 @@ Our API functions accept filter parameters, allowing the same endpoint to be reu
 
 We used Clerk to manage user authentication, passing the userId to relevant API calls for personalized features.
 
-**Error Handling**: 
+**Error Handling**:
 
 We implemented consistent error handling across all API calls, with appropriate fallbacks when services are unavailable.
 
 ### SQL Injection Prevention
 
 #### Parameter Binding Strategy
+
 We use MyBatis's `#{}` parameter binding syntax instead of `${}` string substitution for all SQL queries. This choice is based on the following comparison:
 
-| Syntax | Parameter Binding | SQL Injection Risk | Usage in Our Project |
-|--------|------------------|-------------------|---------------------|
-| `#{}`  | ✅ Pre-compiled via JDBC | ❌ Safe, prevents injection | ✅ Used for all user inputs |
-| `${}`  | ❌ Direct text substitution | ⚠️ Vulnerable to injection | ❌ Not used for user inputs |
+| Syntax | Parameter Binding           | SQL Injection Risk          | Usage in Our Project        |
+| ------ | --------------------------- | --------------------------- | --------------------------- |
+| `#{}`  | ✅ Pre-compiled via JDBC    | ❌ Safe, prevents injection | ✅ Used for all user inputs |
+| `${}`  | ❌ Direct text substitution | ⚠️ Vulnerable to injection  | ❌ Not used for user inputs |
 
 ##### Why `#{}`?
+
 - Uses JDBC PreparedStatement for parameter binding
 - Automatically escapes special characters
 - Prevents SQL injection attacks
@@ -89,6 +98,7 @@ We use MyBatis's `#{}` parameter binding syntax instead of `${}` string substitu
   Then safely bound via PreparedStatement
 
 ##### Why Not `${}`?
+
 - Direct text substitution in SQL
 - Vulnerable to SQL injection
 - Example of risk:
@@ -103,7 +113,9 @@ We use MyBatis's `#{}` parameter binding syntax instead of `${}` string substitu
   ```
 
 #### Framework Implementation
+
 While our code imports from the `org.apache.ibatis` package, we are using MyBatis (not iBatis). This is because:
+
 1. MyBatis maintains backward compatibility with the original iBatis package structure
 2. The `org.apache.ibatis` namespace is the official package name for MyBatis
 3. The actual framework version and functionality are from MyBatis, as confirmed by our dependencies:
@@ -113,7 +125,7 @@ While our code imports from the `org.apache.ibatis` package, we are using MyBati
        <artifactId>mybatis-spring-boot-starter</artifactId>
    </dependency>
    ```
-   
+
 # Testing
 
 We have implemented an extensive testing suite, including backend unit tests, Postman tests for API endpoints, and frontend-backend integration tests.
@@ -176,21 +188,20 @@ By default, the frontend should be running at `http://localhost:8000/` and commu
 
 You can now explore events on an interactive map, filter by category, view trending/recommended events, and use the like/bookmark features!
 
-
 ### 5. Scrape Brown Events
 
 1. Navigate to the scraper/ directory.
 2. Make sure you're using the Python virtual environment:
-    - If not already created, set it up and install dependencies:
-    `pip3 install -r requirements.txt`
-    - Activate the environment:
-    `source env/bin/activate`
+   - If not already created, set it up and install dependencies:
+     `pip3 install -r requirements.txt`
+   - Activate the environment:
+     `source env/bin/activate`
 3. Run the crawler:
-    `python main_crawler.py`
+   `python main_crawler.py`
 
 # Collaboration
 
-**Yumian Cui (ycui39)**: Yumian designed the recommendation strategy, finalized the API endpoint specifications, and implemented both the recommendation and trending API endpoints. She also supported backend debugging efforts to ensure proper functionality, communicated closely with the frontend to support smooth integration, and tested the entire recommendation pipeline through both unit and integration testing.
+**Yumian Cui (ycui39)**: Yumian initiated the project idea, designed the recommendation strategy, finalized the API endpoint specifications, and implemented both the recommendation and trending API endpoints. She also worked closely with backend development to support backend debugging efforts to ensure proper functionality, communicated closely with the frontend to support smooth integration and made corresponding changes, and tested the entire recommendation pipeline through both unit, postman, and integration testing.
 
 **Yunqi Li (yli795)**: Yunqi implemented a comprehensive frontend for the BrunoMap application using React and TypeScript, creating an intuitive interface with three main views: a map-based discovery system using Mapbox, a personalized likes collection, and a bookmarks section. She developed a robust filtering system for events by category, time, and location, while ensuring responsive design across devices. For backend integration, Yunqi designed a centralized service layer that manages all API communications, implementing optimistic UI updates for user interactions and efficient state management. She established proper authentication flow, enabling event engagement tracking and user-specific content display, while maintaining clean separation between data fetching and UI rendering components.
 
