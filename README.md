@@ -64,9 +64,9 @@ We used Clerk to manage user authentication, passing the userId to relevant API 
 
 We implemented consistent error handling across all API calls, with appropriate fallbacks when services are unavailable.
 
-## SQL Injection Prevention
+**SQL Injection Prevention**
 
-### Parameter Binding Strategy
+#### Parameter Binding Strategy
 We use MyBatis's `#{}` parameter binding syntax instead of `${}` string substitution for all SQL queries. This choice is based on the following comparison:
 
 | Syntax | Parameter Binding | SQL Injection Risk | Usage in Our Project |
@@ -74,72 +74,36 @@ We use MyBatis's `#{}` parameter binding syntax instead of `${}` string substitu
 | `#{}`  | ✅ Pre-compiled via JDBC | ❌ Safe, prevents injection | ✅ Used for all user inputs |
 | `${}`  | ❌ Direct text substitution | ⚠️ Vulnerable to injection | ❌ Not used for user inputs |
 
-#### Why `#{}`?
-1. **Security**:
-   - Uses JDBC PreparedStatement for parameter binding
-   - Automatically escapes special characters
-   - Prevents SQL injection attacks
-   - Example:
-     ```java
-     @Select("SELECT * FROM events WHERE event_id = #{eventId}")
-     ```
-     Gets converted to:
-     ```sql
-     SELECT * FROM events WHERE event_id = ?
-     ```
-     Then safely bound via PreparedStatement
+##### Why `#{}`?
+- Uses JDBC PreparedStatement for parameter binding
+- Automatically escapes special characters
+- Prevents SQL injection attacks
+- Example:
+  ```java
+  @Select("SELECT * FROM events WHERE event_id = #{eventId}")
+  ```
+  Gets converted to:
+  ```sql
+  SELECT * FROM events WHERE event_id = ?
+  ```
+  Then safely bound via PreparedStatement
 
-2. **Performance**:
-   - Enables query plan caching
-   - Reuses prepared statements
-   - Optimizes database performance
+##### Why Not `${}`?
+**Security Risks**:
+- Direct text substitution in SQL
+- Vulnerable to SQL injection
+- Example of risk:
+  ```java
+  // UNSAFE: Using ${} for user input
+  @Select("SELECT * FROM events WHERE name = ${userInput}")
+  ```
+  If userInput = "'; DROP TABLE events; --"
+  Results in:
+  ```sql
+  SELECT * FROM events WHERE name = ''; DROP TABLE events; --'
+  ```
 
-3. **Type Safety**:
-   - Automatic parameter type conversion
-   - Reduces type-related errors
-   - Improves code robustness
-
-#### Why Not `${}`?
-1. **Security Risks**:
-   - Direct text substitution in SQL
-   - Vulnerable to SQL injection
-   - Example of risk:
-     ```java
-     // UNSAFE: Using ${} for user input
-     @Select("SELECT * FROM events WHERE name = ${userInput}")
-     ```
-     If userInput = "'; DROP TABLE events; --"
-     Results in:
-     ```sql
-     SELECT * FROM events WHERE name = ''; DROP TABLE events; --'
-     ```
-
-2. **Limited Use Cases**:
-   - Only used in our project for:
-     - Dynamic table names (when absolutely necessary)
-     - Static SQL fragments
-     - Never for user input
-
-### Implementation Details
-1. **Parameter Binding**:
-   ```java
-   // Safe: Using #{} for parameter binding
-   @Select("SELECT * FROM events WHERE event_id = #{eventId}")
-   Event getEventById(@Param("eventId") Integer eventId);
-   ```
-
-2. **Input Validation**:
-   - All user inputs are validated at the service layer
-   - No direct exposure of dynamic SQL to user input
-   - Proper error handling for invalid inputs
-
-3. **Additional Security Measures**:
-   - Regular security audits of SQL queries
-   - Input sanitization at the service layer
-   - Proper error handling to prevent information leakage
-   - Use of parameterized queries for all database operations
-
-### Framework Implementation
+#### Framework Implementation
 While our code imports from the `org.apache.ibatis` package, we are using MyBatis (not iBatis). This is because:
 1. MyBatis maintains backward compatibility with the original iBatis package structure
 2. The `org.apache.ibatis` namespace is the official package name for MyBatis
