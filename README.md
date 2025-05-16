@@ -126,6 +126,18 @@ By default, the frontend should be running at `http://localhost:8000/` and commu
 
 You can now explore events on an interactive map, filter by category, view trending/recommended events, and use the like/bookmark features!
 
+
+### 5. Scrape Brown Events
+
+1. Navigate to the scraper/ directory.
+2. Make sure you're using the Python virtual environment:
+    - If not already created, set it up and install dependencies:
+    `pip3 install -r requirements.txt`
+    - Activate the environment:
+    `source env/bin/activate`
+3. Run the crawler:
+    `python main_crawler.py`
+
 # Collaboration
 
 **Yumian Cui (ycui39)**: Yumian designed the recommendation strategy, finalized the API endpoint specifications, and implemented both the recommendation and trending API endpoints. She also supported backend debugging efforts to ensure proper functionality, communicated closely with the frontend to support smooth integration, and tested the entire recommendation pipeline through both unit and integration testing.
@@ -133,3 +145,5 @@ You can now explore events on an interactive map, filter by category, view trend
 **Yunqi Li (yli795)**: Yunqi implemented a comprehensive frontend for the BrunoMap application using React and TypeScript, creating an intuitive interface with three main views: a map-based discovery system using Mapbox, a personalized likes collection, and a bookmarks section. She developed a robust filtering system for events by category, time, and location, while ensuring responsive design across devices. For backend integration, Yunqi designed a centralized service layer that manages all API communications, implementing optimistic UI updates for user interactions and efficient state management. She established proper authentication flow, enabling event engagement tracking and user-specific content display, while maintaining clean separation between data fetching and UI rendering components.
 
 **Yuki Zang (mzang2)**: Yuki designed the relational database schema in MySQL to support event-related and user interaction features, and selected the backend technology stack including Java, Spring Boot, and MyBatis. She implemented all non-recommendation API endpoints, encompassing core functionalities such as event retrieval, filtering, search, and user-specific actions like viewing, bookmarking, and liking events. Yuki ensured efficient data access and consistency across endpoints, and collaborated closely with the frontend, recommendation, and data team members to support smooth integration and end-to-end system functionality.
+
+**Lin Ning Kung (klinning)**: Lin Ning designed and implemented an automated event crawler to collect structured event data from the Brown University events calendar. Using Selenium in headless mode, the system navigates through event listings, extracts detailed information including event name, time, location, description, type, and related tags, and stores the data in a relational database. The crawler is designed to run regularly and avoid duplicate entries by tracking previously seen links. It also includes logging, error handling, and database insertion logic with support for category mapping. Lin also contributed to finalizing the database schema, ensuring support for location metadata to enable future geospatial features such as map-based event discovery.
