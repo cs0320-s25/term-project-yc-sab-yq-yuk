@@ -64,7 +64,7 @@ We used Clerk to manage user authentication, passing the userId to relevant API 
 
 We implemented consistent error handling across all API calls, with appropriate fallbacks when services are unavailable.
 
-**SQL Injection Prevention**
+### SQL Injection Prevention
 
 #### Parameter Binding Strategy
 We use MyBatis's `#{}` parameter binding syntax instead of `${}` string substitution for all SQL queries. This choice is based on the following comparison:
