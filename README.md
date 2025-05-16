@@ -23,6 +23,46 @@ Here are the snapshots:
 ![My bookmarks](./assets/images/my-bookmarks.png)
 
 # Design Choices
+## Frontend Development and Backend Integration
+### Frontend Development
+**React with TypeScript**: 
+
+We chose React for its component-based architecture, which allowed us to build reusable UI elements. TypeScript provided type safety, improving code quality and developer experience through early error detection.
+
+**Three-View Architecture**: 
+
+We implemented a clear separation between the Map view, Likes view, and Bookmarks view to create a focused user experience for each task.
+
+**Mapbox GL Integration**: 
+
+We selected Mapbox for its powerful interactive mapping capabilities, customizable markers, and smooth animations for location transitions.
+State Management: We used React's useState and useEffect hooks for local component state and side effects, avoiding the complexity of additional state management libraries.
+
+**Responsive Design**: 
+
+All components were designed to adapt to different screen sizes, ensuring a consistent experience across devices.
+
+**Optimistic UI Updates**: 
+
+User actions like likes and bookmarks immediately update the UI before backend confirmation, creating a more responsive feel.
+
+### Backend Integration
+
+**Service Layer Pattern**: 
+
+We centralized all API communication in api.ts, creating a clean separation between data fetching and UI rendering.
+
+**Parameterized Endpoints:**
+
+Our API functions accept filter parameters, allowing the same endpoint to be reused in different contexts with varying criteria.
+
+**Authentication Integration:**
+
+We used Clerk to manage user authentication, passing the userId to relevant API calls for personalized features.
+
+**Error Handling**: 
+
+We implemented consistent error handling across all API calls, with appropriate fallbacks when services are unavailable.
 
 # Testing
 
@@ -89,3 +129,5 @@ You can now explore events on an interactive map, filter by category, view trend
 # Collaboration
 
 **Yumian Cui (ycui39)**: Yumian designed the recommendation strategy, finalized the API endpoint specifications, and implemented both the recommendation and trending API endpoints. She also supported backend debugging efforts to ensure proper functionality, communicated closely with the frontend to support smooth integration, and tested the entire recommendation pipeline through both unit and integration testing.
+
+**Yunqi Li (yli795)**: Yunqi implemented a comprehensive frontend for the BrunoMap application using React and TypeScript, creating an intuitive interface with three main views: a map-based discovery system using Mapbox, a personalized likes collection, and a bookmarks section. She developed a robust filtering system for events by category, time, and location, while ensuring responsive design across devices. For backend integration, Yunqi designed a centralized service layer that manages all API communications, implementing optimistic UI updates for user interactions and efficient state management. She established proper authentication flow, enabling event engagement tracking and user-specific content display, while maintaining clean separation between data fetching and UI rendering components.
