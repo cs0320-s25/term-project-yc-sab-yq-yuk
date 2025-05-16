@@ -68,7 +68,7 @@ We implemented consistent error handling across all API calls, with appropriate 
 
 We have implemented an extensive testing suite, including backend unit tests, Postman tests for API endpoints, and frontend-backend integration tests.
 
-- **Backend unit tests** for the recommendation and trending services are located in `server/map/map-server/src/test/java/com/map/service`.
+- **Backend unit tests** are located in `server/map/map-server/src/test/java/com/map/service`.
 - **Postman tests** covering the full recommendation flow can be found in `server/bruno-map-nonrec.postman_collection.json` and `server/bruno-map-rec.postman_collection.json`.
 - **Frontend-backend integration tests** are available in `client/tests/e2e`. - `npx playwright test App.spec.ts --workers 1`
 
