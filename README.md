@@ -69,7 +69,7 @@ We implemented consistent error handling across all API calls, with appropriate 
 We have implemented an extensive testing suite, including backend unit tests, Postman tests for API endpoints, and frontend-backend integration tests.
 
 - **Backend unit tests** for the recommendation and trending services are located in `server/map/map-server/src/test/java/com/map/service`.
-- **Postman tests** covering the full recommendation flow can be found in `server/bruno-map-rec.postman_collection.json`.
+- **Postman tests** covering the full recommendation flow can be found in `server/bruno-map-nonrec.postman_collection.json` and `server/bruno-map-rec.postman_collection.json`.
 - **Frontend-backend integration tests** are available in `client/tests/e2e`. - `npx playwright test App.spec.ts --workers 1`
 
 In addition to automated testing, our team has conducted thorough manual testing by interacting with the app to verify expected behaviors.
@@ -131,3 +131,5 @@ You can now explore events on an interactive map, filter by category, view trend
 **Yumian Cui (ycui39)**: Yumian designed the recommendation strategy, finalized the API endpoint specifications, and implemented both the recommendation and trending API endpoints. She also supported backend debugging efforts to ensure proper functionality, communicated closely with the frontend to support smooth integration, and tested the entire recommendation pipeline through both unit and integration testing.
 
 **Yunqi Li (yli795)**: Yunqi implemented a comprehensive frontend for the BrunoMap application using React and TypeScript, creating an intuitive interface with three main views: a map-based discovery system using Mapbox, a personalized likes collection, and a bookmarks section. She developed a robust filtering system for events by category, time, and location, while ensuring responsive design across devices. For backend integration, Yunqi designed a centralized service layer that manages all API communications, implementing optimistic UI updates for user interactions and efficient state management. She established proper authentication flow, enabling event engagement tracking and user-specific content display, while maintaining clean separation between data fetching and UI rendering components.
+
+**Yuki Zang (mzang2)**: Yuki designed the relational database schema in MySQL to support event-related and user interaction features, and selected the backend technology stack including Java, Spring Boot, and MyBatis. She implemented all non-recommendation API endpoints, encompassing core functionalities such as event retrieval, filtering, search, and user-specific actions like viewing, bookmarking, and liking events. Yuki ensured efficient data access and consistency across endpoints, and collaborated closely with the frontend, recommendation, and data team members to support smooth integration and end-to-end system functionality.

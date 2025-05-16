@@ -61,8 +61,8 @@ public class EventController {
         @RequestParam(required = false) String near) {
 
         Set<String> allowedNames = Set.of("Today", "Tomorrow", "This Week", "This Weekend", "Next Week");
-
-        if (time != null && allowedNames.contains(time)) {
+        System.out.println("here's the time" + time);
+        if (time != null && !allowedNames.contains(time)) {
             return Result.error("Invalid time filter.");
         }
 
