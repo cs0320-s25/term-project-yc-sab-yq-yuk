@@ -7,8 +7,11 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.OptionalDouble;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import com.map.service.TrendingService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import static com.map.constant.RecommendationConstant.RECOMMENDATION_LIMIT;
 
@@ -17,6 +20,7 @@ import static com.map.constant.RecommendationConstant.RECOMMENDATION_LIMIT;
  */
 @Service
 public class TrendingServiceImpl implements TrendingService {
+    private static final Logger logger = LoggerFactory.getLogger(TrendingServiceImpl.class);
     @Autowired
     private EventService eventService;
     // private List<Event> allEvents = eventService.fetchEvents(EventQueryDTO.builder().build());
@@ -36,9 +40,12 @@ public class TrendingServiceImpl implements TrendingService {
     * - Swap MockDataLoader.getEvents() with eventRepository.findAll().
     * - Persist updates with eventRepository.save(event).
     */
+    // Runs automatically every hour (cron: second=0, minute=0, every hour).
+    // This means the POST /trending/recalculate endpoint still exists for manual admin
+    // use, but the frontend should NEVER call it — users just call GET /trending.
+    @Scheduled(cron = "0 0 * * * *")
     public void recalculateTrendingScores() {
-        // TODO: Implement trending score recalculation logic
-        // List<Event> allEvents = eventRepository.findAll();
+        logger.info("Scheduled: recalculating trending scores");
         List<Event> allEvents = eventService.fetchEvents(EventQueryDTO.builder().build());
 
         OptionalDouble maxPopularityOpt = allEvents.stream()

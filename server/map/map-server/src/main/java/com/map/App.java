@@ -2,13 +2,16 @@ package com.map;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.scheduling.annotation.EnableScheduling;
 
 /**
- * run the program
- *
+ * Application entry point.
+ * @EnableScheduling activates Spring's cron/fixed-rate task infrastructure,
+ * so @Scheduled methods (e.g. trending recalculation) actually run.
  */
 @SpringBootApplication
-public class App 
+@EnableScheduling
+public class App
 {
     public static void main( String[] args )
     {

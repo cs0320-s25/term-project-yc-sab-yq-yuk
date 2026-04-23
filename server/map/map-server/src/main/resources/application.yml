@@ -7,11 +7,16 @@ spring:
   main:
     allow-circular-references: true
   datasource:
-    druid:
-      driver-class-name: com.mysql.cj.jdbc.Driver
-      url: jdbc:mysql://localhost:3306/brownevents?serverTimezone=America/New_York&useUnicode=true&characterEncoding=utf-8&zeroDateTimeBehavior=convertToNull&useSSL=false&allowPublicKeyRetrieval=true
-      username: root
-      password: 12345678
+    # Postgres via Supabase Session Pooler (IPv4-compatible)
+    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://${DB_HOST:aws-1-us-east-2.pooler.supabase.com}:${DB_PORT:5432}/${DB_NAME:postgres}
+    username: ${DB_USERNAME:postgres.qbozkmwkimxcharmwgpn}
+    password: ${DB_PASSWORD:5WrrP7ly1YwiTSpY}
+
+# CORS allowed origins — override with env var in production
+app:
+  cors:
+    allowed-origins: ${ALLOWED_ORIGINS:http://localhost:8000}
 
 springdoc:
   api-docs:
