@@ -10,13 +10,25 @@ pom.xml.bak
 # node, vite
 node_modules/
 client/*.js
-target/
 build/
 dist/
-.env
 test-results/
 playwright-report/
 playwright/.cache/
+
+# Python
+venv/
+__pycache__/
+*.pyc
+
+# Scraper runtime files
+scraper/crawler.log
+scraper/seen_links.json
+
+# Environment & secrets
+.env
+application.yml
+application-test.yml
 
 # mac
 .DS_Store

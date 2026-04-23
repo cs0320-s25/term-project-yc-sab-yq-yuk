@@ -1,0 +1,248 @@
+{
+	"info": {
+		"_postman_id": "56ce126f-2e23-4d45-b755-2947ac3de1e6",
+		"name": "bruno-map-rec",
+		"description": "These tests focus only on the recommendation and trending endpoints. They are intended to mimic a basic user interaction flow to ensure core functionality is working as expected.",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "42020184"
+	},
+	"item": [
+		{
+			"name": "view event 412 career",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/events/views/412",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"events",
+						"views",
+						"412"
+					]
+				},
+				"description": "user viewed event 412 with event type career-related"
+			},
+			"response": []
+		},
+		{
+			"name": "like event 412 career",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "412",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/users/test_user1/likes",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"users",
+						"test_user1",
+						"likes"
+					]
+				},
+				"description": "user liked event 412 with event type career-related"
+			},
+			"response": []
+		},
+		{
+			"name": "like event 295 forums",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "295",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/users/test_user1/likes",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"users",
+						"test_user1",
+						"likes"
+					]
+				},
+				"description": "user liked event 295 with event type forums"
+			},
+			"response": []
+		},
+		{
+			"name": "like event 75 public art",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "75",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/users/test_user1/likes",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"users",
+						"test_user1",
+						"likes"
+					]
+				},
+				"description": "user liked event 75 with event type public art (Since likes are weighted using time decay, and \"public art\" was liked more recently than other categories, recommendations favor events in this category.)"
+			},
+			"response": []
+		},
+		{
+			"name": "user profile",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/users/test_user1/profile",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"users",
+						"test_user1",
+						"profile"
+					],
+					"query": [
+						{
+							"key": "category",
+							"value": "Brown%20University%20School%20of%20Public%20Health",
+							"disabled": true
+						},
+						{
+							"key": "time",
+							"value": "Today",
+							"disabled": true
+						}
+					]
+				},
+				"description": "fetch user profile to confirm likes are recorded!"
+			},
+			"response": []
+		},
+		{
+			"name": "trending recalculate",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/trending/recalculate",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"trending",
+						"recalculate"
+					]
+				},
+				"description": "now manually invoke trending recalculate (so that it gets used in later recommendation pipeline :)"
+			},
+			"response": []
+		},
+		{
+			"name": "recommendations",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/recommendations/test_user1",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"recommendations",
+						"test_user1"
+					]
+				},
+				"description": "let's see what recommendations we get! (there could be some randomness, but you should public arts weighted more heavily, and ofc careers and forums-related"
+			},
+			"response": []
+		},
+		{
+			"name": "recommendations filters",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/recommendations/test_user1?category=Athletics, Sports, Wellness",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"recommendations",
+						"test_user1"
+					],
+					"query": [
+						{
+							"key": "category",
+							"value": "Athletics, Sports, Wellness"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "trending",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/trending",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"trending"
+					]
+				},
+				"description": "trending events should be 412, 296, and 75 at the top!"
+			},
+			"response": []
+		}
+	]
+}
