@@ -372,3 +372,64 @@ Stacktrace:
 📅 Date: 20250712 - Found 2 event links
 2025-05-13 18:41:00,660 [WARNING] Skipping event with missing start_time (url: https://events.brown.edu/event/292308-alchemy-imagining-social-justice-art-exhibi)
 2025-05-13 18:41:00,660 [INFO] [✓] Done crawling 20250712: 2 events inserted.
+2026-04-21 18:55:09,080 [INFO] 
+📅 Date: 20260421 - Found 74 event links
+2026-04-21 19:00:01,110 [WARNING] Skipping event with missing start_time (url: https://events.brown.edu/event/328635-art-at-watson-presents-odisha-illuminated-a)
+2026-04-21 19:00:05,994 [WARNING] Skipping event with missing start_time (url: https://events.brown.edu/event/329049-art-at-watson-presents-the-future-was-already-buried-)
+2026-04-21 19:00:09,986 [WARNING] Skipping event with missing start_time (url: https://events.brown.edu/event/325182-basel-abbas-ruanne-abou-rahme-prisoners-of)
+2026-04-21 19:00:13,877 [WARNING] Skipping event with missing start_time (url: https://events.brown.edu/event/318692-community-connection-art-exhibit)
+2026-04-21 19:00:17,938 [WARNING] Skipping event with missing start_time (url: https://events.brown.edu/event/331399-exposure-black-queer-visual-constellations)
+2026-04-21 19:00:21,594 [WARNING] Skipping event with missing start_time (url: https://events.brown.edu/event/304703-registration-for-fall-2026-continues-until-)
+2026-04-21 19:00:25,218 [WARNING] Skipping event with missing start_time (url: https://events.brown.edu/event/325373-registration-period-for-fall-courses-for-brown)
+2026-04-21 19:00:29,046 [WARNING] Skipping event with missing start_time (url: https://events.brown.edu/event/331485-share-your-voice-fy26-dpsem-community-survey)
+2026-04-21 19:00:29,046 [INFO] [✓] Done crawling 20260421: 74 events inserted.
+2026-04-21 19:00:31,567 [INFO] 
+📅 Date: 20260422 - Found 90 event links
+2026-04-21 19:06:59,456 [WARNING] Skipping event with missing start_time (url: https://events.brown.edu/event/328635-art-at-watson-presents-odisha-illuminated-a)
+2026-04-21 19:07:03,329 [WARNING] Skipping event with missing start_time (url: https://events.brown.edu/event/329049-art-at-watson-presents-the-future-was-already-buried-)
+2026-04-21 19:07:07,205 [WARNING] Skipping event with missing start_time (url: https://events.brown.edu/event/325182-basel-abbas-ruanne-abou-rahme-prisoners-of)
+2026-04-21 19:07:10,728 [WARNING] Skipping event with missing start_time (url: https://events.brown.edu/event/318692-community-connection-art-exhibit)
+2026-04-21 19:07:14,263 [WARNING] Skipping event with missing start_time (url: https://events.brown.edu/event/331400-exposure-black-queer-visual-constellations)
+2026-04-21 19:07:17,868 [WARNING] Skipping event with missing start_time (url: https://events.brown.edu/event/325374-registration-period-for-summer-courses-for-brown)
+2026-04-21 19:07:21,661 [WARNING] Skipping event with missing start_time (url: https://events.brown.edu/event/331485-share-your-voice-fy26-dpsem-community-survey)
+2026-04-21 19:07:21,661 [INFO] [✓] Done crawling 20260422: 90 events inserted.
+2026-04-21 19:07:24,178 [INFO] 
+📅 Date: 20260423 - Found 94 event links
+2026-04-21 19:07:45,777 [WARNING] Skipping event with missing start_time (url: https://events.brown.edu/event/325416-brown-university-coed-sailing-at-icsa-open-team)
+2026-04-21 19:13:51,607 [WARNING] Skipping event with missing start_time (url: https://events.brown.edu/event/331455-the-black-lavender-experience-there-will-be-bloom)
+2026-04-21 19:13:54,938 [WARNING] Skipping event with missing start_time (url: https://events.brown.edu/event/328635-art-at-watson-presents-odisha-illuminated-a)
+2026-04-21 19:13:58,458 [WARNING] Skipping event with missing start_time (url: https://events.brown.edu/event/329049-art-at-watson-presents-the-future-was-already-buried-)
+2026-04-21 19:14:02,421 [WARNING] Skipping event with missing start_time (url: https://events.brown.edu/event/325182-basel-abbas-ruanne-abou-rahme-prisoners-of)
+2026-04-21 19:14:05,882 [WARNING] Skipping event with missing start_time (url: https://events.brown.edu/event/320860-brown-university-mens-track-field-at-penn)
+2026-04-21 19:14:09,628 [WARNING] Skipping event with missing start_time (url: https://events.brown.edu/event/320861-brown-university-womens-track-field-at-penn)
+2026-04-21 19:14:13,357 [WARNING] Skipping event with missing start_time (url: https://events.brown.edu/event/318692-community-connection-art-exhibit)
+2026-04-21 19:14:16,759 [WARNING] Skipping event with missing start_time (url: https://events.brown.edu/event/331401-exposure-black-queer-visual-constellations)
+2026-04-21 19:14:20,582 [WARNING] Skipping event with missing start_time (url: https://events.brown.edu/event/332304-point-of-entry)
+2026-04-21 19:14:24,133 [WARNING] Skipping event with missing start_time (url: https://events.brown.edu/event/325374-registration-period-for-summer-courses-for-brown)
+2026-04-21 19:14:27,661 [WARNING] Skipping event with missing start_time (url: https://events.brown.edu/event/331485-share-your-voice-fy26-dpsem-community-survey)
+2026-04-21 19:14:27,662 [INFO] [✓] Done crawling 20260423: 94 events inserted.
+2026-04-21 21:51:18,739 [INFO] 
+📅 Date: 20260421 - Found 74 event links
+2026-04-21 21:51:22,886 [WARNING] Could not parse time string: '9:00am' — needs LLM parsing
+2026-04-21 21:51:23,021 [WARNING] Skipping event with missing start_time (url: https://events.brown.edu/event/331603-senior-thesis-presentation-lucinda-bryce)
+2026-04-21 21:51:27,023 [WARNING] Could not parse time string: '9:00am' — needs LLM parsing
+2026-04-21 21:51:27,024 [WARNING] Could not parse time string: '10:00am' — needs LLM parsing
+2026-04-21 21:51:27,191 [WARNING] Skipping event with missing start_time (url: https://events.brown.edu/event/331138-mcbgp-thesis-defense-raphael-britt)
+2026-04-21 21:51:31,450 [WARNING] Could not parse time string: '9:00am' — needs LLM parsing
+2026-04-21 21:51:31,451 [WARNING] Could not parse time string: '4:30pm' — needs LLM parsing
+2026-04-21 21:51:31,601 [WARNING] Skipping event with missing start_time (url: https://events.brown.edu/event/330637-exhibit-divine-afterlife-burials-and-religion-in)
+2026-04-21 21:51:35,867 [WARNING] Could not parse time string: '10:00am' — needs LLM parsing
+2026-04-21 21:51:35,867 [WARNING] Could not parse time string: '11:00am' — needs LLM parsing
+2026-04-21 21:51:35,995 [WARNING] Skipping event with missing start_time (url: https://events.brown.edu/event/331914-build-a-better-poster-workshop)
+2026-04-21 21:51:39,623 [WARNING] Could not parse time string: '10:00am' — needs LLM parsing
+2026-04-21 21:51:39,623 [WARNING] Could not parse time string: '12:00pm' — needs LLM parsing
+2026-04-21 21:51:39,754 [WARNING] Skipping event with missing start_time (url: https://events.brown.edu/event/328579-building-sustaining-psychological-safety-virtual)
+2026-04-21 22:22:03,957 [INFO] 
+📅 Date: 20260421 - Found 74 event links
+2026-04-21 22:27:47,492 [INFO] [✓] Done crawling 20260421: 74 events inserted.
+2026-04-21 22:27:50,399 [INFO] 
+📅 Date: 20260422 - Found 90 event links
+2026-04-21 22:34:59,042 [INFO] [✓] Done crawling 20260422: 90 events inserted.
+2026-04-21 22:35:01,643 [INFO] 
+📅 Date: 20260423 - Found 94 event links
+2026-04-21 22:42:19,530 [INFO] [✓] Done crawling 20260423: 94 events inserted.

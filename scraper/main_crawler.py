@@ -6,7 +6,11 @@ from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.chrome.options import Options
 from crawl_event import scrape_event_detail
+from dotenv import load_dotenv
 import logging
+
+# Load from scraper/.env if present; falls back to system environment variables
+load_dotenv()
 
 logging.basicConfig(
     level=logging.INFO,
@@ -16,6 +20,7 @@ logging.basicConfig(
         logging.StreamHandler(),
     ],
 )
+
 
 def load_seen_links(filename="seen_links.json"):
     if not os.path.exists(filename) or os.path.getsize(filename) == 0:
@@ -30,9 +35,6 @@ def save_seen_links(seen_links, filename="seen_links.json"):
 
 
 def save_events(events, filename="events.json"):
-    # from pprint import pprint
-    # pprint(events)
-
     old = []
     if os.path.exists(filename) and os.path.getsize(filename) > 0:
         with open(filename, "r") as f:
@@ -51,11 +53,12 @@ from db import get_connection
 
 
 def insert_event(event):
+    """Insert an event into the database. Returns True if inserted, False if skipped."""
     if not event.get("start_time"):
         logging.warning(
             f"Skipping event with missing start_time (url: {event.get('url')})"
         )
-        return
+        return False
 
     conn = get_connection()
     cursor = conn.cursor()
@@ -73,38 +76,42 @@ def insert_event(event):
         "longitude": event.get("longitude"),
     }
 
+    # Postgres: use RETURNING to get the auto-generated event_id
+    # (MySQL used cursor.lastrowid; Postgres returns it inline)
     insert_event_sql = """
     INSERT INTO events (
-        name, start_time, end_time, timezone, location, description, 
+        name, start_time, end_time, timezone, location, description,
         event_type, link, latitude, longitude
     ) VALUES (
-        %(name)s, %(start_time)s, %(end_time)s, %(timezone)s, %(location)s, 
+        %(name)s, %(start_time)s, %(end_time)s, %(timezone)s, %(location)s,
         %(description)s, %(event_type)s, %(link)s, %(latitude)s, %(longitude)s
     )
+    RETURNING event_id
     """
 
     cursor.execute(insert_event_sql, event_data)
-
-    # auto increment
-    event_id = cursor.lastrowid
+    event_id = cursor.fetchone()[0]
 
     # Insert categories
+    # Postgres: INSERT ... ON CONFLICT DO NOTHING (replaces MySQL's INSERT IGNORE)
     for category in event.get("categories", []):
         cursor.execute(
-            "INSERT IGNORE INTO categories (category_name) VALUES (%s)", (category,)
+            "INSERT INTO categories (category_name) VALUES (%s) ON CONFLICT DO NOTHING",
+            (category,),
         )
         cursor.execute(
             "SELECT category_id FROM categories WHERE category_name = %s", (category,)
         )
         category_id = cursor.fetchone()[0]
         cursor.execute(
-            "INSERT IGNORE INTO event_categories (event_id, category_id) VALUES (%s, %s)",
+            "INSERT INTO event_categories (event_id, category_id) VALUES (%s, %s) ON CONFLICT DO NOTHING",
             (event_id, category_id),
         )
 
     conn.commit()
     cursor.close()
     conn.close()
+    return True
 
 
 def get_event_links_for_date(driver, date_str):
@@ -116,35 +123,38 @@ def get_event_links_for_date(driver, date_str):
 
 
 def main():
+    # Crawl window controlled by env vars — see scraper/.env.example
+    start_offset = int(os.environ.get("CRAWL_START_OFFSET", 0))
+    end_offset = int(os.environ.get("CRAWL_END_OFFSET", 30))
+
     seen_links = load_seen_links()
     new_seen_links = set(seen_links)
     all_event_details = []
 
     options = Options()
-    options.add_argument(
-        "--headless"
-    )  # Run the browser in headless mode (no visible window)
+    options.add_argument("--headless")
 
     driver = webdriver.Chrome(options=options)
 
-    # for offset in range(0, 2):  # crawl next 7 days
-    for offset in range(60, 61):
+    for offset in range(start_offset, end_offset):
         date = (datetime.date.today() + datetime.timedelta(days=offset)).strftime("%Y%m%d")
         event_links = get_event_links_for_date(driver, date)
         logging.info(f"\n📅 Date: {date} - Found {len(event_links)} event links")
 
         daily_success_count = 0
 
-        # for link in event_links:
-        for link in event_links[:2]:
+        for link in event_links:
             if link in seen_links:
                 continue
             try:
                 detail = scrape_event_detail(link, date)
-                insert_event(detail)
-                new_seen_links.add(link)
-                all_event_details.append(detail)
-                daily_success_count += 1
+                inserted = insert_event(detail)
+                if inserted:
+                    new_seen_links.add(link)
+                    all_event_details.append(detail)
+                    daily_success_count += 1
+                # If not inserted (skipped), don't add to seen_links
+                # so it gets retried on the next run with potentially better parsing
             except Exception as e:
                 logging.error(f"Failed to scrape {link}: {e}")
 
@@ -153,11 +163,6 @@ def main():
         save_seen_links(new_seen_links)
 
     driver.quit()
-
-    # save_events(all_event_details)
-    # save_seen_links(new_seen_links)
-
-    # print(f"[✓] Collected {len(all_event_details)} new events.")
 
 
 if __name__ == "__main__":
