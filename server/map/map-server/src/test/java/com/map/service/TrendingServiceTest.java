@@ -2,49 +2,100 @@ package com.map.service;
 
 import com.map.dto.EventQueryDTO;
 import com.map.entity.Event;
-import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.ActiveProfiles;
-import org.springframework.transaction.annotation.Transactional;
-
+import com.map.service.impl.TrendingServiceImpl;
+import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
-@SpringBootTest
-@ActiveProfiles("test")
-@Transactional
-@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
-public class TrendingServiceTest {
+@ExtendWith(MockitoExtension.class)
+class TrendingServiceTest {
 
-    @Autowired
-    private TrendingService trendingService;
+    @Mock
+    private EventService eventService;
+
+    @InjectMocks
+    private TrendingServiceImpl trendingService;
+
+    @Captor
+    private ArgumentCaptor<Integer> eventIdCaptor;
+
+    @Captor
+    private ArgumentCaptor<Double> scoreCaptor;
 
     @Test
-    public void testRecalculateTrendingScores_andFetchTrendingEvents() {
-        // Call the service method that recalculates trending scores
+    void recalculateTrendingScores_updatesNormalizedScoresForEachEvent() {
+        when(eventService.fetchEvents(any(EventQueryDTO.class))).thenReturn(List.of(
+            event(101, 10, 5),
+            event(102, 2, 3),
+            event(103, 0, 0)
+        ));
+
         trendingService.recalculateTrendingScores();
 
-        // Query for trending events with no filter
-        EventQueryDTO query = EventQueryDTO.builder().build();
-        List<Event> trendingEvents = trendingService.fetchTrendingEvents(query);
+        verify(eventService, times(3)).updateTrendingScore(eventIdCaptor.capture(), scoreCaptor.capture());
+        Map<Integer, Double> updatedScores = toScoreMap(eventIdCaptor.getAllValues(), scoreCaptor.getAllValues());
 
-        // Basic checks
-        assertNotNull(trendingEvents);
-        assertFalse(trendingEvents.isEmpty(), "Expected non-empty trending list");
+        assertEquals(1.0, updatedScores.get(101), 1e-9);
+        assertEquals(5.0 / 15.0, updatedScores.get(102), 1e-9);
+        assertEquals(0.0, updatedScores.get(103), 1e-9);
+    }
 
-        // Trending scores should be non-negative
-        for (Event event : trendingEvents) {
-            assertNotNull(event.getTrendingScore(), "Trending score should not be null");
-            assertTrue(event.getTrendingScore() >= 0.0, "Trending score should be non-negative");
+    @Test
+    void recalculateTrendingScores_handlesZeroPopularityWithoutDivisionByZero() {
+        when(eventService.fetchEvents(any(EventQueryDTO.class))).thenReturn(List.of(
+            event(201, 0, 0),
+            event(202, 0, 0)
+        ));
+
+        trendingService.recalculateTrendingScores();
+
+        verify(eventService, times(2)).updateTrendingScore(eventIdCaptor.capture(), scoreCaptor.capture());
+        for (Double updatedScore : scoreCaptor.getAllValues()) {
+            assertEquals(0.0, updatedScore, 1e-9);
         }
+    }
 
-        // Should be in descending order by trending score
-        for (int i = 1; i < trendingEvents.size(); i++) {
-            assertTrue(trendingEvents.get(i - 1).getTrendingScore() >= trendingEvents.get(i).getTrendingScore(),
-                "Events should be sorted by descending trending score");
+    @Test
+    void recalculateTrendingScores_doesNothingWhenNoEventsExist() {
+        when(eventService.fetchEvents(any(EventQueryDTO.class))).thenReturn(List.of());
+
+        trendingService.recalculateTrendingScores();
+
+        verify(eventService, times(0)).updateTrendingScore(any(), any());
+    }
+
+    private Map<Integer, Double> toScoreMap(List<Integer> eventIds, List<Double> scores) {
+        Map<Integer, Double> scoreMap = new HashMap<>();
+        for (int i = 0; i < eventIds.size(); i++) {
+            scoreMap.put(eventIds.get(i), scores.get(i));
         }
+        return scoreMap;
+    }
+
+    private Event event(int eventId, int likedCount, int viewedCount) {
+        LocalDateTime startTime = LocalDateTime.now().plusDays(1);
+        return Event.builder()
+            .eventId(eventId)
+            .name("Event " + eventId)
+            .startTime(startTime)
+            .endTime(startTime.plusHours(1))
+            .likedCount(likedCount)
+            .viewedCount(viewedCount)
+            .trendingScore(0.0)
+            .build();
     }
 }
