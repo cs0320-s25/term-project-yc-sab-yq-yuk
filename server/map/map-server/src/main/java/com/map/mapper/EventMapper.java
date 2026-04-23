@@ -22,7 +22,7 @@ public interface EventMapper{
    * @param eventId
    * @return true if the event exists, false otherwise
    */
-  @Select("SELECT COUNT(*) > 0 FROM Events WHERE event_id = #{eventId}")
+  @Select("SELECT COUNT(*) > 0 FROM events WHERE event_id = #{eventId}")
   boolean checkIfEventExists(@Param("eventId") Integer eventId);
 
   /**
@@ -37,7 +37,7 @@ public interface EventMapper{
    * @param eventId
    * @return event object if found, else null.
    */
-  @Select("SELECT * FROM Events WHERE event_id = #{eventId}")
+  @Select("SELECT * FROM events WHERE event_id = #{eventId}")
   Event selectEventById(@Param("eventId") Integer eventId);
 
   /**
@@ -45,9 +45,9 @@ public interface EventMapper{
    * @param query the search term
    * @return list of matching events
    */
-  @Select("SELECT * FROM Events "
-      + "WHERE LOWER(name) LIKE CONCAT('%', LOWER(#{query}), '%') "
-      + "OR LOWER(description) LIKE CONCAT('%', LOWER(#{query}), '%') ")
+  @Select("SELECT * FROM events "
+      + "WHERE LOWER(name) LIKE '%' || LOWER(#{query}) || '%' "
+      + "OR LOWER(description) LIKE '%' || LOWER(#{query}) || '%' ")
   List<Event> selectEventByValue(@Param("query") String query);
 
   /**
@@ -62,7 +62,7 @@ public interface EventMapper{
    * Increment the view count for a specific event by 1.
    * @param eventId
    */
-  @Update("UPDATE Events SET viewed_count = viewed_count + 1 WHERE event_id = #{eventId}")
+  @Update("UPDATE events SET viewed_count = viewed_count + 1 WHERE event_id = #{eventId}")
   void updateViewCount(@Param("eventId") Integer eventId);
 
   /**
@@ -84,7 +84,7 @@ public interface EventMapper{
    * @param
    * @return list of locations of all events.
    */
-  @Select("SELECT DISTINCT location FROM Events")
+  @Select("SELECT DISTINCT location FROM events")
   List<String> getAllLocations();
 
   /**

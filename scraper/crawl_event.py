@@ -46,18 +46,68 @@ def scrape_event_detail(url, date_str):
         timezone = None
 
     # Parse time strings into datetime objects using the passed-in date
-    def parse_datetime(date_str, time_str):
-        try:
-            date_fmt = "%Y%m%d"
-            time_fmt = "%I:%M%p"
-            date_part = datetime.strptime(date_str, date_fmt).date()
-            time_part = datetime.strptime(time_str.lower(), time_fmt).time()
-            return datetime.combine(date_part, time_part)
-        except:
-            return None
+    def parse_datetime(date_str, time_str, is_end=False):
+        """Parse a time string into a datetime.
+        Tries multiple formats in order:
+          1. 'All Day' / None → midnight or 23:59
+          2. '9:00AM'          → time only, use crawl date
+          3. 'April 23, 9:00am' → date embedded in time string (multi-day events)
+          4. 'April 23, 2026, 9:00am' → full date with year
+        If the time string contains its own date, that overrides the crawl date.
+        """
+        date_fmt = "%Y%m%d"
+        date_part = datetime.strptime(date_str, date_fmt).date()
 
-    start_time = parse_datetime(date_str, start_time_raw) if start_time_raw else None
-    end_time = parse_datetime(date_str, end_time_raw) if end_time_raw else None
+        # Handle All Day / missing time
+        if time_str is None or time_str.lower().strip() in ("all day", ""):
+            if is_end:
+                return datetime.combine(date_part, datetime.strptime("11:59PM", "%I:%M%p").time())
+            else:
+                return datetime.combine(date_part, datetime.min.time())
+
+        cleaned = time_str.strip()
+
+        # Normalize AM/PM to uppercase (strptime %p requires "AM"/"PM" on some systems)
+        # and title-case for month names (strptime %B requires "April" not "april")
+        import re
+        normalized = re.sub(r'(?i)(am|pm)', lambda m: m.group().upper(), cleaned)
+
+        # Try formats in order: most specific first
+        # IMPORTANT: never lowercase format strings — %I and %M are case-sensitive
+        formats = [
+            # "April 23, 2026, 9:00AM" — full date with year
+            ("%B %d, %Y, %I:%M%p", True),
+            # "April 23, 9:00AM" — date without year (multi-day events)
+            ("%B %d, %I:%M%p", True),
+            # "Apr 23, 9:00AM" — abbreviated month
+            ("%b %d, %I:%M%p", True),
+            # "9:00AM" — time only (most common)
+            ("%I:%M%p", False),
+        ]
+
+        # Try each format with two input variants: as-is and title-cased
+        for fmt, has_date in formats:
+            for variant in [normalized, normalized.title()]:
+                try:
+                    parsed = datetime.strptime(variant, fmt)
+                    if has_date:
+                        # The time string contained its own date — use it
+                        if parsed.year == 1900:
+                            parsed = parsed.replace(year=date_part.year)
+                        return parsed
+                    else:
+                        return datetime.combine(date_part, parsed.time())
+                except ValueError:
+                    continue
+
+        # Nothing matched — log and return None
+        import logging
+        logging.warning(f"Could not parse time string: '{time_str}' — needs LLM parsing")
+        return None
+
+    start_time = parse_datetime(date_str, start_time_raw, is_end=False)
+    end_time = parse_datetime(date_str, end_time_raw, is_end=True)
+
 
     # description
     try:

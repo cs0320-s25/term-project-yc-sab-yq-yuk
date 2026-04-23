@@ -9,16 +9,16 @@ import { Event } from '../types';
 export const isOnlineEvent = (event: Event): boolean => {
   if (!event.location) return false;
   const locationLower = event.location.toLowerCase();
-  return locationLower.includes('online only') || 
-         locationLower.includes('online-only') || 
-         locationLower.includes('virtual') ||
-         locationLower === 'online' ||
-         event.latitude === 0 || 
-         event.longitude === 0||
-         event.latitude === null ||
-         event.longitude === null ||
-         event.latitude === undefined ||
-         event.longitude === undefined;
+  return locationLower.includes('online only') ||
+    locationLower.includes('online-only') ||
+    locationLower.includes('virtual') ||
+    locationLower === 'online' ||
+    event.latitude === 0 ||
+    event.longitude === 0 ||
+    event.latitude === null ||
+    event.longitude === null ||
+    event.latitude === undefined ||
+    event.longitude === undefined;
 };
 
 /**
@@ -27,16 +27,16 @@ export const isOnlineEvent = (event: Event): boolean => {
  * @returns True if the event has valid coordinates
  */
 export const hasValidCoordinates = (event: Event): boolean => {
-  const isValid = typeof event.latitude === 'number' && 
-         typeof event.longitude === 'number' && 
-         !isNaN(event.latitude) && 
-         !isNaN(event.longitude) &&
-         event.latitude !== 0 &&
-         event.longitude !== 0;
-  
+  const isValid = typeof event.latitude === 'number' &&
+    typeof event.longitude === 'number' &&
+    !isNaN(event.latitude) &&
+    !isNaN(event.longitude) &&
+    event.latitude !== 0 &&
+    event.longitude !== 0;
+
 
   // console.log('Coordinates for event:', event.name, 'location:', event.location, 'lat:', event.latitude, 'long:', event.longitude);
-  
+
   return isValid;
 };
 
@@ -78,32 +78,32 @@ export const filterEvents = (events: Event[], filters: {
     if (filters.showOnlineOnly && !isOnlineEvent(event)) {
       return false;
     }
-    
+
     // Filter by location
     if (filters.location === 'online' && !isOnlineEvent(event)) {
       return false;
-    } else if (filters.location && 
-              filters.location !== 'online' && 
-              !event.location.toLowerCase().includes(filters.location.toLowerCase())) {
+    } else if (filters.location &&
+      filters.location !== 'online' &&
+      !event.location.toLowerCase().includes(filters.location.toLowerCase())) {
       return false;
     }
-    
+
     // Filter by category
-    if (filters.category && 
-        (!event.categories || 
-         !event.categories.some(cat => cat.includes(filters.category!)))) {
+    if (filters.category &&
+      (!event.categories ||
+        !event.categories.some(cat => cat.includes(filters.category!)))) {
       return false;
     }
-    
+
     // Filter by search query
-    if (filters.searchQuery && 
-        !event.name.toLowerCase().includes(filters.searchQuery.toLowerCase()) &&
-        !event.description.toLowerCase().includes(filters.searchQuery.toLowerCase())) {
+    if (filters.searchQuery &&
+      !event.name.toLowerCase().includes(filters.searchQuery.toLowerCase()) &&
+      !event.description.toLowerCase().includes(filters.searchQuery.toLowerCase())) {
       return false;
     }
-    
+
     // More filters could be added here (time, etc.)
-    
+
     return true;
   });
 };
@@ -115,4 +115,23 @@ export const filterEvents = (events: Event[], filters: {
  */
 export const getMapEvents = (events: Event[]): Event[] => {
   return events.filter(event => hasValidCoordinates(event));
+};
+
+/**
+ * Truncate a string to the first N sentences. Falls back to a char cut when
+ * no sentence terminator is found (e.g. scraped descriptions without punctuation).
+ */
+export const truncateToSentences = (
+  text: string,
+  maxSentences = 2,
+  fallbackChars = 140
+): string => {
+  if (!text) return '';
+  const matches = text.match(/[^.!?]+[.!?]+/g);
+  if (matches && matches.length > 0) {
+    const taken = matches.slice(0, maxSentences).join('').trim();
+    return taken.length < text.trim().length ? `${taken}…` : taken;
+  }
+  if (text.length <= fallbackChars) return text;
+  return `${text.substring(0, fallbackChars).trimEnd()}…`;
 };

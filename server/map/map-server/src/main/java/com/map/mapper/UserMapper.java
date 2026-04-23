@@ -66,7 +66,7 @@ public interface UserMapper {
    */
   @Insert("INSERT INTO user_likes (user_id, event_id, timestamp) " +
           "VALUES (#{userId}, #{eventId}, CURRENT_TIMESTAMP) " +
-          "ON DUPLICATE KEY UPDATE timestamp = CURRENT_TIMESTAMP")
+          "ON CONFLICT (user_id, event_id) DO UPDATE SET timestamp = CURRENT_TIMESTAMP")
   void likeEvent(@Param("userId") String userId, @Param("eventId") Integer eventId);
 
   /**
@@ -84,7 +84,7 @@ public interface UserMapper {
    */
   @Insert("INSERT INTO user_bookmarks (user_id, event_id) " +
           "VALUES (#{userId}, #{eventId}) " +
-          "ON DUPLICATE KEY UPDATE user_id = user_id")
+          "ON CONFLICT (user_id, event_id) DO NOTHING")
   void bookmarkEvent(@Param("userId") String userId, @Param("eventId") Integer eventId);
 
   /**

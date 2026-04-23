@@ -1,110 +1,123 @@
 package com.map.service;
 
 import com.map.dto.UserLikeDTO;
+import com.map.mapper.EventMapper;
+import com.map.mapper.UserMapper;
+import com.map.service.impl.UserServiceImpl;
 import com.map.vo.UserProfileVO;
-import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.ActiveProfiles;
-import org.springframework.transaction.annotation.Transactional;
-
+import java.time.LocalDateTime;
 import java.util.List;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertIterableEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
-@SpringBootTest
-@ActiveProfiles("dev")
-@Transactional
-@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
-public class UserServiceTest {
+@ExtendWith(MockitoExtension.class)
+class UserServiceTest {
 
-    @Autowired
-    private UserService userService;
+    @Mock
+    private UserMapper userMapper;
+
+    @Mock
+    private EventMapper eventMapper;
+
+    @InjectMocks
+    private UserServiceImpl userService;
 
     @Test
-    public void testGetUserProfile_NewUser() {
-        // Test getting profile for a new user
-        assertThrows(Exception.class, () -> {
-            userService.getUserProfile("new_user");
-        });
+    void getUserProfile_newUser_createsUserAndThrows() {
+        when(userMapper.checkUserExists("new_user")).thenReturn(false);
+
+        Exception exception = assertThrows(Exception.class, () -> userService.getUserProfile("new_user"));
+
+        assertEquals("User not found: new_user", exception.getMessage());
+        verify(userMapper).createUser("new_user");
     }
 
     @Test
-    public void testGetUserProfile_ExistingUser() throws Exception {
-        // Test getting profile for an existing user
+    void getUserProfile_existingUser_returnsLikesAndBookmarks() throws Exception {
+        when(userMapper.checkUserExists("mytest")).thenReturn(true);
+        when(userMapper.getUserLikes("mytest")).thenReturn(List.of(1, 2));
+        when(userMapper.getUserBookmarks("mytest")).thenReturn(List.of(3));
+
         UserProfileVO profile = userService.getUserProfile("mytest");
-        assertNotNull(profile);
-        assertNotNull(profile.getLikes());
-        assertNotNull(profile.getBookmarks());
+
+        assertIterableEquals(List.of(1, 2), profile.getLikes());
+        assertIterableEquals(List.of(3), profile.getBookmarks());
     }
 
     @Test
-    public void testGetUserLikeEntries() {
-        // Test getting like entries for a user
-        List<UserLikeDTO> likes = userService.getUserLikeEntries("test_user1");
-        assertNotNull(likes);
+    void getUserLikeEntries_returnsMapperResults() {
+        List<UserLikeDTO> likes = List.of(new UserLikeDTO(1, LocalDateTime.of(2026, 4, 20, 10, 0)));
+        when(userMapper.getUserLikesWithTimestamps("test_user1")).thenReturn(likes);
+
+        List<UserLikeDTO> actualLikes = userService.getUserLikeEntries("test_user1");
+
+        assertEquals(likes, actualLikes);
+        verify(userMapper).getUserLikesWithTimestamps("test_user1");
     }
 
     @Test
-    public void testLikeEvent() throws Exception {
-        // Test liking an event
-        String userId = "mytest";
-        Integer eventId = 1;
-        
-        // Like the event
-        userService.likeEvent(userId, eventId);
-        
-        // Verify the like was recorded
-        List<UserLikeDTO> likes = userService.getUserLikeEntries(userId);
-        assertTrue(likes.stream().anyMatch(like -> like.getEventId().equals(eventId)));
+    void likeEvent_addsLikeAndIncrementsCountWhenEventWasNotPreviouslyLiked() throws Exception {
+        when(userMapper.checkUserExists("mytest")).thenReturn(true);
+        when(eventMapper.checkIfEventExists(1)).thenReturn(true);
+        when(userMapper.checkIfUserLiked("mytest", 1)).thenReturn(false);
+
+        userService.likeEvent("mytest", 1);
+
+        verify(eventMapper).incrementLikedCount(1);
+        verify(userMapper).likeEvent("mytest", 1);
     }
 
     @Test
-    public void testDelikeEvent() throws Exception {
-        // Test removing a like
-        String userId = "mytest";
-        Integer eventId = 1;
-        
-        // First like the event
-        userService.likeEvent(userId, eventId);
-        
-        // Then remove the like
-        userService.delikeEvent(userId, eventId);
-        
-        // Verify the like was removed
-        List<UserLikeDTO> likes = userService.getUserLikeEntries(userId);
-        assertFalse(likes.stream().anyMatch(like -> like.getEventId().equals(eventId)));
+    void likeEvent_updatesTimestampWithoutIncrementWhenAlreadyLiked() throws Exception {
+        when(userMapper.checkUserExists("mytest")).thenReturn(true);
+        when(eventMapper.checkIfEventExists(1)).thenReturn(true);
+        when(userMapper.checkIfUserLiked("mytest", 1)).thenReturn(true);
+
+        userService.likeEvent("mytest", 1);
+
+        verify(eventMapper, never()).incrementLikedCount(1);
+        verify(userMapper).likeEvent("mytest", 1);
     }
 
     @Test
-    public void testBookmarkEvent() throws Exception {
-        // Test bookmarking an event
-        String userId = "mytest";
-        Integer eventId = 1;
-        
-        // Bookmark the event
-        userService.bookmarkEvent(userId, eventId);
-        
-        // Verify the bookmark was recorded
-        UserProfileVO profile = userService.getUserProfile(userId);
-        assertTrue(profile.getBookmarks().contains(eventId));
+    void delikeEvent_removesLikeAndDecrementsCountWhenPresent() {
+        when(userMapper.checkUserExists("mytest")).thenReturn(true);
+        when(eventMapper.checkIfEventExists(1)).thenReturn(true);
+        when(userMapper.checkIfUserLiked("mytest", 1)).thenReturn(true);
+
+        userService.delikeEvent("mytest", 1);
+
+        verify(eventMapper).decrementLikedCount(1);
+        verify(userMapper).delikeEvent("mytest", 1);
     }
 
     @Test
-    public void testDebookmarkEvent() throws Exception {
-        // Test removing a bookmark
-        String userId = "mytest";
-        Integer eventId = 1;
-        
-        // First bookmark the event
-        userService.bookmarkEvent(userId, eventId);
-        
-        // Then remove the bookmark
-        userService.debookmarkEvent(userId, eventId);
-        
-        // Verify the bookmark was removed
-        UserProfileVO profile = userService.getUserProfile(userId);
-        assertFalse(profile.getBookmarks().contains(eventId));
+    void bookmarkEvent_persistsBookmarkForExistingUserAndEvent() throws Exception {
+        when(userMapper.checkUserExists("mytest")).thenReturn(true);
+        when(eventMapper.checkIfEventExists(1)).thenReturn(true);
+
+        userService.bookmarkEvent("mytest", 1);
+
+        verify(userMapper).bookmarkEvent("mytest", 1);
     }
-} 
+
+    @Test
+    void debookmarkEvent_removesBookmarkForExistingUserAndEvent() throws Exception {
+        when(userMapper.checkUserExists("mytest")).thenReturn(true);
+        when(eventMapper.checkIfEventExists(1)).thenReturn(true);
+
+        userService.debookmarkEvent("mytest", 1);
+
+        verify(userMapper).debookmarkEvent("mytest", 1);
+    }
+}

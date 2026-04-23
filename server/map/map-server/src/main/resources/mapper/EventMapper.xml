@@ -4,7 +4,7 @@
 
 <!--  useGeneratedKeys="true"-->
 <insert id="insertEventRecord" parameterType="com.map.entity.Event">
-  INSERT INTO Event (
+  INSERT INTO events (
     event_id, name, start_time, end_time, timezone, location, description, link,
     liked_count, viewed_count, trending_score, latitude, longitude
   ) VALUES (
@@ -31,39 +31,43 @@
     </where>
 </select>
 
+<!-- Postgres date arithmetic:
+     MySQL DATE_ADD(date, INTERVAL n DAY) becomes date + INTERVAL 'n days'
+     MySQL WEEKDAY(date) [Mon=0..Sun=6] replaced with EXTRACT(ISODOW FROM date) [Mon=1..Sun=7]
+     Formula conversion: MySQL (6-WEEKDAY) = Postgres (7-ISODOW), MySQL (8-WEEKDAY) = Postgres (9-ISODOW) -->
 <select id="selectEvents" resultType="com.map.entity.Event">
     SELECT DISTINCT e.*
-    FROM Events e
-    JOIN Event_Categories ec ON e.event_id = ec.event_id
-    JOIN Categories c ON ec.category_id = c.category_id
+    FROM events e
+    JOIN event_categories ec ON e.event_id = ec.event_id
+    JOIN categories c ON ec.category_id = c.category_id
     WHERE 1=1
     <if test="category != null and category != '' and category != 'All Categories'">
-        AND LOWER(category_name) = LOWER(#{category})
+        AND LOWER(c.category_name) = LOWER(#{category})
     </if>
     <if test="time != null and time != '' and time != 'Any Time'">
         AND e.start_time BETWEEN
         <choose>
             <when test="time == 'Today'">
-                CURRENT_DATE AND DATE_ADD(CURRENT_DATE, INTERVAL 1 DAY)
+                CURRENT_DATE AND CURRENT_DATE + INTERVAL '1 day'
             </when>
             <when test="time == 'Tomorrow'">
-                DATE_ADD(CURRENT_DATE, INTERVAL 1 DAY) AND DATE_ADD(CURRENT_DATE, INTERVAL 2 DAY)
+                CURRENT_DATE + INTERVAL '1 day' AND CURRENT_DATE + INTERVAL '2 days'
             </when>
             <when test="time == 'This Week'">
-                CURRENT_DATE AND DATE_ADD(CURRENT_DATE, INTERVAL 7 DAY)
+                CURRENT_DATE AND CURRENT_DATE + INTERVAL '7 days'
             </when>
             <when test="time == 'This Weekend'">
-                DATE_ADD(CURRENT_DATE, INTERVAL (6 - WEEKDAY(CURRENT_DATE)) DAY)
-                AND DATE_ADD(CURRENT_DATE, INTERVAL (8 - WEEKDAY(CURRENT_DATE)) DAY)
+                CURRENT_DATE + (7 - EXTRACT(ISODOW FROM CURRENT_DATE))::INT * INTERVAL '1 day'
+                AND CURRENT_DATE + (9 - EXTRACT(ISODOW FROM CURRENT_DATE))::INT * INTERVAL '1 day'
             </when>
             <when test="time == 'Next Week'">
-                DATE_ADD(CURRENT_DATE, INTERVAL 7 DAY) AND DATE_ADD(CURRENT_DATE, INTERVAL 14 DAY)
+                CURRENT_DATE + INTERVAL '7 days' AND CURRENT_DATE + INTERVAL '14 days'
             </when>
         </choose>
     </if>
     <if test="near != null and near != '' and near != 'All Locations'">
-        AND LOWER(location) = LOWER(#{near})
+        AND LOWER(e.location) = LOWER(#{near})
     </if>
-    ORDER BY start_time ASC
+    ORDER BY e.start_time ASC
 </select>
 </mapper>

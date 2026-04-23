@@ -105,7 +105,8 @@ export const api = {
   },
 
   // Get trending events
-  // This fetches events sorted by popularity metrics (Recalculate trending before fetching)
+  // Trending scores are recalculated automatically by a server-side scheduled job (hourly).
+  // This call just fetches the already-scored results — no recalculation triggered.
   getTrendingEvents: async (
     filters: {
       category?: string;
@@ -114,25 +115,6 @@ export const api = {
     } = {}
   ): Promise<Event[]> => {
     try {
-      // First, trigger the recalculation of trending events
-      try {
-        const recalculateResponse = await fetch(
-          `${API_BASE_URL}/trending/recalculate`,
-          {
-            method: "POST", // or 'GET' depending on your API design
-          }
-        );
-        const recalculateData = await recalculateResponse.json();
-        console.log(
-          "Trending recalculation:",
-          recalculateData.code === 1 ? "successful" : "failed"
-        );
-      } catch (recalcError) {
-        // Log error but continue with fetching - don't block if recalculation fails
-        console.error("Error recalculating trending events:", recalcError);
-      }
-
-      // Then proceed with fetching trending events
       const params = new URLSearchParams();
       if (filters.category) params.append("category", filters.category);
       if (filters.time) params.append("time", filters.time);

@@ -16,6 +16,7 @@
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <skipITs>true</skipITs>
   </properties>
 
   <dependencies>
@@ -57,8 +58,8 @@
     </dependency>
 
     <dependency>
-      <groupId>mysql</groupId>
-      <artifactId>mysql-connector-java</artifactId>
+      <groupId>org.postgresql</groupId>
+      <artifactId>postgresql</artifactId>
       <scope>runtime</scope>
     </dependency>
 
@@ -100,10 +101,7 @@
       <artifactId>fastjson</artifactId>
     </dependency>
 
-    <dependency>
-      <groupId>com.alibaba</groupId>
-      <artifactId>druid-spring-boot-starter</artifactId>
-    </dependency>
+    <!-- Druid connection pool removed (MySQL-specific); using Spring Boot's built-in HikariCP -->
 
     <dependency>
       <groupId>com.github.pagehelper</groupId>
@@ -178,7 +176,34 @@
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-maven-plugin</artifactId>
       </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-failsafe-plugin</artifactId>
+        <executions>
+          <execution>
+            <goals>
+              <goal>integration-test</goal>
+              <goal>verify</goal>
+            </goals>
+            <configuration>
+              <skipITs>${skipITs}</skipITs>
+              <includes>
+                <include>**/*IT.java</include>
+              </includes>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
     </plugins>
   </build>
+
+  <profiles>
+    <profile>
+      <id>integration-tests</id>
+      <properties>
+        <skipITs>false</skipITs>
+      </properties>
+    </profile>
+  </profiles>
 
 </project>

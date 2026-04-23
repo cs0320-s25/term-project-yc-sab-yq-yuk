@@ -16,7 +16,7 @@ public interface CategoryMapper {
    * Fetch all categories.
    * @return all categories
    */
-  @Select("SELECT category_name FROM Categories")
+  @Select("SELECT category_name FROM categories")
   List<String> fetchAllCategories();
 
   /**
@@ -24,8 +24,8 @@ public interface CategoryMapper {
    * @param eventId
    * @return list of categories for the event.
    */
-  @Select("SELECT c.category_name FROM Categories c " +
-          "JOIN Event_Categories ec ON c.category_id = ec.category_id " +
+  @Select("SELECT c.category_name FROM categories c " +
+          "JOIN event_categories ec ON c.category_id = ec.category_id " +
           "WHERE ec.event_id = #{eventId}")
   List<String> getCategoriesForEvent(@Param("eventId") Integer eventId);
 }
